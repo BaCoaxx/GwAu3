@@ -1,5 +1,5 @@
 #include-once
 
-Global Const $GC_I_UIMSG_TRAVEL = 0x10000182
+Global Const $GC_I_UIMSG_TRAVEL = 0x10000183
 Global Const $GC_I_UIMSG_EQUIP_ITEM = 0x100001AA
 Global Const $GC_I_UIMSG_INITIATE_TRADE = 0x100001B0
