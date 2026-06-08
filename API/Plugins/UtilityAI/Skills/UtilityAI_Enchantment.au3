@@ -77,7 +77,9 @@ Func BestTarget_SympatheticVisage($a_f_AggroRange)
 	; Enchantment Spell. For 4...9...10 seconds, whenever target ally is hit by a melee attack, all adjacent foes lose all adrenaline and 3 Energy.
 	; Concise description
 	; Enchantment Spell. (4...9...10 seconds.) All adjacent foes lose all adrenaline and 3 Energy whenever a melee attack hits target ally.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 37 - $GC_I_SKILL_ID_ILLUSION_OF_HASTE
@@ -171,7 +173,9 @@ Func BestTarget_DeathNova($a_f_AggroRange)
 	; Enchantment Spell. For 30 seconds, if target ally dies, all adjacent foes take 26...85...100 damage and are Poisoned for 15 seconds.
 	; Concise description
 	; Enchantment Spell. (30 seconds.) Deals 26...85...100 damage and inflicts Poisoned condition (15 seconds) on adjacent foes if target ally dies.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 111 - $GC_I_SKILL_ID_AWAKEN_THE_BLOOD
@@ -199,7 +203,9 @@ Func BestTarget_TaintedFlesh($a_f_AggroRange)
 	; Elite Enchantment Spell. For 20...39...44 seconds, target ally is immune to disease, and anyone striking that ally in melee becomes Diseased for 3...13...15 seconds.
 	; Concise description
 	; Elite Enchantment Spell. (20...39...44 seconds.) Foes who hit target ally in melee become Diseased (3...13...15 seconds); this ally is immune to Disease.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 114 - $GC_I_SKILL_ID_AURA_OF_THE_LICH
@@ -256,7 +262,9 @@ Func BestTarget_BloodIsPower($a_f_AggroRange)
 	; Elite Enchantment Spell. For 10 seconds, target other ally gains +3...5...6 Energy regeneration.
 	; Concise description
 	; Elite Enchantment Spell. (10 seconds.) +3...5...6 Energy regeneration. Cannot self-target.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 130 - $GC_I_SKILL_ID_DEMONIC_FLESH
@@ -354,7 +362,9 @@ Func BestTarget_BloodRitual($a_f_AggroRange)
 	; Enchantment Spell. For 8...13...14 seconds, target touched ally gains +3 Energy regeneration. Blood Ritual cannot be used on the caster.
 	; Concise description
 	; Enchantment Spell. (8...13...14 seconds.) +3 Energy regeneration. Cannot self-target.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 160 - $GC_I_SKILL_ID_WINDBORNE_SPEED
@@ -368,7 +378,9 @@ Func BestTarget_WindborneSpeed($a_f_AggroRange)
 	; Enchantment Spell. For 5...11...13 seconds, target ally moves 33% faster.
 	; Concise description
 	; Enchantment Spell. (5...11...13 seconds.) Target ally moves 33% faster.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 164 - $GC_I_SKILL_ID_ELEMENTAL_ATTUNEMENT
@@ -564,7 +576,7 @@ Func BestTarget_IceSpear($a_f_AggroRange)
 	; Enchantment Spell. Send out an Ice Spear, striking target foe for 10...50...60 cold damage if it hits. If you are Overcast, you gain +1...3...4 Health regeneration for 5 seconds.
 	; Concise description
 	; Enchantment Spell. Projectile: deals 10...50...60 cold damage. Gain +1...3...4 Health regeneration for 5 seconds if Overcast.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 216 - $GC_I_SKILL_ID_IRON_MIST
@@ -676,7 +688,9 @@ Func BestTarget_LifeBond($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, whenever target other ally takes damage from an attack, half the damage is redirected to you. The damage you receive this way is reduced by 3...25...30.
 	; Concise description
 	; Enchantment Spell. Half of the damage target ally takes from attacks is redirected to you. Redirected damage is reduced by 3...25...30. Cannot self-target.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 242 - $GC_I_SKILL_ID_BALTHAZARS_SPIRIT
@@ -690,7 +704,9 @@ Func BestTarget_BalthazarsSpirit($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, target ally gains adrenaline and 1 Energy after taking damage. (The amount of adrenaline gained increases depending on your rank in Smiting Prayers.)
 	; Concise description
 	; Enchantment Spell. Target ally gains adrenaline and 1 Energy when taking damage.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 243 - $GC_I_SKILL_ID_STRENGTH_OF_HONOR
@@ -704,7 +720,9 @@ Func BestTarget_StrengthOfHonor($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, target ally deals 5...21...25 more damage in melee.
 	; Concise description
 	; Enchantment Spell. Target ally deals 5...21...25 more damage in melee.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 244 - $GC_I_SKILL_ID_LIFE_ATTUNEMENT
@@ -718,7 +736,9 @@ Func BestTarget_LifeAttunement($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, target ally deals 30% less damage with attacks, but gains 14...43...50% more Health when healed.
 	; Concise description
 	; Enchantment Spell. Target ally gains 14...43...50% more Health when healed. This ally deals 30% less damage with attacks.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 245 - $GC_I_SKILL_ID_PROTECTIVE_SPIRIT
@@ -732,7 +752,9 @@ Func BestTarget_ProtectiveSpirit($a_f_AggroRange)
 	; Enchantment Spell. For 5...19...23 seconds, target ally cannot lose more than 10% max Health due to damage from a single attack or spell.
 	; Concise description
 	; Enchantment Spell. (5...19...23 seconds.) Incoming damage is reduced to 10% of target ally's maximum Health.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 246 - $GC_I_SKILL_ID_DIVINE_INTERVENTION
@@ -746,7 +768,9 @@ Func BestTarget_DivineIntervention($a_f_AggroRange)
 	; Enchantment Spell. For 10 seconds, the next time target ally receives damage that would be fatal, the damage is negated and that ally is healed for 26...197...240 Health.
 	; Concise description
 	; Enchantment Spell. (10 seconds.) Negates the next fatal damage target ally takes. Negation effect: heals for 26...197...240.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 248 - $GC_I_SKILL_ID_RETRIBUTION
@@ -760,7 +784,9 @@ Func BestTarget_Retribution($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, whenever target ally takes attack damage, this spell deals 33% of the damage back to the source (maximum 5...17...20 damage).
 	; Concise description
 	; Enchantment Spell. Deals 33% of each attack's damage (maximum 5...17...20) back to the source.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 249 - $GC_I_SKILL_ID_HOLY_WRATH
@@ -774,7 +800,9 @@ Func BestTarget_HolyWrath($a_f_AggroRange)
 	; Enchantment Spell. For 10...26...30 seconds, the next 1...8...10 time[s] target other ally takes attack damage, this spell deals 66% of the damage back to the source (maximum of 5...41...50 damage).
 	; Concise description
 	; Enchantment Spell. (10...26...30 seconds). Deals 66% of each attack's damage (maximum 5...41...50) back to source. Ends after dealing damage 1...8...10 time[s]. Cannot self-target.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 250 - $GC_I_SKILL_ID_ESSENCE_BOND
@@ -788,7 +816,9 @@ Func BestTarget_EssenceBond($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, whenever target ally takes physical or elemental damage, you gain 1 Energy.
 	; Concise description
 	; Enchantment Spell. You gain 1 Energy whenever target ally takes physical or elemental damage.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 254 - $GC_I_SKILL_ID_VIGOROUS_SPIRIT
@@ -802,7 +832,9 @@ Func BestTarget_VigorousSpirit($a_f_AggroRange)
 	; Enchantment Spell. For 30 seconds, each time target ally attacks or casts a spell, that ally is healed for 5...17...20 Health.
 	; Concise description
 	; Enchantment Spell. (30 seconds.) Heals for 5...17...20 each time target ally attacks or casts a spell.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 255 - $GC_I_SKILL_ID_WATCHFUL_SPIRIT
@@ -816,7 +848,9 @@ Func BestTarget_WatchfulSpirit($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, target ally gains +2 Health regeneration. That ally is healed for 30...150...180 Health when Watchful Spirit ends.
 	; Concise description
 	; Enchantment Spell. +2 Health regeneration. End effect: heals for 30...150...180.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 256 - $GC_I_SKILL_ID_BLESSED_AURA
@@ -858,7 +892,9 @@ Func BestTarget_Guardian($a_f_AggroRange)
 	; This article is about a monk skill. For the character title, see Guardian (title).
 	; Concise description
 	; green; font-weight: bold;">2...6...7
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 259 - $GC_I_SKILL_ID_SHIELD_OF_DEFLECTION
@@ -872,7 +908,9 @@ Func BestTarget_ShieldOfDeflection($a_f_AggroRange)
 	; Elite Enchantment Spell. For 3...9...10 seconds, target ally has a 75% chance to block attacks and gains 15...27...30 armor.
 	; Concise description
 	; Elite Enchantment Spell. (3...9...10 seconds.) 75% chance to block. +15...27...30 armor.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 260 - $GC_I_SKILL_ID_AURA_OF_FAITH
@@ -886,7 +924,9 @@ Func BestTarget_AuraOfFaith($a_f_AggroRange)
 	; Elite Enchantment Spell. For 3 seconds, target ally gains 50...90...100% more Health when healed and takes 5...41...50% less damage.
 	; Concise description
 	; Elite Enchantment Spell. (3 seconds.) Target ally gains 50...90...100% more Health when healed and takes 5...41...50% less damage.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 261 - $GC_I_SKILL_ID_SHIELD_OF_REGENERATION
@@ -900,7 +940,9 @@ Func BestTarget_ShieldOfRegeneration($a_f_AggroRange)
 	; Elite Enchantment Spell. For 5...11...13 seconds, target ally gains +3...9...10 Health regeneration and 40 armor.
 	; Concise description
 	; Elite Enchantment Spell. (5...11...13 seconds.) +3...9...10 Health regeneration and +40 armor.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 262 - $GC_I_SKILL_ID_SHIELD_OF_JUDGMENT
@@ -914,7 +956,9 @@ Func BestTarget_ShieldOfJudgment($a_f_AggroRange)
 	; Elite Enchantment Spell. For 8...18...20 seconds, anyone striking target ally with an attack is knocked down and suffers 5...41...50 holy damage.
 	; Concise description
 	; Elite Enchantment Spell. (8...18...20 seconds.) Deals 5...41...50 holy damage to foes attacking [sic] target ally. Causes knock-down.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 263 - $GC_I_SKILL_ID_PROTECTIVE_BOND
@@ -928,7 +972,9 @@ Func BestTarget_ProtectiveBond($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, target ally cannot lose more than 5% max Health due to damage from a single attack or spell. When Protective Bond prevents damage, you lose 6...4...3 Energy or the spell ends.
 	; Concise description
 	; Enchantment Spell. Target ally cannot lose more than 5% max Health from a single attack or spell. Each time damage is reduced you lose 6...4...3 Energy or this spell ends.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 266 - $GC_I_SKILL_ID_PEACE_AND_HARMONY
@@ -951,7 +997,9 @@ Func BestTarget_PeaceAndHarmony($a_f_AggroRange)
 	$l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_IsConditioned")
 	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.5 Then Return $l_i_Target
 
-	Return 0
+	$l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 267 - $GC_I_SKILL_ID_JUDGES_INSIGHT
@@ -961,7 +1009,8 @@ Func CanUse_JudgesInsight()
 EndFunc
 
 Func BestTarget_JudgesInsight($a_f_AggroRange)
-	Return 0
+	; Judges Insight is a self-targeted enchantment
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 268 - $GC_I_SKILL_ID_UNYIELDING_AURA
@@ -989,7 +1038,9 @@ Func BestTarget_MarkOfProtection($a_f_AggroRange)
 	; Elite Enchantment Spell. For 10 seconds, whenever target ally would take damage, that ally is healed for that amount instead, maximum 6...49...60. All your Protection Prayers are disabled for 5 seconds.
 	; Concise description
 	; Elite Enchantment Spell. (10 seconds.) Converts incoming damage to healing (maximum 6...49...60). All your Protection Prayers are disabled (5 seconds).
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 270 - $GC_I_SKILL_ID_LIFE_BARRIER
@@ -1003,7 +1054,9 @@ Func BestTarget_LifeBarrier($a_f_AggroRange)
 	; Elite Enchantment Spell. While you maintain this enchantment, damage dealt to target other ally is reduced by 20...44...50%. If your Health is below 50% when that ally takes damage, Life Barrier ends.
 	; Concise description
 	; Elite Enchantment Spell. Reduces damage by 20...44...50%. Cannot self-target. If your Health is below 50% when target takes damage, Life Barrier ends.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 271 - $GC_I_SKILL_ID_ZEALOTS_FIRE
@@ -1027,7 +1080,8 @@ Func CanUse_BalthazarsAura()
 EndFunc
 
 Func BestTarget_BalthazarsAura($a_f_AggroRange)
-	Return 0
+	; Balthazar's Aura is a self-targeted enchantment
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 273 - $GC_I_SKILL_ID_SPELL_BREAKER
@@ -1041,7 +1095,9 @@ Func BestTarget_SpellBreaker($a_f_AggroRange)
 	; Elite Enchantment Spell. For 5...15...17 seconds, target ally cannot be the target of enemy spells.
 	; Concise description
 	; Elite Enchantment Spell. (5...15...17 seconds.) Target ally cannot be the target of enemy spells.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 274 - $GC_I_SKILL_ID_HEALING_SEED
@@ -1055,7 +1111,9 @@ Func BestTarget_HealingSeed($a_f_AggroRange)
 	; Enchantment Spell. For 10 seconds, whenever target other ally takes damage, that ally and all adjacent allies gain 3...25...30 Health.
 	; Concise description
 	; Enchantment Spell. (10 seconds.) Target and adjacent allies gain 3...25...30 Health whenever this ally takes damage. Cannot self-target.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 284 - $GC_I_SKILL_ID_DIVINE_BOON
@@ -1083,7 +1141,9 @@ Func BestTarget_HealingHands($a_f_AggroRange)
 	; Elite Enchantment Spell. For 10 seconds, whenever target ally takes damage, that ally is healed for 5...29...35 Health.
 	; Concise description
 	; Elite Enchantment Spell. (10 seconds.) Heals for 5...29...35 whenever target takes damage.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 288 - $GC_I_SKILL_ID_HEALING_BREEZE
@@ -1112,7 +1172,9 @@ Func BestTarget_VitalBlessing($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, target ally has +40...168...200 maximum Health.
 	; Concise description
 	; Enchantment Spell. +40...168...200 maximum Health.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 290 - $GC_I_SKILL_ID_MENDING
@@ -1126,7 +1188,9 @@ Func BestTarget_Mending($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, target ally gains +1...3...4 Health regeneration.
 	; Concise description
 	; Enchantment Spell. +1...3...4 Health regeneration.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 291 - $GC_I_SKILL_ID_LIVE_VICARIOUSLY
@@ -1140,7 +1204,9 @@ Func BestTarget_LiveVicariously($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, whenever target ally hits a foe, you gain 2...14...17 Health.
 	; Concise description
 	; Enchantment Spell. You gain 2...14...17 Health whenever target ally hits a foe.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 299 - $GC_I_SKILL_ID_SHIELDING_HANDS
@@ -1154,7 +1220,9 @@ Func BestTarget_ShieldingHands($a_f_AggroRange)
 	; Enchantment Spell. For 8 seconds, damage and life steal received by target ally is reduced by 3...15...18. When Shielding Hands ends, that ally is healed for 5...41...50 Health.
 	; Concise description
 	; Enchantment Spell. (8 seconds.) Reduces incoming damage and life steal by 3...15...18. End effect: heals for 5...41...50
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 307 - $GC_I_SKILL_ID_REVERSAL_OF_FORTUNE
@@ -1168,7 +1236,9 @@ Func BestTarget_ReversalOfFortune($a_f_AggroRange)
 	; "RoF" redirects here. For the Prophecies mission, see Ring of Fire.
 	; Concise description
 	; green; font-weight: bold;">15...67...80
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 308 - $GC_I_SKILL_ID_SUCCOR
@@ -1182,7 +1252,9 @@ Func BestTarget_Succor($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this Enchantment, target other ally gains +1 Health and +1 Energy regeneration, but you lose 1 Energy each time that ally casts a Spell.
 	; Concise description
 	; Enchantment Spell. +1 Health regeneration and +1 Energy regeneration. Cannot self-target. You lose 1 Energy each time target ally casts a spell.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 309 - $GC_I_SKILL_ID_HOLY_VEIL
@@ -1196,7 +1268,12 @@ Func BestTarget_HolyVeil($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, any hex cast on target ally takes twice as long to cast. When Holy Veil ends, one hex is removed from target ally.
 	; Concise description
 	; Enchantment Spell. Doubles casting time of hexes cast on target ally. End effect: removes a hex.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	
+	$l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 310 - $GC_I_SKILL_ID_DIVINE_SPIRIT
@@ -1225,7 +1302,7 @@ Func BestTarget_Vengeance($a_f_AggroRange)
 	; This article is about the Monk skill. For the weapon, see Anniversary Daggers "Vengeance".
 	; Concise description
 	; #808080;">End effect: this ally dies.
-	Return 0
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 515 - $GC_I_SKILL_ID_CHARR_BUFF
@@ -1239,7 +1316,7 @@ Func BestTarget_CharrBuff($a_f_AggroRange)
 	; Monster skill
 	; Concise description
 	; 1em; margin-bottom:1em; clear:both;" />
-	Return 0
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 532 - $GC_I_SKILL_ID_HEALING_BREEZE_AGNARS_RAGE
@@ -1249,7 +1326,8 @@ Func CanUse_HealingBreezeAgnarsRage()
 EndFunc
 
 Func BestTarget_HealingBreezeAgnarsRage($a_f_AggroRange)
-	Return 0
+	; Healing Breeze variant - targets lowest HP ally
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 584 - $GC_I_SKILL_ID_DIVINE_FIRE
@@ -1277,7 +1355,7 @@ Func BestTarget_ChimeraOfIntensity($a_f_AggroRange)
 	; Enchantment Spell. Your skills recharge 50% faster, spells you cast cost 50% less Energy, and your movement speed is increased by 50%.
 	; Concise description
 	; Enchantment Spell. Your skills recharge 50% faster, spells you cast cost 50% less Energy, and your movement speed is increased by 50%.
-	Return 0
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 763 - $GC_I_SKILL_ID_JAUNDICED_GAZE
@@ -1291,7 +1369,7 @@ Func BestTarget_JaundicedGaze($a_f_AggroRange)
 	; Enchantment Spell. Remove an enchantment from target foe. If an enchantment is removed, for the next 1...12...15 second[s], your next enchantment spell casts 0...1...1 second[s] faster and costs 1...8...10 less Energy.
 	; Concise description
 	; Enchantment Spell. Removes an enchantment from target foe. Removal effect: your next enchantment casts 0...1...1 second[s] faster and costs 1...8...10 less Energy. (1...12...15 second[s])
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 771 - $GC_I_SKILL_ID_AURA_OF_DISPLACEMENT
@@ -1305,7 +1383,7 @@ Func BestTarget_AuraOfDisplacement($a_f_AggroRange)
 	; Elite Enchantment Spell. When you cast Aura of Displacement, Shadow Step to target foe. When you stop maintaining Aura of Displacement you return to your original location.
 	; Concise description
 	; Elite Enchantment Spell. Shadow Step to target foe. End effect: return to your original location.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 806 - $GC_I_SKILL_ID_CULTISTS_FERVOR
@@ -1354,7 +1432,7 @@ Func BestTarget_VampiricSpirit($a_f_AggroRange)
 	; Elite Enchantment Spell. Steal up to 5...41...50 Health from target foe. For 10 seconds, you have +5...9...10 Health regeneration.
 	; Concise description
 	; Elite Enchantment Spell. Steal 5...41...50 Health from target foe. You have +5...9...10 Health regeneration (10 seconds).
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 823 - $GC_I_SKILL_ID_BURNING_SPEED
@@ -1406,7 +1484,9 @@ Func BestTarget_BorrowedEnergy($a_f_AggroRange)
 	; Mesmer
 	; Concise description
 	; green; font-weight: bold;">4...9...10
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 837 - $GC_I_SKILL_ID_ENERGY_BOON
@@ -1420,7 +1500,9 @@ Func BestTarget_EnergyBoon($a_f_AggroRange)
 	; Elite Enchantment Spell. For 36...55...60 seconds, Energy Boon raises the maximum Health of you and target ally by 1...3...3 for each point of your respective maximum Energy. When this enchantment is first applied, you and your target gain 1...10...12 Energy. You gain an additional 1 Energy for every 2 points you have in Energy Storage.
 	; Concise description
 	; Elite Enchantment Spell. (36...55...60 seconds.) Maximum Health for you and target ally is increased by 1...3...3 for each point of maximum Energy. Initial effect: Both gain 1...10...12 Energy. You gain +1 Energy for every 2 points of Energy Storage.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 838 - $GC_I_SKILL_ID_DWAYNAS_SORROW
@@ -1430,7 +1512,8 @@ Func CanUse_DwaynasSorrow()
 EndFunc
 
 Func BestTarget_DwaynasSorrow($a_f_AggroRange)
-	Return 0
+	; Dwayna's Sorrow is a self-targeted enchantment
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 843 - $GC_I_SKILL_ID_GUST
@@ -1444,7 +1527,9 @@ Func BestTarget_Gust($a_f_AggroRange)
 	; Elite Enchantment Spell. For 5...10...11 seconds, both you and target ally move 33% faster. When you cast this spell, all foes near you and your target take 15...59...70 cold damage. Foes struck by Gust while attacking or moving are knocked down.
 	; Concise description
 	; Elite Enchantment Spell. (5...10...11 seconds.) You and target ally move 33% faster. Initial effect: Foes near you and target ally are struck for 15...59...70 cold damage. Attacking or moving foes are knocked down.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 848 - $GC_I_SKILL_ID_REVERSE_HEX
@@ -1458,7 +1543,12 @@ Func BestTarget_ReverseHex($a_f_AggroRange)
 	; Enchantment Spell. Remove one hex from target ally. If a hex was removed in this way, for 5...9...10 seconds, the next time target ally would take damage, that damage is reduced by 5...41...50.
 	; Concise description
 	; Enchantment Spell. (5...9...10 seconds.) Removes one hex from target ally. The next damage this ally takes is reduced by 5...41...50. No effect unless this ally is hexed.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	
+	$l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 863 - $GC_I_SKILL_ID_ORDER_OF_APOSTASY
@@ -1500,7 +1590,9 @@ Func BestTarget_RestfulBreeze($a_f_AggroRange)
 	; Enchantment Spell. For 8...16...18 seconds, target ally has +10 Health regeneration. This enchantment ends if that ally attacks or uses a skill.
 	; Concise description
 	; Enchantment Spell. (8...16...18 seconds.) +10 Health regeneration. Ends if target ally attacks or uses a skill.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 925 - $GC_I_SKILL_ID_RECALL
@@ -1514,7 +1606,9 @@ Func BestTarget_Recall($a_f_AggroRange)
 	; Enchantment Spell. While you maintain Recall, nothing happens. When Recall ends, you Shadow Step to the ally you targeted when you activated this skill and all of your skills are disabled for 10 seconds.
 	; Concise description
 	; Enchantment Spell. End effect: Shadow Step to target ally. Cannot self-target and disables all of your skills for 10 seconds when it ends.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 926 - $GC_I_SKILL_ID_SHARPEN_DAGGERS
@@ -1654,7 +1748,7 @@ Func BestTarget_IceBreaker($a_f_AggroRange)
 	; This article is about the snow fighting skill. For the unique hammer, see The Ice Breaker.
 	; Concise description
 	; Acquisition">edit
-	Return 0
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1027 - $GC_I_SKILL_ID_CRITICAL_DEFENSES
@@ -1730,7 +1824,8 @@ Func CanUse_AncestorsVisage()
 EndFunc
 
 Func BestTarget_AncestorsVisage($a_f_AggroRange)
-	Return 0
+	; Ancestors Visage is a self-targeted enchantment
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1084 - $GC_I_SKILL_ID_SLIVER_ARMOR
@@ -1758,7 +1853,9 @@ Func BestTarget_DoubleDragon($a_f_AggroRange)
 	; Elite Enchantment Spell. Invoke the power of the Dragon. For 8 seconds, you and target ally are enchanted with Double Dragon. Adjacent foes are dealt 5...25...30 fire damage each second. Additionally, when you or your ally use skills that target a foe, that foe is set on fire for 0...2...3 second[s].
 	; Concise description
 	; Elite Enchantment Spell. (8 seconds.) Enchants you and target ally. Adjacent foes take 5...25...30 fire damage each second. Skills that target a foe also inflict Burning (0...2...3 second[s]).
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1114 - $GC_I_SKILL_ID_SPIRIT_BOND
@@ -1772,7 +1869,9 @@ Func BestTarget_SpiritBond($a_f_AggroRange)
 	; Enchantment Spell. For 8 seconds, whenever target ally takes more than 50 damage from the next 10 attacks or spells, that ally is healed for 30...78...90 Health.
 	; Concise description
 	; Enchantment Spell. (8 seconds.) Heals for 30...78...90 whenever target ally takes more than 50 damage. Ends after this ally takes damage from 10 attacks or spells.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1115 - $GC_I_SKILL_ID_AIR_OF_ENCHANTMENT
@@ -1786,7 +1885,9 @@ Func BestTarget_AirOfEnchantment($a_f_AggroRange)
 	; Elite Enchantment Spell. For 4...9...10 seconds, enchantments cast on target other ally cost 5 less Energy (minimum 1 Energy).
 	; Concise description
 	; Elite Enchantment Spell. (4...9...10 seconds.) Enchantments cast on target ally cost 5 less Energy (minimum 1 Energy). Cannot self-target.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1123 - $GC_I_SKILL_ID_LIFE_SHEATH
@@ -1800,7 +1901,12 @@ Func BestTarget_LifeSheath($a_f_AggroRange)
 	; Elite Enchantment Spell. Remove 0...2...2 condition[s] from target ally. For 8 seconds, the next time that ally would take damage or life steal, that ally gains that amount of Health instead (maximum 20...84...100).
 	; Concise description
 	; Elite Enchantment Spell. (8 seconds.) Converts the next incoming damage or life steal (maximum 20...84...100) to healing. Initial effect: Removes 0...2...2 condition[s].
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	
+	$l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1152 - $GC_I_SKILL_ID_DEMONIC_AGILITY
@@ -1964,7 +2070,7 @@ Func BestTarget_JaggedBones($a_f_AggroRange)
 	; Elite Enchantment Spell. For 30 seconds, whenever target undead servant dies, it is replaced by a level 0...12...15 jagged horror that causes Bleeding with each of its attacks.
 	; Concise description
 	; Elite Enchantment Spell. (30 seconds.) When target undead servant dies, it is replaced by a level 0...12...15 jagged horror that inflicts Bleeding with attacks.
-	Return 0
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1356 - $GC_I_SKILL_ID_CONTAGION
@@ -2030,7 +2136,9 @@ Func BestTarget_StoneSheath($a_f_AggroRange)
 	; Elite Enchantment Spell. For 5...17...20 seconds, you and target ally have +1...24...30 armor and are immune to critical hits. When you cast this spell, all foes near you and your target take 15...59...70 earth damage and are Weakened for 5...17...20 seconds.
 	; Concise description
 	; Elite Enchantment Spell. (5...17...20 seconds.) Gives you and target ally +1...24...30 armor and immunity to critical hits. Initial effect: Foes near you and target ally are struck for 15...59...70 earth damage and are Weakened (5...17...20 seconds).
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1375 - $GC_I_SKILL_ID_STONEFLESH_AURA
@@ -2082,7 +2190,9 @@ Func BestTarget_JudgesIntervention($a_f_AggroRange)
 	; Enchantment Spell. For 10 seconds, the next time target ally receives damage that would be fatal, the damage is negated and one nearby foe takes 30...150...180 holy damage.
 	; Concise description
 	; Enchantment Spell. (10 seconds.) Negates the next fatal damage. Negation effect: deals 30...150...180 holy damage to one foe near target ally.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1391 - $GC_I_SKILL_ID_SUPPORTIVE_SPIRIT
@@ -2096,7 +2206,9 @@ Func BestTarget_SupportiveSpirit($a_f_AggroRange)
 	; Enchantment Spell. For 5...19...23 seconds, whenever target ally takes damage while knocked down, that ally is healed for 5...29...35 Health.
 	; Concise description
 	; Enchantment Spell. (5...19...23 seconds.) Heals for 5...29...35 whenever target ally takes damage while knocked-down.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1392 - $GC_I_SKILL_ID_WATCHFUL_HEALING
@@ -2110,7 +2222,9 @@ Func BestTarget_WatchfulHealing($a_f_AggroRange)
 	; Enchantment Spell. For 10 seconds, target ally gains +1...3...4 Health regeneration. If this skill ends prematurely, that ally gains 30...102...120 Health.
 	; Concise description
 	; Enchantment Spell. (10 seconds.) Target ally has +1...3...4 Health regeneration and gains 30...102...120 Health if this enchantment ends early.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1393 - $GC_I_SKILL_ID_HEALERS_BOON
@@ -2144,7 +2258,8 @@ Func CanUse_BalthazarsPendulum()
 EndFunc
 
 Func BestTarget_BalthazarsPendulum($a_f_AggroRange)
-	Return 0
+	; Balthazar's Pendulum is a self-targeted enchantment
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1399 - $GC_I_SKILL_ID_SHIELD_OF_ABSORPTION
@@ -2158,7 +2273,9 @@ Func BestTarget_ShieldOfAbsorption($a_f_AggroRange)
 	; Enchantment Spell. For 3...6...7 seconds, damage received by target ally is reduced by 5 each time that ally is hit while under the effects of this enchantment.
 	; Concise description
 	; Enchantment Spell. (3...6...7 seconds.) Reduces incoming damage by 5 each time target ally takes damage.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1400 - $GC_I_SKILL_ID_REVERSAL_OF_DAMAGE
@@ -2172,7 +2289,9 @@ Func BestTarget_ReversalOfDamage($a_f_AggroRange)
 	; Enchantment Spell. For 8 seconds, the next time target ally would take damage, the foe dealing the damage takes that damage instead (maximum 5...61...75).
 	; Concise description
 	; Enchantment Spell. (8 seconds.) Negates the next damage and hits the source for that same amount (maximum 5...61...75).
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1450 - $GC_I_SKILL_ID_ABADDONS_CONSPIRACY
@@ -2182,7 +2301,8 @@ Func CanUse_AbaddonsConspiracy()
 EndFunc
 
 Func BestTarget_AbaddonsConspiracy($a_f_AggroRange)
-	Return 0
+	; Abaddon's Conspiracy is a self-targeted enchantment
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1457 - $GC_I_SKILL_ID_ABADDONS_CHOSEN
@@ -2365,7 +2485,9 @@ Func BestTarget_WatchfulIntervention($a_f_AggroRange)
 	; Enchantment Spell. For 60 seconds, the next time damage drops target ally's Health below 25%, that ally is healed for 50...170...200 Health.
 	; Concise description
 	; Enchantment Spell. (60 seconds.) Heals for 50...170...200 the next time damage drops target ally's Health below 25%.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1505 - $GC_I_SKILL_ID_VOW_OF_PIETY
@@ -2685,7 +2807,9 @@ Func BestTarget_ShadowMeld($a_f_AggroRange)
 	; Elite Enchantment Spell. Shadow Step to target other ally. When you stop maintaining this Enchantment, you return to your original location.
 	; Concise description
 	; Elite Enchantment Spell. Shadow Step to target ally. End effect: return to your original location. Cannot self-target.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1663 - $GC_I_SKILL_ID_ELEMENTAL_FLAME
@@ -2713,7 +2837,9 @@ Func BestTarget_PensiveGuardian($a_f_AggroRange)
 	; Enchantment Spell. For 5...10...11 seconds, target ally has a 50% chance to block attacks from enchanted foes.
 	; Concise description
 	; Enchantment Spell. (5...10...11 seconds.) 50% chance to block enchanted foes.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1684 - $GC_I_SKILL_ID_SCRIBES_INSIGHT
@@ -3103,7 +3229,9 @@ Func BestTarget_WitheringAura($a_f_AggroRange)
 	; Enchantment Spell. For 5...17...20 seconds, target ally's melee attacks cause Weakness for 5...17...20 seconds.
 	; Concise description
 	; Enchantment Spell. (5...17...20 seconds.) Target ally's melee attacks cause Weakness condition (5...17...20 seconds.)
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2005 - $GC_I_SKILL_ID_SMITERS_BOON
@@ -3127,7 +3255,12 @@ Func BestTarget_PurifyingVeil($a_f_AggroRange)
 	; Enchantment Spell. While you maintain this enchantment, conditions expire 5...41...50% faster on target ally. When this enchantment ends, one condition is removed from that ally.
 	; Concise description
 	; Enchantment Spell. Conditions expire 5...41...50% faster on target ally. End effect: removes a condition.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	
+	$l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2013 - $GC_I_SKILL_ID_GRENTHS_AURA
@@ -3153,7 +3286,9 @@ Func BestTarget_PatientSpirit($a_f_AggroRange)
 	; Enchantment Spell. For 2 seconds, target ally is enchanted with Patient Spirit. Unless this enchantment ends prematurely, that ally is healed for 30...102...120 Health when the enchantment ends.
 	; Concise description
 	; Enchantment Spell. (2 seconds.) End effect: heals for 30...102...120. No effect if ends early.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2063 - $GC_I_SKILL_ID_AURA_OF_STABILITY
@@ -3167,7 +3302,9 @@ Func BestTarget_AuraOfStability($a_f_AggroRange)
 	; Enchantment Spell. For 3...7...8 seconds, target other ally cannot be knocked down.
 	; Concise description
 	; Enchantment Spell. (3...7...8 seconds.) Target ally cannot be knocked-down. Cannot self-target.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2064 - $GC_I_SKILL_ID_SPOTLESS_MIND
@@ -3181,7 +3318,12 @@ Func BestTarget_SpotlessMind($a_f_AggroRange)
 	; Enchantment Spell. For 1...12...15 seconds, target other ally loses a hex every 5 seconds.
 	; Concise description
 	; Enchantment Spell. (1...12...15 seconds.) Removes a hex every 5 seconds. Cannot self-target.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	
+	$l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2065 - $GC_I_SKILL_ID_SPOTLESS_SOUL
@@ -3195,7 +3337,12 @@ Func BestTarget_SpotlessSoul($a_f_AggroRange)
 	; Enchantment Spell. For 1...12...15 seconds, target other ally loses a condition every 3 seconds.
 	; Concise description
 	; Enchantment Spell. (1...12...15 seconds.) Removes a condition every 3 seconds. Cannot self-target.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	
+	$l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2091 - $GC_I_SKILL_ID_SHADOW_SANCTUARY_KURZICK
@@ -3264,7 +3411,9 @@ Func BestTarget_SeedOfLife($a_f_AggroRange)
 	; Enchantment Spell. For 2...5 seconds, whenever target other ally takes damage, all party members are healed for 2 Health for each rank in Divine Favor.
 	; Concise description
 	; Enchantment Spell. (2...5) seconds. Heals party members for 2 for each rank in Divine Favor whenever target takes damage. Cannot self target.
-	Return 0
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2109 - $GC_I_SKILL_ID_ETERNAL_AURA
@@ -3342,7 +3491,7 @@ Func BestTarget_MagneticSurge($a_f_AggroRange)
 	; Enchantment Spell. Target foe takes 15...63...75 damage. If you are Overcast, Magnetic Surge enchants all allies in earshot for 1...4...5 second[s] to block the next attack against them.
 	; Concise description
 	; Enchantment Spell. Deals 15...63...75 damage. If you are Overcast, allies in earshot are enchanted for 1...4...5 [sic] and block the next attack against them.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2201 - $GC_I_SKILL_ID_SHIELD_OF_FORCE
@@ -3370,7 +3519,9 @@ Func BestTarget_GreatDwarfArmor($a_f_AggroRange)
 	; Enchantment Spell. For 22...40 seconds, target ally has +24 armor, +60 maximum Health, and an additional +24 armor against Destroyers.
 	; Concise description
 	; Enchantment Spell. (22...40 seconds.) +24 armor and +60 maximum Health. Additional +24 armor against Destroyers.
-	Return 0
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2249 - $GC_I_SKILL_ID_POLYMOCK_BLOCK
@@ -3539,7 +3690,8 @@ Func CanUse_AegisPvP()
 EndFunc
 
 Func BestTarget_AegisPvP($a_f_AggroRange)
-	Return 0
+	; Aegis PvP is a self-targeted enchantment
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2860 - $GC_I_SKILL_ID_ETHER_RENEWAL_PvP
@@ -3589,7 +3741,8 @@ Func CanUse_UnyieldingAuraPvP()
 EndFunc
 
 Func BestTarget_UnyieldingAuraPvP($a_f_AggroRange)
-	Return 0
+	; Unyielding Aura PvP is a self-targeted enchantment
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2892 - $GC_I_SKILL_ID_SPIRIT_BOND_PvP
@@ -3599,7 +3752,10 @@ Func CanUse_SpiritBondPvP()
 EndFunc
 
 Func BestTarget_SpiritBondPvP($a_f_AggroRange)
-	Return 0
+	; Spirit Bond PvP targets lowest HP ally
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2895 - $GC_I_SKILL_ID_SMITERS_BOON_PvP
@@ -3623,7 +3779,7 @@ Func BestTarget_BitGolemRectifier($a_f_AggroRange)
 	; Enchantment Spell. N.O.X. is healed for 10 Health every second.
 	; Concise description
 	; Enchantment Spell. Heals N.O.X. for 10 every second.
-	Return 0
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2915 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -3637,7 +3793,8 @@ Func CanUse_StrengthOfHonorPvP()
 EndFunc
 
 Func BestTarget_StrengthOfHonorPvP($a_f_AggroRange)
-	Return 0
+	; Strength of Honor PvP is a self-targeted enchantment
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 3003 - $GC_I_SKILL_ID_ARMOR_OF_UNFEELING_PvP

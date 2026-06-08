@@ -55,7 +55,10 @@ Func BestTarget_PowerBlock($a_f_AggroRange)
 	; Elite Spell. If target foe is casting a spell or chant, that skill and all skills of the same attribute are disabled for 1...10...12 seconds and that skill is interrupted.
 	; Concise description
 	; Elite Spell. If target foe is casting a spell or chant, that skill and all skills of the same attribute are disabled (1...10...12 seconds) and that skill is interrupted.
-	Return 0
+	; Target: Casting enemy (highest priority), fallback to nearest caster
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCaster")
 EndFunc
 
 ; Skill ID: 21 - $GC_I_SKILL_ID_INSPIRED_ENCHANTMENT
@@ -83,7 +86,8 @@ Func BestTarget_InspiredHex($a_f_AggroRange)
 	; Spell. Remove a hex from target ally and gain 4...9...10 Energy. For 20 seconds, Inspired Hex is replaced with the hex that was removed.
 	; Concise description
 	; Spell. Removes a hex from target ally. Removal effects: you gain 4...9...10 Energy; this spell is replaced with that hex (20 seconds).
-	Return 0
+	; Target: Hexed ally (support spell)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsHexed")
 EndFunc
 
 ; Skill ID: 23 - $GC_I_SKILL_ID_POWER_SPIKE
@@ -97,7 +101,8 @@ Func BestTarget_PowerSpike($a_f_AggroRange)
 	; Spell. If target foe is casting a spell or a chant, that skill is interrupted and target foe takes 30...102...120 damage.
 	; Concise description
 	; Spell. Interrupts a spell or chant. Interruption effect: deals 30...102...120 damage.
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 24 - $GC_I_SKILL_ID_POWER_LEAK
@@ -111,7 +116,8 @@ Func BestTarget_PowerLeak($a_f_AggroRange)
 	; Spell. If target foe is casting a spell or chant, that skill is interrupted and target foe loses 3...14...17 Energy.
 	; Concise description
 	; Spell. Interrupts a spell or chant. Interruption effect: causes 3...14...17 Energy loss.
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 25 - $GC_I_SKILL_ID_POWER_DRAIN
@@ -229,7 +235,10 @@ Func BestTarget_EnergyBurn($a_f_AggroRange)
 	; Spell. Target foe loses 1...8...10 Energy and takes 9 damage for each point of Energy lost.
 	; Concise description
 	; Spell. Causes 1...8...10 Energy loss. Deals 9 damage for each point of Energy lost.
-	Return 0
+	; Target: Highest health caster (energy drain effectiveness)
+	Local $l_i_Target = UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCaster")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 57 - $GC_I_SKILL_ID_CRY_OF_FRUSTRATION
@@ -243,7 +252,8 @@ Func BestTarget_CryOfFrustration($a_f_AggroRange)
 	; "CoF" and "Cof" redirects here. For the dungeon, see Cathedral of Flames.
 	; Concise description
 	; green; font-weight: bold;">15...63...75
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 64 - $GC_I_SKILL_ID_MIMIC
@@ -257,7 +267,8 @@ Func BestTarget_Mimic($a_f_AggroRange)
 	; Mesmer
 	; Concise description
 	; #808080;">Ends after one use.
-	Return 0
+	; Target: Self (mimics target's elite skill)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 65 - $GC_I_SKILL_ID_ARCANE_MIMICRY
@@ -271,7 +282,8 @@ Func BestTarget_ArcaneMimicry($a_f_AggroRange)
 	; "AM" redirects here. For the mission, see Abaddon's Mouth.
 	; Concise description
 	; #808080;">Cannot self-target. No effect if target's elite skill is a form.
-	Return 0
+	; Target: Nearest enemy (mimics their elite skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 67 - $GC_I_SKILL_ID_SHATTER_HEX
@@ -285,7 +297,8 @@ Func BestTarget_ShatterHex($a_f_AggroRange)
 	; Spell. Remove a hex from target ally. If a hex is removed, foes near that ally take 30...102...120 damage.
 	; Concise description
 	; Spell. Removes a hex from target ally. Removal effect: deals 30...102...120 damage to foes near this ally.
-	Return 0
+	; Target: Hexed ally (support spell)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsHexed")
 EndFunc
 
 ; Skill ID: 68 - $GC_I_SKILL_ID_DRAIN_ENCHANTMENT
@@ -314,7 +327,8 @@ Func BestTarget_ShatterEnchantment($a_f_AggroRange)
 	; Spell. Remove an enchantment from target foe. If an enchantment is removed, that foe takes 14...83...100 damage.
 	; Concise description
 	; Spell. Removes an enchantment from target foe. Removal effect: deals 14...83...100 damage.
-	Return 0
+	; Target: Enchanted enemy (highest priority)
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
 EndFunc
 
 ; Skill ID: 77 - $GC_I_SKILL_ID_CHAOS_STORM
@@ -342,7 +356,10 @@ Func BestTarget_Epidemic($a_f_AggroRange)
 	; Spell. Spread all negative conditions and their remaining durations from target foe to all foes adjacent to your target.
 	; Concise description
 	; Spell. Conditions on target foe transfer to adjacent foes.
-	Return 0
+	; Target: Conditioned enemy with grouped enemies nearby
+	Local $l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 79 - $GC_I_SKILL_ID_ENERGY_DRAIN
@@ -406,7 +423,10 @@ Func BestTarget_ArcaneThievery($a_f_AggroRange)
 	; Spell. For 5...29...35 seconds, one random spell is disabled for target foe, and Arcane Thievery is replaced by that spell.
 	; Concise description
 	; Spell. (5...29...35 seconds.) Disables one random spell. This skill becomes that spell.
-	Return 0
+	; Target: Caster enemy (highest priority)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCaster")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 83 - $GC_I_SKILL_ID_ANIMATE_BONE_HORROR
@@ -458,7 +478,8 @@ Func CanUse_GrenthsBalance()
 EndFunc
 
 Func BestTarget_GrenthsBalance($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 87 - $GC_I_SKILL_ID_VERATAS_GAZE
@@ -468,7 +489,8 @@ Func CanUse_VeratasGaze()
 EndFunc
 
 Func BestTarget_VeratasGaze($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 89 - $GC_I_SKILL_ID_DEATHLY_CHILL
@@ -482,7 +504,8 @@ Func BestTarget_DeathlyChill($a_f_AggroRange)
 	; Spell. Target foe is struck for 5...41...50 cold damage. If that foe's Health is above 50%, you deal an additional 5...41...50 shadow damage.
 	; Concise description
 	; Spell. Deals 5...41...50 cold damage. Deals 5...41...50 more damage if target foe was above 50% Health.
-	Return 0
+	; Target: Highest health enemy (bonus damage)
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 90 - $GC_I_SKILL_ID_VERATAS_SACRIFICE
@@ -562,7 +585,8 @@ Func BestTarget_ShadowStrike($a_f_AggroRange)
 	; Spell. Target foe takes 12...41...48 shadow damage. If that foe's Health is above 50%, you steal up to 12...41...48 Health.
 	; Concise description
 	; Spell. Deals 12...41...48 damage. Steal up to 12...41...48 Health if this foe was above 50% Health.
-	Return 0
+	; Target: Highest health enemy (life steal bonus)
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 105 - $GC_I_SKILL_ID_DEATHLY_SWARM
@@ -590,7 +614,8 @@ Func BestTarget_RottingFlesh($a_f_AggroRange)
 	; Spell. Target fleshy foe becomes Diseased for 10...22...25 seconds, slowly losing Health.
 	; Concise description
 	; Spell. Inflicts Diseased condition (10...22...25 seconds).
-	Return 0
+	; Target: Nearest enemy (condition application)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 107 - $GC_I_SKILL_ID_VIRULENCE
@@ -604,7 +629,8 @@ Func BestTarget_Virulence($a_f_AggroRange)
 	; Elite Spell. If target foe was already suffering from a condition, that foe suffers from Disease, Poison, and Weakness for 3...13...15 seconds.
 	; Concise description
 	; Elite Spell. Inflicts Disease, Poison, and Weakness conditions (3...13...15 seconds). No effect unless this foe already had a condition.
-	Return 0
+	; Target: Conditioned enemy (condition requirement)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsConditioned")
 EndFunc
 
 ; Skill ID: 110 - $GC_I_SKILL_ID_UNHOLY_FEAST
@@ -632,7 +658,10 @@ Func BestTarget_DesecrateEnchantments($a_f_AggroRange)
 	; Spell. Target foe and all nearby foes take 6...49...60 shadow damage and 4...17...20 shadow damage for each enchantment on them.
 	; Concise description
 	; Spell. Deals 6...49...60 damage to target and nearby foes. Deals 4...17...20 more damage for each enchantment on them.
-	Return 0
+	; Target: Grouped enchanted enemies (AOE damage)
+	Local $l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 117 - $GC_I_SKILL_ID_ENFEEBLE1
@@ -642,7 +671,8 @@ Func CanUse_Enfeeble1()
 EndFunc
 
 Func BestTarget_Enfeeble1($a_f_AggroRange)
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 118 - $GC_I_SKILL_ID_ENFEEBLING_BLOOD
@@ -656,7 +686,8 @@ Func BestTarget_EnfeeblingBlood($a_f_AggroRange)
 	; Spell. Target foe and all nearby foes suffer from Weakness for 5...17...20 seconds.
 	; Concise description
 	; Spell. Inflicts Weakness condition (5...17...20 seconds) on this foe and nearby foes.
-	Return 0
+	; Target: Grouped enemies (AOE condition)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 120 - $GC_I_SKILL_ID_BLOOD_OF_THE_MASTER
@@ -680,11 +711,8 @@ Func CanUse_DarkPact()
 EndFunc
 
 Func BestTarget_DarkPact($a_f_AggroRange)
-	; Description
-	; Spell. Deal 10...40...48 shadow damage to target foe.
-	; Concise description
-	; Spell. Deals 10...40...48 damage.
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 141 - $GC_I_SKILL_ID_REND_ENCHANTMENTS
@@ -698,7 +726,8 @@ Func BestTarget_RendEnchantments($a_f_AggroRange)
 	; Spell. Remove 5...8...9 enchantments from target foe. For each Monk enchantment removed, you lose 55...31...25 Health.
 	; Concise description
 	; Spell. Removes 5...8...9 enchantments from target foe. Removal cost: you lose 55...31...25 Health for each Monk enchantment removed.
-	Return 0
+	; Target: Enchanted enemy (highest priority)
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
 EndFunc
 
 ; Skill ID: 143 - $GC_I_SKILL_ID_STRIP_ENCHANTMENT
@@ -726,7 +755,10 @@ Func BestTarget_Chilblains($a_f_AggroRange)
 	; Spell. You become Poisoned for 10 seconds. Foes in the area of your target are struck for 10...37...44 cold damage and lose 1...2...2 enchantment[s].
 	; Concise description
 	; Spell. Deals 10...37...44 cold damage to foes in the area around your target; removes 1...2...2 enchantment[s] from these foes. You are Poisoned (10 seconds).
-	Return 0
+	; Target: Grouped enemies (AOE damage and enchantment removal)
+	Local $l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 146 - $GC_I_SKILL_ID_OFFERING_OF_BLOOD
@@ -754,7 +786,8 @@ Func BestTarget_PlagueSending($a_f_AggroRange)
 	; Spell. Transfer 1...3...3 negative condition[s] and [its/their] remaining duration[s] from yourself to target foe and all adjacent foes.
 	; Concise description
 	; Spell. Transfer 1...3...3 condition[s] and [its/their] remaining duration[s] from yourself to target foe and all adjacent foes.
-	Return 0
+	; Target: Grouped enemies (AOE condition transfer)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 151 - $GC_I_SKILL_ID_FEAST_OF_CORRUPTION
@@ -768,7 +801,10 @@ Func BestTarget_FeastOfCorruption($a_f_AggroRange)
 	; Elite Spell. Target foe and all adjacent foes are struck for 16...67...80 shadow damage. You steal up to 8...34...40 Health from each struck foe who is suffering from a hex.
 	; Concise description
 	; Elite Spell. Deals 16...67...80 damage to target and adjacent foes. Steal 8...34...40 Health from each hexed foe.
-	Return 0
+	; Target: Grouped hexed enemies (AOE damage and life steal)
+	Local $l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 152 - $GC_I_SKILL_ID_TASTE_OF_DEATH
@@ -782,7 +818,8 @@ Func BestTarget_TasteOfDeath($a_f_AggroRange)
 	; Spell. Steal up to 100...340...400 Health from target animated undead ally.
 	; Concise description
 	; Spell. Steals 100...340...400 Health from allied undead servant.
-	Return 0
+	; Target: Self (targets own minions)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 153 - $GC_I_SKILL_ID_VAMPIRIC_GAZE
@@ -810,7 +847,8 @@ Func BestTarget_WeakenArmor($a_f_AggroRange)
 	; Spell. Target foe and foes adjacent to your target have Cracked Armor for 5...17...20 seconds.
 	; Concise description
 	; Spell. Also affects adjacent foes. Inflicts Cracked Armor condition (5...17...20 seconds).
-	Return 0
+	; Target: Grouped enemies (AOE condition)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 161 - $GC_I_SKILL_ID_LIGHTNING_STORM
@@ -824,7 +862,8 @@ Func BestTarget_LightningStorm($a_f_AggroRange)
 	; Elementalist
 	; Concise description
 	; green; font-weight: bold;">14...61...73
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 162 - $GC_I_SKILL_ID_GALE
@@ -838,7 +877,8 @@ Func BestTarget_Gale($a_f_AggroRange)
 	; Spell. Knock down target foe for 2 seconds. (50% failure chance with Air Magic 4 or less.)
 	; Concise description
 	; Spell. Causes knock-down. 50% failure chance unless Air Magic 5 or more.
-	Return 0
+	; Target: Nearest enemy (knockdown control)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 163 - $GC_I_SKILL_ID_WHIRLWIND
@@ -866,7 +906,8 @@ Func BestTarget_Eruption($a_f_AggroRange)
 	; Spell. Cause an Eruption at target foe's location. Each second for 5 seconds, foes near this location are struck for 10...34...40 earth damage and are Blinded for 10 seconds.
 	; Concise description
 	; Spell. Deals 10...34...40 earth damage each second (5 seconds). Hits foes near target's initial location. Inflicts Blindness condition (10 seconds).
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 170 - $GC_I_SKILL_ID_EARTHQUAKE
@@ -880,7 +921,8 @@ Func BestTarget_Earthquake($a_f_AggroRange)
 	; Spell. You invoke an Earthquake at target foe's location. All foes near this location are knocked down and are struck for 26...85...100 earth damage.
 	; Concise description
 	; Spell. Deals 26...85...100 earth damage. Also hits foes near target. Causes knock-down.
-	Return 0
+	; Target: Grouped enemies (AOE knockdown)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 171 - $GC_I_SKILL_ID_STONING
@@ -894,7 +936,10 @@ Func BestTarget_Stoning($a_f_AggroRange)
 	; Spell. Send out a large stone, striking target foe for 45...93...105 earth damage if it hits. If Stoning hits a foe suffering from Weakness, that foe is knocked down.
 	; Concise description
 	; Spell. Projectile: deals 45...93...105 earth damage. Causes knock-down if target foe is Weakened.
-	Return 0
+	; Target: Weakened enemy (knockdown priority)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 172 - $GC_I_SKILL_ID_STONE_DAGGERS
@@ -908,7 +953,8 @@ Func BestTarget_StoneDaggers($a_f_AggroRange)
 	; Spell. Send out two Stone Daggers. Each Stone Dagger strikes target foe for 8...28...33 earth damage if it hits. If you are Overcast, each projectile inflicts Bleeding for 1...4...5 second[s].
 	; Concise description
 	; Spell. Two projectiles: each deals 8...28...33 earth damage. If Overcast, cause Bleeding for 1...4...5 second[s].
-	Return 0
+	; Target: Nearest enemy (projectile spell)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 174 - $GC_I_SKILL_ID_AFTERSHOCK
@@ -950,7 +996,8 @@ Func BestTarget_MindBurn($a_f_AggroRange)
 	; Elite Spell. Target foe and all adjacent foes take 15...51...60 fire damage. If you have more Energy than target foe, that foe and all adjacent foes take an additional 15...51...60 fire damage and are set on fire for 1...8...10 second[s].
 	; Concise description
 	; Elite Spell. Deals 15...51...60 fire damage. If you have more energy than target foe, deals 15...51...60 more fire damage and inflicts Burning (1...8...10 second[s]). Also hits adjacent foes.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 186 - $GC_I_SKILL_ID_FIREBALL
@@ -964,7 +1011,8 @@ Func BestTarget_Fireball($a_f_AggroRange)
 	; This article is about the skill. For the effect from the Obelisk Flag Stand, see Fireball (obelisk).
 	; Concise description
 	; deals
-	Return 0
+	; Target: Lowest health enemy
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 187 - $GC_I_SKILL_ID_METEOR
@@ -978,7 +1026,8 @@ Func BestTarget_Meteor($a_f_AggroRange)
 	; Spell. Target foe and all adjacent foes are struck for 7...91...112 fire damage and knocked down.
 	; Concise description
 	; Spell. Deals 7...91...112 fire damage and causes knock-down. Also hits foes adjacent to target foe.
-	Return 0
+	; Target: Grouped enemies (AOE knockdown damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 188 - $GC_I_SKILL_ID_FLAME_BURST
@@ -1002,7 +1051,8 @@ Func CanUse_RodgortsInvocation()
 EndFunc
 
 Func BestTarget_RodgortsInvocation($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 191 - $GC_I_SKILL_ID_IMMOLATE
@@ -1016,7 +1066,8 @@ Func BestTarget_Immolate($a_f_AggroRange)
 	; Spell. Target foe is struck for 20...64...75 fire damage and is set on fire for 1...3...3 second[s].
 	; Concise description
 	; Spell. Deals 20...64...75 fire damage. Inflicts Burning condition (1...3...3 second[s]).
-	Return 0
+	; Target: Nearest enemy (single target burn)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 192 - $GC_I_SKILL_ID_METEOR_SHOWER
@@ -1044,7 +1095,8 @@ Func BestTarget_Phoenix($a_f_AggroRange)
 	; This article is about the spell. For the animal companion, see Phoenix (pet).
 	; Concise description
 	; deals
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 194 - $GC_I_SKILL_ID_FLARE
@@ -1144,7 +1196,8 @@ Func BestTarget_ObsidianFlame($a_f_AggroRange)
 	; This article is about a spell. For the guild found in Cantha, see Obsidian Flame (guild).
 	; Concise description
 	; green; font-weight: bold;">22...94...112
-	Return 0
+	; Target: Grouped enemies (AOE fire damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 220 - $GC_I_SKILL_ID_BLINDING_FLASH
@@ -1175,7 +1228,8 @@ Func BestTarget_ChainLightning($a_f_AggroRange)
 	; Spell. Target foe and up to two other foes near your target are struck for 10...70...85 lightning damage. This spell has 25% armor penetration.
 	; Concise description
 	; Spell. Deals 10...70...85 lightning damage. Also hits two foes near your target. 25% armor penetration.
-	Return 0
+	; Target: Grouped enemies (AOE chaining damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 224 - $GC_I_SKILL_ID_ENERVATING_CHARGE
@@ -1189,7 +1243,8 @@ Func BestTarget_EnervatingCharge($a_f_AggroRange)
 	; Spell. Target foe is struck for 25...45...50 lightning damage and suffers from Weakness for 5...17...20 seconds. This spell has 25% armor penetration.
 	; Concise description
 	; Spell. Deals 25...45...50 lightning damage. Inflicts Weakness condition (5...17...20 seconds). 25% armor penetration.
-	Return 0
+	; Target: Nearest enemy (condition application)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 226 - $GC_I_SKILL_ID_MIND_SHOCK
@@ -1203,7 +1258,8 @@ Func BestTarget_MindShock($a_f_AggroRange)
 	; Elite Spell. Target foe suffers 10...42...50 lightning damage. If you have more Energy than target foe, that foe suffers 10...42...50 more lightning damage and is knocked down. This spell has 25% armor penetration.
 	; Concise description
 	; Elite Spell. Deals 10...42...50 lightning damage. If you have more Energy than target foe, deals +10...42...50 lightning damage and causes knockdown. 25% armor penetration.
-	Return 0
+	; Target: Nearest enemy (elite damage/knockdown)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 228 - $GC_I_SKILL_ID_THUNDERCLAP
@@ -1217,7 +1273,8 @@ Func BestTarget_Thunderclap($a_f_AggroRange)
 	; Elite Spell. Create a massive shockwave at target foe's location. Deals 10...42...50 lightning damage to target and all adjacent foes. Struck foes are interrupted and suffer from Cracked Armor and Weakness for 5...17...20 seconds. This spell has 25% armor penetration.
 	; Concise description
 	; Elite Spell. Deals 10...42...50 lightning damage. Also strikes adjacent foes. Inflicts Cracked Armor and Weakness (5...17...20 seconds). Causes interrupt. 25% armor penetration.
-	Return 0
+	; Target: Grouped enemies (AOE interrupt + conditions)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 229 - $GC_I_SKILL_ID_LIGHTNING_ORB1
@@ -1227,7 +1284,8 @@ Func CanUse_LightningOrb1()
 EndFunc
 
 Func BestTarget_LightningOrb1($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 230 - $GC_I_SKILL_ID_LIGHTNING_JAVELIN
@@ -1258,7 +1316,8 @@ Func BestTarget_WaterTrident($a_f_AggroRange)
 	; Elite Spell. Send out a fast-moving Water Trident, striking target foe and up to 2 adjacent foes for 10...74...90 cold damage if it hits. If it hits a moving foe, that foe is knocked down.
 	; Concise description
 	; Elite Spell. Fast Projectile: deals 10...74...90 cold damage and knocks-down moving foes. Shoots 2 additional projectiles at adjacent foes.
-	Return 0
+	; Target: Lowest health enemy (projectile with knockdown)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 240 - $GC_I_SKILL_ID_SMITE
@@ -1324,7 +1383,7 @@ Func BestTarget_MendCondition($a_f_AggroRange)
 	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe|UAI_Filter_IsConditioned")
 	If $l_i_Target <> 0 Then Return $l_i_Target
 
-	Return 0
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 276 - $GC_I_SKILL_ID_RESTORE_CONDITION
@@ -1341,7 +1400,7 @@ Func BestTarget_RestoreCondition($a_f_AggroRange)
 	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe|UAI_Filter_IsConditioned")
 	If $l_i_Target <> 0 Then Return $l_i_Target
 
-	Return 0
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 277 - $GC_I_SKILL_ID_MEND_AILMENT
@@ -1355,7 +1414,8 @@ Func BestTarget_MendAilment($a_f_AggroRange)
 	; Spell. Remove one condition (Poison, Disease, Blindness, Dazed, Bleeding, Crippled, Burning, Weakness, Cracked Armor, or Deep Wound) from target ally. For each remaining Condition, that ally is healed for 5...57...70 Health.
 	; Concise description
 	; Spell. Removes a condition. Removal effect: heals for 5...57...70 for each remaining condition.
-	Return 0
+	; Target: Conditioned ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_IsConditioned")
 EndFunc
 
 ; Skill ID: 278 - $GC_I_SKILL_ID_PURGE_CONDITIONS
@@ -1369,7 +1429,8 @@ Func BestTarget_PurgeConditions($a_f_AggroRange)
 	; Spell. Remove all conditions (Poison, Disease, Blindness, Dazed, Bleeding, Crippled, Burning, Weakness, Cracked Armor, and Deep Wound) from target ally.
 	; Concise description
 	; Spell. Removes all conditions.
-	Return 0
+	; Target: Conditioned ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_IsConditioned")
 EndFunc
 
 ; Skill ID: 279 - $GC_I_SKILL_ID_DIVINE_HEALING
@@ -1426,12 +1487,15 @@ Func BestTarget_WordOfHealing($a_f_AggroRange)
 	; Elite Spell. Heal target ally for 5...81...100 Health. Heal for an additional 30...98...115 Health if that ally is below 50% Health.
 	; Concise description
 	; Elite Spell. Heals for 5...81...100. Heals for 30...98...115 more if target ally is below 50% Health.
-	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
-	Local $l_f_Hp = UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP)
-	If $l_i_Target <> 0 And $l_f_Hp < 0.5 Then Return $l_i_Target
-	If $l_i_Target <> 0 And ($l_f_Hp > 0.7 And $l_f_Hp < 0.9) Then Return $l_i_Target
+	; Target: Lowest health living ally
+    Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 
-	Return 0
+    ; Always return the lowest health ally if one exists. The skill's effect will handle the bonus healing based on HP.
+    If $l_i_Target <> 0 Then Return $l_i_Target
+
+    ; Final Fallback: If no other conditions are met, and no ally is below 50% HP,
+    ; just return the lowest HP ally (excluding self) if one exists.
+    Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 283 - $GC_I_SKILL_ID_DWAYNAS_KISS
@@ -1454,7 +1518,7 @@ Func BestTarget_DwaynasKiss($a_f_AggroRange)
 	$l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 	If UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.5 And $l_i_Target <> 0 Then Return $l_i_Target
 
-	Return 0
+	Return $l_i_Target
 EndFunc
 
 ; Skill ID: 286 - $GC_I_SKILL_ID_HEAL_OTHER
@@ -1468,7 +1532,8 @@ Func BestTarget_HealOther($a_f_AggroRange)
 	; Spell. Heal target other ally for 35...151...180 Health.
 	; Concise description
 	; Spell. Heals for 35...151...180. Cannot self-target.
-	Return 0
+	; Target: Lowest health ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 287 - $GC_I_SKILL_ID_HEAL_PARTY
@@ -1497,9 +1562,11 @@ Func BestTarget_InfuseHealth($a_f_AggroRange)
 	; Concise description
 	; Spell. Heals for 100...129...136% of half your current Health. Lose half your current Health. Cannot self-target.
 	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
-	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.1 Then Return $l_i_Target
+	; Priority 1: Lowest health other ally (below 10% HP)
+    If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.1 Then Return $l_i_Target
 
-	Return 0
+    ; Fallback: Any other living ally, prioritizing lowest HP
+    Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 298 - $GC_I_SKILL_ID_MARTYR
@@ -1556,7 +1623,10 @@ Func BestTarget_ConvertHexes($a_f_AggroRange)
 	; Spell. Remove all hexes from target other ally. For 8...18...20 seconds, that ally gains +10 armor for each Necromancer hex that was removed.
 	; Concise description
 	; Spell. Removes all hexes; +10 armor for each Necromancer hex removed (8...18...20 seconds). Cannot self-target.
-	Return 0
+	; Target: Hexed ally (support spell)
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 304 - $GC_I_SKILL_ID_LIGHT_OF_DWAYNA
@@ -1586,7 +1656,8 @@ Func BestTarget_Resurrect($a_f_AggroRange)
 	; This article is about the Monk skill. For the game mechanic, see Resurrection. For the monster skills, see Resurrect (monster skill) and Resurrect (Gargoyle).
 	; Concise description
 	; none" />
-	Return 0
+	; Target: Nearest dead ally (resurrection)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsDeadAlly")
 EndFunc
 
 ; Skill ID: 306 - $GC_I_SKILL_ID_REBIRTH
@@ -1601,7 +1672,8 @@ Func BestTarget_Rebirth($a_f_AggroRange)
 	; Spell. Resurrect target party member. Target party member is returned to life with 25% Health and zero Energy, and is teleported to your current location. All of target's skills are disabled for 10...4...3 seconds. This spell consumes all of your remaining Energy.
 	; Concise description
 	; Spell. Resurrects target party member (25% Health, 0 Energy). Teleports target to you. Disables target's skills (10...4...3 seconds). You lose all Energy.
-	Return 0
+	; Target: Nearest dead ally (resurrection)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsDeadAlly")
 EndFunc
 
 ; Skill ID: 311 - $GC_I_SKILL_ID_DRAW_CONDITIONS
@@ -1615,7 +1687,8 @@ Func BestTarget_DrawConditions($a_f_AggroRange)
 	; Spell. All negative conditions are transferred from target other ally to yourself. For each condition acquired, you gain 6...22...26 Health.
 	; Concise description
 	; Spell. Transfers all conditions from target ally to yourself. Transfer effect: you gain 6...22...26 Health for each condition. Cannot self-target.
-	Return 0
+	; Target: Conditioned ally (remove conditions from allies)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe|UAI_Filter_IsConditioned")
 EndFunc
 
 ; Skill ID: 313 - $GC_I_SKILL_ID_HEALING_TOUCH
@@ -1629,7 +1702,8 @@ Func BestTarget_HealingTouch($a_f_AggroRange)
 	; Spell. Heal target touched ally for 16...51...60 Health. Health gain from Divine Favor is doubled for this spell.
 	; Concise description
 	; Touch Spell. Heals for 16...51...60. Double Health gain from Divine Favor for this spell.
-	Return 0
+	; Target: Lowest health ally (touch healing)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 314 - $GC_I_SKILL_ID_RESTORE_LIFE
@@ -1644,7 +1718,8 @@ Func BestTarget_RestoreLife($a_f_AggroRange)
 	; Spell. Touch the body of a fallen party member. Target party member is returned to life with 20...56...65% Health and 42...80...90% Energy.
 	; Concise description
 	; Touch Spell. Resurrects target party member (20...56...65% Health, 42...80...90% Energy).
-	Return 0
+	; Target: Nearest dead ally (resurrection)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsDeadAlly")
 EndFunc
 
 ; Skill ID: 488 - $GC_I_SKILL_ID_ERUPTION_ENVIRONMENT
@@ -1726,7 +1801,8 @@ Func CanUse_MursaatTowerSkill()
 EndFunc
 
 Func BestTarget_MursaatTowerSkill($a_f_AggroRange)
-	Return 0
+	; Tower skill - target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 496 - $GC_I_SKILL_ID_QUICKSAND_ENVIRONMENT_EFFECT
@@ -1841,7 +1917,8 @@ Func CanUse_ResurrectGargoyle()
 EndFunc
 
 Func BestTarget_ResurrectGargoyle($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 562 - $GC_I_SKILL_ID_LIGHTNING_ORB2
@@ -1851,7 +1928,8 @@ Func CanUse_LightningOrb2()
 EndFunc
 
 Func BestTarget_LightningOrb2($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 563 - $GC_I_SKILL_ID_WURM_SIEGE_DUNES_OF_DESPAIR
@@ -1861,7 +1939,8 @@ Func CanUse_WurmSiegeDunesOfDespair()
 EndFunc
 
 Func BestTarget_WurmSiegeDunesOfDespair($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 564 - $GC_I_SKILL_ID_WURM_SIEGE
@@ -1871,7 +1950,8 @@ Func CanUse_WurmSiege()
 EndFunc
 
 Func BestTarget_WurmSiege($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 566 - $GC_I_SKILL_ID_SHIVER_TOUCH
@@ -1885,7 +1965,8 @@ Func BestTarget_ShiverTouch($a_f_AggroRange)
 	; Monster skill
 	; Concise description
 	; 1em; margin-bottom:1em; clear:both;" />
-	Return 0
+	; Target: Nearest enemy (monster skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 568 - $GC_I_SKILL_ID_VANISH
@@ -1913,7 +1994,10 @@ Func BestTarget_DisruptingDagger($a_f_AggroRange)
 	; Spell. Send out a Disrupting Dagger at target foe that strikes for 10...30...35 earth damage. If that foe was activating a skill, that skill is interrupted. This spell has half the normal range.
 	; Concise description
 	; Half Range Spell. Projectile: deals 10...30...35 earth damage. Interrupts a skill.
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 576 - $GC_I_SKILL_ID_STATUES_BLESSING
@@ -1923,7 +2007,8 @@ Func CanUse_StatuesBlessing()
 EndFunc
 
 Func BestTarget_StatuesBlessing($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 579 - $GC_I_SKILL_ID_DOMAIN_OF_SKILL_DAMAGE
@@ -2083,7 +2168,7 @@ Func BestTarget_GazeOfContempt($a_f_AggroRange)
 	; Spell. If target foe has more than 50% Health, that foe loses all enchantments.
 	; Concise description
 	; Spell. Removes target foe's enchantments. No effect unless this foe has more than 50% Health.
-	Return 0
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 769 - $GC_I_SKILL_ID_VIPERS_DEFENSE
@@ -2093,7 +2178,8 @@ Func CanUse_VipersDefense()
 EndFunc
 
 Func BestTarget_VipersDefense($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 770 - $GC_I_SKILL_ID_RETURN
@@ -2107,7 +2193,7 @@ Func BestTarget_Return($a_f_AggroRange)
 	; Spell. All adjacent foes are Crippled for 3...7...8 seconds. Shadow Step to target other ally's location.
 	; Concise description
 	; Spell. Inflicts Crippled condition (3...7...8 seconds) on all foes adjacent to you. You Shadow Step to target ally's location. Cannot self-target.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 784 - $GC_I_SKILL_ID_ENTANGLING_ASP
@@ -2121,7 +2207,7 @@ Func BestTarget_EntanglingAsp($a_f_AggroRange)
 	; Spell. Entangling Asp must follow a lead attack. Target foe is knocked down and becomes Poisoned for 5...17...20 seconds.
 	; Concise description
 	; Spell. Causes knock-down. Inflicts Poisoned condition (5...17...20 seconds). Must follow a lead attack.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 791 - $GC_I_SKILL_ID_FLESH_OF_MY_FLESH
@@ -2136,7 +2222,7 @@ Func BestTarget_FleshOfMyFlesh($a_f_AggroRange)
 	; Spell. Lose half your Health. Resurrect target party member with your current Health and 5...17...20% Energy.
 	; Concise description
 	; Spell. Resurrect target party member (half your current Health and 5...17...20% Energy). Lose half your Health.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsDeadAlly")
 EndFunc
 
 ; Skill ID: 796 - $GC_I_SKILL_ID_SORROWS_FLAME
@@ -2184,7 +2270,7 @@ Func BestTarget_BeguilingHaze($a_f_AggroRange)
 	; Elite Spell. Shadow Step to target foe. That foe becomes Dazed for 3...8...9 seconds.
 	; Concise description
 	; Elite Spell. You Shadow Step to this foe. Inflicts Dazed condition (3...8...9 seconds).
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 805 - $GC_I_SKILL_ID_ANIMATE_VAMPIRIC_HORROR
@@ -2214,7 +2300,7 @@ Func BestTarget_Discord($a_f_AggroRange)
 	; Elite Spell. Deals 30...94...110 damage. No effect unless target foe has a condition and is either hexed or enchanted.
 	$l_i_Target = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsHexedOrEnchanted|UAI_Filter_IsConditioned")
 	If $l_i_Target <> 0 Then Return $l_i_Target
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 824 - $GC_I_SKILL_ID_LAVA_ARROWS
@@ -2228,7 +2314,7 @@ Func BestTarget_LavaArrows($a_f_AggroRange)
 	; Spell. Lava Arrows fly toward up to 3 foes near your target and strike for 20...56...65 fire damage if they hit.
 	; Concise description
 	; Spell. Projectile: deals 20...56...65 fire damage. Bonus effect: sends projectiles at 2 other foes near your target.
-	Return 0
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 825 - $GC_I_SKILL_ID_BED_OF_COALS
@@ -2242,7 +2328,7 @@ Func BestTarget_BedOfCoals($a_f_AggroRange)
 	; Spell. Create a Bed of Coals at target foe's location. For 5 seconds, foes adjacent to target foe are struck for 5...24...29 fire damage each second. Any foe knocked down on the Bed of Coals is set on fire for 3...6...7 seconds.
 	; Concise description
 	; Spell. Deals 5...24...29 fire damage each second (5 seconds) to location of target foe. Hits foes adjacent to your target. Inflicts Burning condition (3...6...7 seconds) on knocked down foes.
-	Return 0
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 830 - $GC_I_SKILL_ID_RAY_OF_JUDGMENT
@@ -2284,7 +2370,7 @@ Func BestTarget_RideTheLightning($a_f_AggroRange)
 	; Elite Spell. You Ride the Lightning to target. All adjacent foes are Blinded for 1...4...5 second[s]. If your target is a foe, it is struck for 10...58...70 lightning damage. This spell has 25% armor penetration.
 	; Concise description
 	; Elite Spell. Deals 10...58...70 lightning damage. 25% armor penetration. Blinds all adjacent foes (1...4...5 second[s]). You instantly move to your target. May target allies.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 840 - $GC_I_SKILL_ID_POISONED_HEART
@@ -2312,7 +2398,7 @@ Func BestTarget_FetidGround($a_f_AggroRange)
 	; Spell. Target foe is struck for 15...55...65 cold damage. If that foe is knocked down, that foe becomes Poisoned for 5...17...20 seconds.
 	; Concise description
 	; Spell. Deals 15...55...65 cold damage. Inflicts Poisoned condition (5...17...20 seconds) if target foe is knocked-down.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 842 - $GC_I_SKILL_ID_ARC_LIGHTNING
@@ -2326,7 +2412,7 @@ Func BestTarget_ArcLightning($a_f_AggroRange)
 	; Spell. Target foe is struck for 5...33...40 lightning damage. If you are Overcast, two foes near your target are struck for 15...71...85 lightning damage. Damage from Arc Lightning has 25% armor penetration.
 	; Concise description
 	; Spell. Deals 5...33...40 lightning damage. Deals 15...71...85 lightning damage to two nearby foes if you are Overcast. 25% armor penetration.
-	Return 0
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 844 - $GC_I_SKILL_ID_CHURNING_EARTH
@@ -2340,7 +2426,7 @@ Func BestTarget_ChurningEarth($a_f_AggroRange)
 	; Spell. Create Churning Earth at target foe's location. For the next 5 seconds, Churning Earth strikes foes near that location for 10...34...40 earth damage each second. Any foe moving faster than normal when struck by Churning Earth is knocked down.
 	; Concise description
 	; Spell. Deals 10...34...40 earth damage each second (5 seconds). Hits foes near target's initial location. Causes knock-down to foes moving faster than normal.
-	Return 0
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 845 - $GC_I_SKILL_ID_LIQUID_FLAME
@@ -2354,7 +2440,7 @@ Func BestTarget_LiquidFlame($a_f_AggroRange)
 	; Spell. Target foe is struck for 7...91...112 fire damage. If that foe is attacking or casting a spell, nearby foes are also struck for 7...91...112 fire damage.
 	; Concise description
 	; Spell. Deals 7...91...112 fire damage. Deals 7...91...112 fire damage to nearby foes if target was attacking or casting.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 846 - $GC_I_SKILL_ID_STEAM1
@@ -2364,7 +2450,8 @@ Func CanUse_Steam1()
 EndFunc
 
 Func BestTarget_Steam1($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 855 - $GC_I_SKILL_ID_CHOMPER
@@ -2392,7 +2479,7 @@ Func BestTarget_DancingDaggers($a_f_AggroRange)
 	; Spell. Send out three Dancing Daggers at target foe, each striking for 5...29...35 earth damage if they hit. Dancing Daggers has half the normal range. This skill counts as a lead attack.
 	; Concise description
 	; Half Range Spell. Three projectiles: each deals 5...29...35 earth damage. Counts as a lead attack.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 862 - $GC_I_SKILL_ID_RAVENOUS_GAZE
@@ -2406,7 +2493,7 @@ Func BestTarget_RavenousGaze($a_f_AggroRange)
 	; Elite Spell. Deal 15...27...30 damage and steal 15...27...30 Health from target foe and all nearby foes.
 	; Concise description
 	; Elite Spell. Deals 15...27...30 damage and steals 15...27...30 Health from target and nearby foes.
-	Return 0
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 864 - $GC_I_SKILL_ID_OPPRESSIVE_GAZE
@@ -2420,7 +2507,7 @@ Func BestTarget_OppressiveGaze($a_f_AggroRange)
 	; Spell. Target foe and adjacent foes take 10...26...30 shadow damage. Foes already suffering from a condition are Poisoned and Weakened for 3...10...12 seconds.
 	; Concise description
 	; Spell. Deals 10...26...30 damage to target and adjacent foes. Inflicts Poison and Weakness (3...10...12 second) on foes suffering from a condition.
-	Return 0
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 865 - $GC_I_SKILL_ID_LIGHTNING_HAMMER
@@ -2434,7 +2521,7 @@ Func BestTarget_LightningHammer($a_f_AggroRange)
 	; Spell. Target foe is struck for 10...82...100 lightning damage and applies Cracked Armor for 5...17...20 seconds. Lightning Hammer has 25% armor penetration.
 	; Concise description
 	; Spell. Deals 10...82...100 lightning damage. Applies Cracked Armor (5...17...20 seconds). 25% armor penetration.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 866 - $GC_I_SKILL_ID_VAPOR_BLADE
@@ -2448,7 +2535,7 @@ Func BestTarget_VaporBlade($a_f_AggroRange)
 	; Spell. Target foe is struck for 15...111...135 cold damage. Vapor Blade deals half damage if that foe has any enchantments on them.
 	; Concise description
 	; Spell. Deals 15...111...135 cold damage. Half damage if target foe is enchanted.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 867 - $GC_I_SKILL_ID_HEALING_LIGHT
@@ -2468,7 +2555,7 @@ Func BestTarget_HealingLight($a_f_AggroRange)
 	$l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.8 Then Return $l_i_Target
 
-	Return 0
+	Return $l_i_Target
 EndFunc
 
 ; Skill ID: 877 - $GC_I_SKILL_ID_LYSSAS_BALANCE
@@ -2478,7 +2565,8 @@ Func CanUse_LyssasBalance()
 EndFunc
 
 Func BestTarget_LyssasBalance($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 884 - $GC_I_SKILL_ID_SEARING_FLAMES1
@@ -2488,7 +2576,8 @@ Func CanUse_SearingFlames1()
 EndFunc
 
 Func BestTarget_SearingFlames1($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 897 - $GC_I_SKILL_ID_OATH_OF_HEALING
@@ -2502,7 +2591,7 @@ Func BestTarget_OathOfHealing($a_f_AggroRange)
 	; Spell. (monster only) Heal your Guild Lord for 200 Health.
 	; Concise description
 	; Spell. (monster only) Heal Guild Lord for 200.
-	Return 0
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 902 - $GC_I_SKILL_ID_BLOOD_OF_THE_AGGRESSOR
@@ -2516,7 +2605,7 @@ Func BestTarget_BloodOfTheAggressor($a_f_AggroRange)
 	; Spell. Steal up to 5...37...45 Health from target foe. If that foe was attacking, that foe suffers Weakness for 3...10...12 seconds.
 	; Concise description
 	; Spell. Steal 5...37...45 Health. Inflicts Weakness (3...10...12 seconds) if target foe was attacking.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 903 - $GC_I_SKILL_ID_ICY_PRISM
@@ -2530,7 +2619,7 @@ Func BestTarget_IcyPrism($a_f_AggroRange)
 	; Spell. Target foe is struck for 15...63...75 cold damage. If that foe has a Water Magic hex, Icy Prism deals +15...63...75 cold damage to all other nearby foes.
 	; Concise description
 	; Spell. Deals 15...63...75 cold damage. Deals +[sic]15...63...75 cold damage to other nearby foes if target has a Water Magic hex.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 910 - $GC_I_SKILL_ID_SPIRIT_RIFT
@@ -2544,7 +2633,7 @@ Func BestTarget_SpiritRift($a_f_AggroRange)
 	; This article is about the Factions skill. For the temporarily available Bonus Mission Pack skill, see Spirit Rift (Togo).
 	; Concise description
 	; green; font-weight: bold;">25...105...125
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 914 - $GC_I_SKILL_ID_CONSUME_SOUL
@@ -2558,7 +2647,7 @@ Func BestTarget_ConsumeSoul($a_f_AggroRange)
 	; Elite Spell. You steal 5...49...60 Health from target foe. All hostile summoned creatures in the area of that foe take 25...105...125 damage.
 	; Concise description
 	; Elite Spell. Steals 5...49...60 Health. Deal 25...105...125 damage to hostile summoned creatures in the area of target foe.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 915 - $GC_I_SKILL_ID_SPIRIT_LIGHT
@@ -2579,7 +2668,7 @@ Func BestTarget_SpiritLight($a_f_AggroRange)
 	$l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.75 Then Return $l_i_Target
 
-	Return 0
+	Return $l_i_Target
 EndFunc
 
 ; Skill ID: 917 - $GC_I_SKILL_ID_RUPTURE_SOUL
@@ -2593,7 +2682,7 @@ Func BestTarget_RuptureSoul($a_f_AggroRange)
 	; Spell. Target allied spirit is destroyed. All nearby enemies are struck for 50...122...140 lightning damage and become blinded for 3...10...12 seconds.
 	; Concise description
 	; Spell. Destroys target allied spirit. Deals 50...122...140 lightning damage and inflicts Blindness condition (3...10...12 seconds) to nearby foes.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsSpirit")
 EndFunc
 
 ; Skill ID: 918 - $GC_I_SKILL_ID_SPIRIT_TO_FLESH
@@ -2603,7 +2692,8 @@ Func CanUse_SpiritToFlesh()
 EndFunc
 
 Func BestTarget_SpiritToFlesh($a_f_AggroRange)
-	Return 0
+	; Target lowest health ally
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 919 - $GC_I_SKILL_ID_SPIRIT_BURN
@@ -2631,7 +2721,7 @@ Func BestTarget_PowerReturn($a_f_AggroRange)
 	; Spell. If target foe is casting a spell or chant, that skill is interrupted and target foe gains 10...6...5 Energy.
 	; Concise description
 	; Spell. Interrupts a spell or chant. Interruption effect: target foe gains 10...6...5 Energy.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 932 - $GC_I_SKILL_ID_COMPLICATE
@@ -2645,7 +2735,7 @@ Func BestTarget_Complicate($a_f_AggroRange)
 	; Spell. If target foe is using a skill, that skill is interrupted and disabled for target foe and all foes in the area for an additional 5...11...12 seconds.
 	; Concise description
 	; Spell. Interrupt a skill. Interruption effect: disables interrupted skill (+5...11...12 seconds) for target foe and all foes in the area.
-	Return 0
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 933 - $GC_I_SKILL_ID_SHATTER_STORM
@@ -2659,7 +2749,7 @@ Func BestTarget_ShatterStorm($a_f_AggroRange)
 	; Elite Spell. Target foe loses all enchantments. For each enchantment removed this way, Shatter Storm is disabled for an additional 7 seconds.
 	; Concise description
 	; Elite Spell. Removes all enchantments. Removal cost: Shatter Storm is disabled for +7 seconds for each enchantment removed.
-	Return 0
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
 EndFunc
 
 ; Skill ID: 936 - $GC_I_SKILL_ID_ENVENOM_ENCHANTMENTS
@@ -2673,7 +2763,7 @@ Func BestTarget_EnvenomEnchantments($a_f_AggroRange)
 	; Spell. Target foe loses one enchantment. For every remaining enchantment, target foe is poisoned for 3...9...10 seconds.
 	; Concise description
 	; Spell. Removes one enchantment from target foe. Inflicts Poisoned condition (3...9...10 seconds for each remaining enchantment on that foe).
-	Return 0
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
 EndFunc
 
 ; Skill ID: 937 - $GC_I_SKILL_ID_SHOCKWAVE
@@ -2727,7 +2817,7 @@ Func BestTarget_BlessedLight($a_f_AggroRange)
 	$l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.7 Then Return $l_i_Target
 
-	Return 0
+	Return $l_i_Target
 EndFunc
 
 ; Skill ID: 942 - $GC_I_SKILL_ID_WITHDRAW_HEXES
@@ -2741,7 +2831,7 @@ Func BestTarget_WithdrawHexes($a_f_AggroRange)
 	; Elite Spell. Remove all hexes from target ally and all adjacent allies. This spell takes an additional 20...8...5 seconds to recharge for each hex removed in this way.
 	; Concise description
 	; Elite Spell. Removes all hexes. Also affects adjacent allies. Removal cost: +20...8...5 seconds recharge for each hex removed.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsHexed")
 EndFunc
 
 ; Skill ID: 943 - $GC_I_SKILL_ID_EXTINGUISH
@@ -2783,7 +2873,7 @@ Func BestTarget_ExpelHexes($a_f_AggroRange)
 	; Elite Spell. Remove up to 2 Hexes from target ally.
 	; Concise description
 	; Elite Spell. Removes 2 hexes from target ally.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsHexed")
 EndFunc
 
 ; Skill ID: 955 - $GC_I_SKILL_ID_RIP_ENCHANTMENT
@@ -2797,7 +2887,7 @@ Func BestTarget_RipEnchantment($a_f_AggroRange)
 	; Spell. Remove 1 enchantment from target foe. If an enchantment was removed, that foe suffers from Bleeding for 5...21...25 seconds.
 	; Concise description
 	; Spell. Removes 1 enchantment. Removal effect: inflicts Bleeding (5...21...25 seconds).
-	Return 0
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
 EndFunc
 
 ; Skill ID: 958 - $GC_I_SKILL_ID_HEALING_WHISPER
@@ -2811,7 +2901,7 @@ Func BestTarget_HealingWhisper($a_f_AggroRange)
 	; Spell. Target other ally is healed for 40...88...100. This spell has half the normal range.
 	; Concise description
 	; Half Range Spell. Heals for 40...88...100. Cannot self-target.
-	Return 0
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 959 - $GC_I_SKILL_ID_ETHEREAL_LIGHT
@@ -2825,7 +2915,7 @@ Func BestTarget_EtherealLight($a_f_AggroRange)
 	; Spell. Target ally is healed for 25...85...100. This spell is easily interrupted.
 	; Concise description
 	; Spell. Heals for 25...85...100. Easily interrupted.
-	Return 0
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 960 - $GC_I_SKILL_ID_RELEASE_ENCHANTMENTS
@@ -2859,7 +2949,7 @@ Func BestTarget_SpiritTransfer($a_f_AggroRange)
 	$l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.5 Then Return $l_i_Target
 
-	Return 0
+	Return $l_i_Target
 EndFunc
 
 ; Skill ID: 965 - $GC_I_SKILL_ID_ARCHEMORUS_STRIKE
@@ -2929,7 +3019,8 @@ Func CanUse_ArgosCry()
 EndFunc
 
 Func BestTarget_ArgosCry($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 972 - $GC_I_SKILL_ID_JADE_FURY
@@ -2957,7 +3048,7 @@ Func BestTarget_BlindingPowder($a_f_AggroRange)
 	; Spell. Must follow an off-hand attack. Target foe and all adjacent foes become Blinded for 3...13...15 seconds.
 	; Concise description
 	; Spell. Inflicts Blindness condition (3...13...15 seconds) on target and adjacent foes. Must follow an off-hand attack.
-	Return 0
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 974 - $GC_I_SKILL_ID_MANTIS_TOUCH
@@ -2971,7 +3062,7 @@ Func BestTarget_MantisTouch($a_f_AggroRange)
 	; Spell. Must follow a lead attack. Target foe becomes Crippled for 5...17...20 seconds. This skill counts as an off-hand attack.
 	; Concise description
 	; Spell. Inflicts Crippled condition (5...17...20 seconds). This skill counts as an off-hand attack. Must follow a lead attack.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 980 - $GC_I_SKILL_ID_FEAST_OF_SOULS
@@ -2999,7 +3090,7 @@ Func BestTarget_Caltrops($a_f_AggroRange)
 	; Spell. Target foe and all foes adjacent to your target are Crippled for 5...13...15 seconds. Caltrops has half the normal range.
 	; Concise description
 	; Half Range Spell. Inflicts Crippled condition (5...13...15 seconds) on target and adjacent foes.
-	Return 0
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 991 - $GC_I_SKILL_ID_DENY_HEXES
@@ -3013,7 +3104,7 @@ Func BestTarget_DenyHexes($a_f_AggroRange)
 	; Spell. Remove one hex from target ally and one additional hex for each recharging Divine Favor skill you have.
 	; Concise description
 	; Spell. Removes one hex from target ally and one additional hex for each recharging Divine Favor skill you have.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsHexed")
 EndFunc
 
 ; Skill ID: 1000 - $GC_I_SKILL_ID_BLINDING_SNOW
@@ -3027,7 +3118,7 @@ Func BestTarget_BlindingSnow($a_f_AggroRange)
 	; Spell. You interrupt target foe's action. That foe is Blinded for 10 seconds.
 	; Concise description
 	; Spell. Interrupts an action. Also inflicts Blindness (10 seconds.)
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1001 - $GC_I_SKILL_ID_AVALANCHE_SKILL
@@ -3037,7 +3128,8 @@ Func CanUse_AvalancheSkill()
 EndFunc
 
 Func BestTarget_AvalancheSkill($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1002 - $GC_I_SKILL_ID_SNOWBALL
@@ -3051,7 +3143,7 @@ Func BestTarget_Snowball($a_f_AggroRange)
 	; This article is about the skill used by player characters. For the skill used by Kimberly, see Snowball (NPC).
 	; Concise description
 	; deals 50 damage. You gain 1 strike of adrenaline.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1003 - $GC_I_SKILL_ID_MEGA_SNOWBALL
@@ -3065,7 +3157,7 @@ Func BestTarget_MegaSnowball($a_f_AggroRange)
 	; Spell. You throw a very slow-moving snowball at target foe. That foe is knocked down and takes 75 damage if it hits.
 	; Concise description
 	; Spell. Very slow projectile: deals 75 damage and causes knock-down.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1011 - $GC_I_SKILL_ID_HOLIDAY_BLUES
@@ -3093,7 +3185,7 @@ Func BestTarget_FlurryOfIce($a_f_AggroRange)
 	; Spell. Throw a snowball at up to 4 foes adjacent to your target. These snowballs deal 50 damage if they hit.
 	; Concise description
 	; Spell. Throw a snowball at up to 4 foes adjacent to your target. These snowballs deal 50 damage if they hit.
-	Return 0
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1016 - $GC_I_SKILL_ID_SNOWBALL_NPC
@@ -3103,7 +3195,8 @@ Func CanUse_SnowballNpc()
 EndFunc
 
 Func BestTarget_SnowballNpc($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1032 - $GC_I_SKILL_ID_HEART_OF_SHADOW
@@ -3117,7 +3210,7 @@ Func BestTarget_HeartOfShadow($a_f_AggroRange)
 	; Spell. You are healed for 30...126...150. Shadow Step to a nearby location directly away from your target.
 	; Concise description
 	; Spell. You are healed for 30...126...150 and you Shadow Step to a nearby location directly away from your target.
-	Return 0
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1038 - $GC_I_SKILL_ID_CRIPPLING_DAGGER
@@ -3131,7 +3224,7 @@ Func BestTarget_CripplingDagger($a_f_AggroRange)
 	; Spell. Send out a Crippling Dagger at target foe. Crippling Dagger strikes for 15...51...60 earth damage if it hits, and Cripples moving foes for 3...13...15 seconds. This spell has half the normal range.
 	; Concise description
 	; Half Range Spell. Projectile: deals 15...51...60 earth damage. Inflicts Crippled condition (3...13...15 seconds) if target foe is moving.
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1040 - $GC_I_SKILL_ID_SPIRIT_WALK
@@ -3145,7 +3238,7 @@ Func BestTarget_SpiritWalk($a_f_AggroRange)
 	; Spell. Shadow Step to target spirit.
 	; Concise description
 	; Spell. Shadow Step to target Spirit. [sic]
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsSpirit")
 EndFunc
 
 ; Skill ID: 1048 - $GC_I_SKILL_ID_REVEALED_ENCHANTMENT
@@ -3173,7 +3266,7 @@ Func BestTarget_RevealedHex($a_f_AggroRange)
 	; Spell. Remove a hex from target ally and gain 4...9...10 Energy. For 20 seconds, Revealed Hex is replaced with the hex that was removed.
 	; Concise description
 	; Spell. Removes a hex from target ally. Removal effects: you gain 4...9...10 Energy; this spell is replaced with that hex (20 seconds).
-	Return 0
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsHexed")
 EndFunc
 
 ; Skill ID: 1052 - $GC_I_SKILL_ID_ACCUMULATED_PAIN
@@ -3187,7 +3280,13 @@ Func BestTarget_AccumulatedPain($a_f_AggroRange)
 	; Spell. Target foe takes 15...63...75 damage. If target foe is suffering from 2 or more hexes, that foe suffers a Deep Wound for 5...17...20 seconds.
 	; Concise description
 	; Spell. Deals 15...63...75 damage. Inflicts Deep Wound condition (5...17...20 seconds) if target foe has 2 or more hexes.
-	Return 0
+	; Target: Enemy with 2+ hexes (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then
+		Local $l_i_HexCount = UAI_CountAgents($l_i_Target, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsHex")
+		If $l_i_HexCount >= 2 Then Return $l_i_Target
+	EndIf
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1053 - $GC_I_SKILL_ID_PSYCHIC_DISTRACTION
@@ -3201,7 +3300,8 @@ Func BestTarget_PsychicDistraction($a_f_AggroRange)
 	; Elite Spell. All of your other skills are disabled for 8 seconds. If target foe is using a skill, that skill is interrupted and disabled for an additional 5...11...12 seconds.
 	; Concise description
 	; Elite Spell. Interrupts a skill. Interruption effect: disables interrupted skill (+5...11...12 seconds). Your other skills are disabled (8 seconds).
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 1057 - $GC_I_SKILL_ID_PSYCHIC_INSTABILITY
@@ -3215,7 +3315,8 @@ Func BestTarget_PsychicInstability($a_f_AggroRange)
 	; Elite Spell. Interrupt the target foe's action. If that action was a skill, that foe and nearby foes are knocked down for 2...4...4 seconds. (50% failure chance with Fast Casting 4 or less.)
 	; Concise description
 	; Elite Spell. Interrupts an action. Interruption effect: if the action is a skill, cause knockdown for 2...4...4 seconds on target foe and all nearby foes. 50% failure chance unless Fast Casting 5 or higher.
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 1060 - $GC_I_SKILL_ID_CELESTIAL_HASTE
@@ -3243,7 +3344,8 @@ Func BestTarget_Feedback($a_f_AggroRange)
 	; This article is about the skill. For the Feedback namespace main page, see Feedback:Main.
 	; Concise description
 	; target foe loses
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 1062 - $GC_I_SKILL_ID_ARCANE_LARCENY
@@ -3257,7 +3359,10 @@ Func BestTarget_ArcaneLarceny($a_f_AggroRange)
 	; Spell. For 5...29...35 seconds, one random spell is disabled for target foe and Arcane Larceny is replaced by that spell.
 	; Concise description
 	; Spell. (5...29...35 seconds.) Disables one random spell. This skill becomes that spell.
-	Return 0
+	; Target: Caster enemy (highest priority)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCaster")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1067 - $GC_I_SKILL_ID_LIFEBANE_STRIKE
@@ -3271,7 +3376,8 @@ Func BestTarget_LifebaneStrike($a_f_AggroRange)
 	; Spell. Target foe takes 12...41...48 shadow damage. If that foe's Health is above 50%, you steal up to 12...41...48 Health.
 	; Concise description
 	; Spell. Deals 12...41...48 damage. Steals 12...41...48 Health if target foe's Health is above 50%.
-	Return 0
+	; Target: Highest health enemy (life steal bonus)
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1068 - $GC_I_SKILL_ID_BITTER_CHILL
@@ -3285,7 +3391,8 @@ Func BestTarget_BitterChill($a_f_AggroRange)
 	; Spell. Target foe is struck for 15...51...60 cold damage. If that foe had more Health than you, Bitter Chill recharges instantly.
 	; Concise description
 	; Spell. Deals 15...51...60 cold damage. Recharges instantly if target foe had more Health than you.
-	Return 0
+	; Target: Highest health enemy (bonus damage/recharge)
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1069 - $GC_I_SKILL_ID_TASTE_OF_PAIN
@@ -3299,7 +3406,8 @@ Func BestTarget_TasteOfPain($a_f_AggroRange)
 	; Spell. If target foe is below 50% Health, you gain 30...126...150 Health.
 	; Concise description
 	; Spell. Heals you for 30...126...150. No effect unless target foe is below 50% Health.
-	Return 0
+	; Target: Lowest health enemy (healing requirement)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1070 - $GC_I_SKILL_ID_DEFILE_ENCHANTMENTS
@@ -3313,7 +3421,10 @@ Func BestTarget_DefileEnchantments($a_f_AggroRange)
 	; Spell. Target foe and all nearby foes take 6...49...60 shadow damage and 4...17...20 shadow damage for each enchantment on them.
 	; Concise description
 	; Spell. Deals 6...49...60 damage to target and nearby foes. Deals 4...17...20 more damage for each enchantment on them.
-	Return 0
+	; Target: Grouped enchanted enemies (AOE damage)
+	Local $l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1075 - $GC_I_SKILL_ID_VAMPIRIC_SWARM
@@ -3327,7 +3438,8 @@ Func BestTarget_VampiricSwarm($a_f_AggroRange)
 	; Spell. Vampiric Swarm steals up to 15...51...60 Health from up to three foes in the area.
 	; Concise description
 	; Spell. Steals 15...51...60 Health. Hits 2 additional foes in the area.
-	Return 0
+	; Target: Grouped enemies (AOE life steal)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1076 - $GC_I_SKILL_ID_BLOOD_DRINKER
@@ -3341,7 +3453,8 @@ Func BestTarget_BloodDrinker($a_f_AggroRange)
 	; This article is about the skill. For the creature, see Blood Drinker (NPC).
 	; Concise description
 	; green; font-weight: bold;">20...56...65
-	Return 0
+	; Target: Grouped enemies (AOE life steal)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1081 - $GC_I_SKILL_ID_TEINAIS_WIND
@@ -3351,7 +3464,8 @@ Func CanUse_TeinaisWind()
 EndFunc
 
 Func BestTarget_TeinaisWind($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1082 - $GC_I_SKILL_ID_SHOCK_ARROW
@@ -3365,7 +3479,10 @@ Func BestTarget_ShockArrow($a_f_AggroRange)
 	; Spell. Send out a shocking arrow that flies swiftly toward target foe, striking for 5...41...50 lightning damage. If Shock Arrow strikes a foe suffering from Cracked Armor, you gain 5 Energy plus 1 Energy for every 2 ranks of Energy Storage. Shock Arrow has 25% armor penetration.
 	; Concise description
 	; Spell. Rapid projectile: deals 5...41...50 lightning damage. Gain 5 Energy plus 1 Energy for every 2 ranks of Energy Storage if you hit a foe suffering from Cracked Armor. 25% armor penetration.
-	Return 0
+	; Target: Enemy with Cracked Armor (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1083 - $GC_I_SKILL_ID_UNSTEADY_GROUND
@@ -3379,7 +3496,8 @@ Func BestTarget_UnsteadyGround($a_f_AggroRange)
 	; Elite Spell. You create Unsteady Ground at target foe's location. For 5 seconds, nearby foes take 10...34...40 earth damage each second. Attacking foes struck by Unsteady Ground are knocked down.
 	; Concise description
 	; Elite Spell. Deals 10...34...40 earth damage each second (5 seconds) and causes knock-down to attacking foes. Hits foes near target's initial location.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1086 - $GC_I_SKILL_ID_DRAGONS_STOMP
@@ -3389,7 +3507,8 @@ Func CanUse_DragonsStomp()
 EndFunc
 
 Func BestTarget_DragonsStomp($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1088 - $GC_I_SKILL_ID_SECOND_WIND
@@ -3431,7 +3550,8 @@ Func BestTarget_StarBurst($a_f_AggroRange)
 	; Elite Spell. Target touched foe and all foes in the area are struck for 7...91...112 fire damage and set on fire for 1...3...4 second[s]. For each foe you hit, gain 2 Energy.
 	; Concise description
 	; Elite Touch Spell. Deals 7...91...112 fire damage. Inflicts Burning (1...3...4 seconds). [sic] Gain 2 Energy for each foe struck. Also hits foes in the area.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1099 - $GC_I_SKILL_ID_TEINAIS_CRYSTALS
@@ -3441,7 +3561,8 @@ Func CanUse_TeinaisCrystals()
 EndFunc
 
 Func BestTarget_TeinaisCrystals($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1106 - $GC_I_SKILL_ID_SHIELD_OF_SAINT_VIKTOR
@@ -3543,10 +3664,8 @@ Func BestTarget_HealingBurst($a_f_AggroRange)
 	; Elite Spell. Target ally is healed for 10...130...160. All party members in earshot of your target gain Health equal to the Divine Favor bonus from this spell. Your Smiting Prayers are disabled for 20 seconds.
 	; Concise description
 	; Elite Spell. Heals for 10...130...160. Party members in earshot of your target gain Health equal to the Divine Favor bonus. Disables your Smiting Prayers (20 seconds).
-	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
-	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.75 Then Return $l_i_Target
-
-	Return 0
+	; Target: Lowest health ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 1119 - $GC_I_SKILL_ID_KAREIS_HEALING_CIRCLE
@@ -3566,7 +3685,8 @@ Func CanUse_JameisGaze()
 EndFunc
 
 Func BestTarget_JameisGaze($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1121 - $GC_I_SKILL_ID_GIFT_OF_HEALTH
@@ -3580,10 +3700,8 @@ Func BestTarget_GiftOfHealth($a_f_AggroRange)
 	; Spell. All of your other Healing Prayers skills are disabled for 10...6...5 seconds. Target other ally is healed for 15...123...150 Health.
 	; Concise description
 	; Spell. Heals for 15...123...150. Disables your other Healing Prayers skills (10...6...5 seconds). Cannot self-target.
-	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
-	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.75 Then Return $l_i_Target
-
-	Return 0
+	; Target: Lowest health ally (support spell, cannot self-target)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 1126 - $GC_I_SKILL_ID_EMPATHIC_REMOVAL
@@ -3597,7 +3715,11 @@ Func BestTarget_EmpathicRemoval($a_f_AggroRange)
 	; Elite Spell. You and target other ally lose 1 condition and 1 hex, and are healed for 50.
 	; Concise description
 	; Elite Spell. Removes one condition and hex from target ally and yourself, and heals for 50. Cannot self-target.
-	Return 0
+	; Target: Conditioned ally (highest priority), fallback to lowest health ally
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsConditioned|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 1128 - $GC_I_SKILL_ID_RESURRECTION_CHANT
@@ -3612,6 +3734,8 @@ Func BestTarget_ResurrectionChant($a_f_AggroRange)
 	; Spell. Resurrect target party member with up to your current Health and 5...29...35% Energy. This spell has half the normal range.
 	; Concise description
 	; Half Range Spell. Resurrects target party member at your current Health and with 5...29...35% Energy.
+	; Target: Dead ally (resurrection priority)
+	; Note: This would need a dead ally filter to work properly
 	Return 0
 EndFunc
 
@@ -3626,7 +3750,8 @@ Func BestTarget_WordOfCensure($a_f_AggroRange)
 	; Elite Spell. Target foe takes 15...63...75 holy damage. If your target was below 33% Health, Word of Censure takes 20 additional seconds to recharge.
 	; Concise description
 	; Elite Spell. Deals 15...63...75 holy damage. +20 recharge time if target foe is below 33% Health.
-	Return 0
+	; Target: Lowest health enemy (bonus recharge)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1130 - $GC_I_SKILL_ID_SPEAR_OF_LIGHT
@@ -3640,7 +3765,10 @@ Func BestTarget_SpearOfLight($a_f_AggroRange)
 	; Spell. Spear of Light flies toward target foe and deals 26...50...56 holy damage if it hits. Spear of Light deals +15...51...60 damage if it hits an attacking foe.
 	; Concise description
 	; Spell. Projectile: deals 26...50...56 holy damage. Deals 15...51...60 more damage if target foe is attacking.
-	Return 0
+	; Target: Attacking enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsAttacking")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1174 - $GC_I_SKILL_ID_CATHEDRAL_COLLAPSE2
@@ -3678,7 +3806,10 @@ Func BestTarget_CorruptedDragonSpores($a_f_AggroRange)
 	; Spell. Create 6 "Corrupted Spore" creatures around target foe. Foes within their range take 100% longer to cast spells and suffer from -2 Health degeneration. Corrupted Spore creatures die after 30 seconds.
 	; Concise description
 	; Spell. (30 seconds.) Create 6 corrupted spore creatures around target foe. Foes within their range take twice as long to cast spells and have -2 Health degeneration.
-	Return 0
+	; Target: Grouped casters (debuff priority)
+	Local $l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCaster")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1184 - $GC_I_SKILL_ID_CORRUPTED_DRAGON_SCALES
@@ -3692,7 +3823,8 @@ Func BestTarget_CorruptedDragonScales($a_f_AggroRange)
 	; Spell. Create 6 "Corrupted Scale" creatures around target foe. Foes within their range attack 50% slower and suffer from -10 Health degeneration. Corrupted Scale creatures die after 30 seconds.
 	; Concise description
 	; Spell. (30 seconds.) Create 6 corrupted scale creatures around target foe. Foes within their range attack 50% slower and have -10 Health degeneration.
-	Return 0
+	; Target: Grouped enemies (AOE debuff)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1189 - $GC_I_SKILL_ID_OF_ROYAL_BLOOD
@@ -3730,7 +3862,8 @@ Func BestTarget_ClamorOfSouls($a_f_AggroRange)
 	; Elite Spell. Target foe and all nearby foes take 10...54...65 lightning damage. If you are within earshot of a spirit or holding a bundle item, you gain 10 Energy.
 	; Concise description
 	; Elite Spell. Deals 10...54...65 lightning damage to target and nearby foes. You gain 10 Energy if you are within earshot of a spirit or holding a bundle item.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1216 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -3745,7 +3878,8 @@ Func BestTarget_DrawSpirit($a_f_AggroRange)
 	; Spell. Teleport target allied spirit to your location.
 	; Concise description
 	; Spell. Teleports target allied spirit to your location.
-	Return 0
+	; Target: Self (teleports spirit to player)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1225 - $GC_I_SKILL_ID_CHANNELED_STRIKE
@@ -3759,7 +3893,8 @@ Func BestTarget_ChanneledStrike($a_f_AggroRange)
 	; Spell. Target foe is struck for 5...77...95 lightning damage. That foe is struck for an additional 5...29...35 lightning damage if you are holding an item.
 	; Concise description
 	; Spell. Deals 5...77...95 lightning damage. Deals 5...29...35 additional lightning damage if you are holding an item.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1226 - $GC_I_SKILL_ID_SPIRIT_BOON_STRIKE
@@ -3773,7 +3908,8 @@ Func BestTarget_SpiritBoonStrike($a_f_AggroRange)
 	; Spell. Target foe is struck for 20...56...65 lightning damage, and all spirits you control within earshot gain 20...56...65 Health.
 	; Concise description
 	; Spell. Deals 20...56...65 lightning damage. Spirits you control within earshot gain 20...56...65 Health.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1227 - $GC_I_SKILL_ID_ESSENCE_STRIKE
@@ -3816,7 +3952,8 @@ Func BestTarget_SoothingMemories($a_f_AggroRange)
 	; Spell. Target ally is healed for 10...82...100 Health. If you are holding an item, you gain 3 Energy.
 	; Concise description
 	; Spell. Heals for 10...82...100. You gain 3 Energy if you are holding an item.
-	Return 0
+	; Target: Lowest health ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 1234 - $GC_I_SKILL_ID_MEND_BODY_AND_SOUL
@@ -3834,10 +3971,7 @@ Func BestTarget_MendBodyAndSoul($a_f_AggroRange)
 	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_IsConditioned")
 	If $l_i_Target <> 0 And $l_i_SpiritCount >= 1 Then Return $l_i_Target
 
-	$l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
-	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.75 Then Return $l_i_Target
-
-	Return 0
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 1242 - $GC_I_SKILL_ID_ARCHEMORUS_STRIKE_CELESTIAL_SUMMONING
@@ -3867,7 +4001,8 @@ Func CanUse_GazeFromBeyond()
 EndFunc
 
 Func BestTarget_GazeFromBeyond($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1262 - $GC_I_SKILL_ID_HEALING_RING
@@ -3896,6 +4031,7 @@ Func BestTarget_RenewLife($a_f_AggroRange)
 	; Spell. Resurrect target touched dead target  party member with 50% Health and 5...17...20% Energy. That party member and all allies within earshot are healed for 55...115...130 Health.
 	; Concise description
 	; Touch Spell. Resurrects target party member (50% Health and 5...17...20% Energy). Heals allies within earshot for 55...115...130.
+	; Target: Dead ally (resurrection priority)
 	Return 0
 EndFunc
 
@@ -3910,7 +4046,8 @@ Func BestTarget_Doom($a_f_AggroRange)
 	; Spell. Strike target foe for 10...34...40 lightning (maximum 135) damage for every recharging binding ritual you have.
 	; Concise description
 	; Spell. Deals 10...34...40 lightning damage (maximum 135) for each of your recharging binding rituals.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1265 - $GC_I_SKILL_ID_WIELDERS_BOON
@@ -3920,7 +4057,8 @@ Func CanUse_WieldersBoon()
 EndFunc
 
 Func BestTarget_WieldersBoon($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1277 - $GC_I_SKILL_ID_BATTLE_CRY2
@@ -4036,7 +4174,10 @@ Func BestTarget_ExtendConditions($a_f_AggroRange)
 	; Elite Spell. Spread all conditions from target foe to foes near your target. The durations of those conditions are increased by 5...81...100% (maximum 30 seconds).
 	; Concise description
 	; Elite Spell. Spread all conditions from target foe to foes near your target. Those [sic] durations of those conditions are increased by 5...81...100% (maximum 30 seconds).
-	Return 0
+	; Target: Conditioned enemy with grouped enemies nearby
+	Local $l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1334 - $GC_I_SKILL_ID_HYPOCHONDRIA
@@ -4050,7 +4191,8 @@ Func BestTarget_Hypochondria($a_f_AggroRange)
 	; Spell. Transfer all conditions from all foes in the area to target foe.
 	; Concise description
 	; Spell. Transfer all conditions from foes in the area to target foe.
-	Return 0
+	; Target: Grouped enemies (condition transfer)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1336 - $GC_I_SKILL_ID_SPIRITUAL_PAIN
@@ -4108,7 +4250,10 @@ Func BestTarget_DrainDelusions($a_f_AggroRange)
 	; Spell. Remove one Mesmer hex from target foe. If a hex was removed in this way, that foe loses 1...4...5 Energy and you gain 4 Energy for each point lost.
 	; Concise description
 	; Spell. Removes one Mesmer hex from target foe. Causes 1...4...5 Energy loss. You gain 4 Energy for each point lost. No effect unless a hex was removed.
-	Return 0
+	; Target: Hexed enemy (highest priority)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1342 - $GC_I_SKILL_ID_TEASE
@@ -4122,7 +4267,8 @@ Func BestTarget_Tease($a_f_AggroRange)
 	; Elite Spell. If target foe is using a skill, that foe and other foes in the area are interrupted and you steal 0...4...5 Energy from all foes in the area.
 	; Concise description
 	; Elite Spell. Interrupts a skill. Interruption effect: also interrupts other foes in the area, and you steal 0...4...5 Energy from all foes in the area.
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 1347 - $GC_I_SKILL_ID_DISCHARGE_ENCHANTMENT
@@ -4136,7 +4282,10 @@ Func BestTarget_DischargeEnchantment($a_f_AggroRange)
 	; Spell. Remove one enchantment from target foe. If that foe is hexed, this skill recharges 20...44...50% faster.
 	; Concise description
 	; Spell. Removes one enchantment from target foe. 20...44...50% faster recharge if that foe was hexed.
-	Return 0
+	; Target: Enchanted enemy (highest priority)
+	Local $l_i_Target = UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1348 - $GC_I_SKILL_ID_HEX_EATER_VORTEX
@@ -4150,7 +4299,8 @@ Func BestTarget_HexEaterVortex($a_f_AggroRange)
 	; Elite Spell. Remove a hex from target ally. If a hex is removed in this way, foes near that ally take 30...78...90 damage and lose one enchantment.
 	; Concise description
 	; Elite Spell. Removes one hex from target ally. Removal effect: deals 30...78...90 damage and removes one enchantment from foes near this ally.
-	Return 0
+	; Target: Hexed ally (support spell)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsHexed")
 EndFunc
 
 ; Skill ID: 1349 - $GC_I_SKILL_ID_MIRROR_OF_DISENCHANTMENT
@@ -4164,7 +4314,10 @@ Func BestTarget_MirrorOfDisenchantment($a_f_AggroRange)
 	; Spell. Remove one enchantment from target foe. All of that foe's party members also lose that same enchantment.
 	; Concise description
 	; Spell. Removes one enchantment from target foe. That foe's party members also lose this enchantment.
-	Return 0
+	; Target: Enchanted enemy (highest priority)
+	Local $l_i_Target = UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1350 - $GC_I_SKILL_ID_SIMPLE_THIEVERY
@@ -4178,7 +4331,8 @@ Func BestTarget_SimpleThievery($a_f_AggroRange)
 	; Elite Spell. Interrupt target foe's action. If that action was a skill, that skill is disabled for 5...17...20 seconds, and Simple Thievery is replaced by that skill.
 	; Concise description
 	; Elite Spell. Interrupts an action. Interruption effect: If a skill was interrupted, that skill is disabled and Simple Thievery becomes that skill (5...17...20 seconds).
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 1351 - $GC_I_SKILL_ID_ANIMATE_SHAMBLING_HORROR
@@ -4220,7 +4374,8 @@ Func BestTarget_PutridFlesh($a_f_AggroRange)
 	; Spell. Destroy one of your target animated undead minions. All foes near that creature are Diseased for 5...13...15 seconds.
 	; Concise description
 	; Spell. Destroys one of your undead servants. Inflicts Diseased condition (5...13...15 seconds) to foes near this servant.
-	Return 0
+	; Target: Grouped enemies (AOE condition)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1354 - $GC_I_SKILL_ID_FEAST_FOR_THE_DEAD
@@ -4230,7 +4385,8 @@ Func CanUse_FeastForTheDead()
 EndFunc
 
 Func BestTarget_FeastForTheDead($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1359 - $GC_I_SKILL_ID_PAIN_OF_DISENCHANTMENT
@@ -4244,7 +4400,10 @@ Func BestTarget_PainOfDisenchantment($a_f_AggroRange)
 	; Elite Spell. Target foe loses 1...3...3 enchantment[s]. If an enchantment was lost in this way, that foe and all adjacent foes lose 10...82...100 Health.
 	; Concise description
 	; Elite Spell. Target foe loses 1...3...3 enchantment[s]. Removal effect: that foe and all adjacent foes lose 10...82...100 Health.
-	Return 0
+	; Target: Grouped enchanted enemies (AOE damage)
+	Local $l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1367 - $GC_I_SKILL_ID_BLINDING_SURGE
@@ -4258,7 +4417,8 @@ Func BestTarget_BlindingSurge($a_f_AggroRange)
 	; Elite Spell. Target foe is struck for 5...41...50 lightning damage. That foe and all adjacent foes are Blinded for 3...7...8 seconds. This spell has 25% armor penetration. If this spell strikes an attacking foe, all adjacent foes are also struck and this spell deals 50% more damage.
 	; Concise description
 	; Elite Spell. Deals 5...41...50 lightning damage. Inflicts Blindness condition (3...7...8 seconds) on target and adjacent foes. 25% armor penetration. If target was attacking, also hits adjacent foes and deals 50% more damage.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1369 - $GC_I_SKILL_ID_LIGHTNING_BOLT
@@ -4272,7 +4432,8 @@ Func BestTarget_LightningBolt($a_f_AggroRange)
 	; Spell. Send out a Lightning Bolt that strikes for 5...41...50 lightning damage if it hits. If Lightning Bolt strikes a moving foe, that foe is struck for 5...41...50 additional lightning damage. This spell has 25% armor penetration.
 	; Concise description
 	; Spell. Projectile: deals 5...41...50 lightning damage. Deals 5...41...50 more lightning damage if target foe is moving. 25% armor penetration.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1372 - $GC_I_SKILL_ID_SANDSTORM
@@ -4286,7 +4447,8 @@ Func BestTarget_Sandstorm($a_f_AggroRange)
 	; Elite Spell. Create a Sandstorm at target foe's location. For 10 seconds, nearby foes are struck for 10...26...30 earth damage each second and attacking foes are struck for an additional 10...26...30 earth damage each second.
 	; Concise description
 	; Elite Spell. Deals 10...26...30 earth damage each second (10 seconds). Hits foes near target foe's initial location. Hits attacking foes for 10...26...30 more earth damage each second.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1374 - $GC_I_SKILL_ID_EBON_HAWK
@@ -4300,7 +4462,8 @@ Func BestTarget_EbonHawk($a_f_AggroRange)
 	; Spell. Send a projectile that strikes target foe for 10...70...85 earth damage and causes Weakness for 5...13...15 seconds if it hits.
 	; Concise description
 	; Spell. Projectile: deals 10...70...85 earth damage and inflicts Weakness condition (5...13...15 seconds).
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1379 - $GC_I_SKILL_ID_GLOWING_GAZE1
@@ -4310,7 +4473,8 @@ Func CanUse_GlowingGaze1()
 EndFunc
 
 Func BestTarget_GlowingGaze1($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1380 - $GC_I_SKILL_ID_SAVANNAH_HEAT
@@ -4338,7 +4502,11 @@ Func BestTarget_WordsOfComfort($a_f_AggroRange)
 	; Spell. Target ally is healed for 15...51...60 Health and an additional 15...39...45 Health if that ally is suffering from a condition.
 	; Concise description
 	; Spell. Heals for 15...51...60. Heals for 15...39...45 more if target ally has a condition.
-	Return 0
+	; Target: Conditioned ally (highest priority), fallback to lowest health ally
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 1397 - $GC_I_SKILL_ID_LIGHT_OF_DELIVERANCE
@@ -4366,7 +4534,10 @@ Func BestTarget_MendingTouch($a_f_AggroRange)
 	; Spell. Touched ally loses two conditions and is healed for 15...51...60 Health for each condition removed in this way.
 	; Concise description
 	; Touch Spell. Removes two conditions. Heals for 15...51...60 for each condition removed.
-	Return 0
+	; Target: Conditioned ally (support spell)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly")
 EndFunc
 
 ; Skill ID: 1424 - $GC_I_SKILL_ID_STOP_PUMP
@@ -4408,7 +4579,8 @@ Func BestTarget_CorruptedHealing($a_f_AggroRange)
 	; Spell. Heal one corrupted root for 300 Health. Caster is also fully healed.
 	; Concise description
 	; Spell. Heal one corrupted root for 300. Caster is also fully healed.
-	Return 0
+	; Target: Self (heals corrupted root)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1444 - $GC_I_SKILL_ID_SUMMON_TORMENT
@@ -4492,7 +4664,8 @@ Func BestTarget_ImbueHealth($a_f_AggroRange)
 	; Spell. Target other ally is healed for 5...41...50% of your current Health (maximum 300 Health).
 	; Concise description
 	; Spell. Heals for 5...41...50% of your current Health (maximum 300). Cannot self-target.
-	Return 0
+	; Target: Lowest health ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 1527 - $GC_I_SKILL_ID_MYSTIC_HEALING
@@ -4516,7 +4689,8 @@ Func CanUse_DwaynasTouch()
 EndFunc
 
 Func BestTarget_DwaynasTouch($a_f_AggroRange)
-	Return 0
+	; Target lowest health ally
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 1529 - $GC_I_SKILL_ID_PIOUS_RESTORATION
@@ -4572,7 +4746,8 @@ Func BestTarget_RendingTouch($a_f_AggroRange)
 	; Spell. Deals 15...55...65 cold damage to target foe. You lose one Dervish enchantment. If an enchantment was removed, target foe loses 1 enchantment and you gain 1 strike of adrenaline.
 	; Concise description
 	; Touch Spell. Deals 15...55...65 cold damage. Lose 1 Dervish enchantment. Removal effect: target foe loses 1 enchantment and you gain 1 strike of adrenaline.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1545 - $GC_I_SKILL_ID_TEST_OF_FAITH
@@ -4586,7 +4761,10 @@ Func BestTarget_TestOfFaith($a_f_AggroRange)
 	; Spell. Deals 15...55...65 cold damage and takes 1 enchantment from target foe. If that foe was not enchanted, that foe is Dazed for 1...3...4 second[s].
 	; Concise description
 	; Touch Spell. Deals 15...55...65 cold damage and removes 1 enchantment. Target foe is Dazed for 1...3...4 second[s] if that foe was not enchanted.
-	Return 0
+	; Target: Enchanted enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1610 - $GC_I_SKILL_ID_SUMMONING_OF_THE_SCEPTER
@@ -4620,7 +4798,8 @@ Func CanUse_DeathsRetreat()
 EndFunc
 
 Func BestTarget_DeathsRetreat($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1653 - $GC_I_SKILL_ID_SWAP
@@ -4634,7 +4813,8 @@ Func BestTarget_Swap($a_f_AggroRange)
 	; Spell. You and target summoned creature Shadow Step to each other's location.
 	; Concise description
 	; Spell. You and target summoned creature Shadow Step to each other's locations.
-	Return 0
+	; Target: Self (swaps with summoned creature)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1659 - $GC_I_SKILL_ID_TOXIC_CHILL
@@ -4648,7 +4828,12 @@ Func BestTarget_ToxicChill($a_f_AggroRange)
 	; Elite Spell. Target foe is struck for 15...63...75 cold damage. If that foe is under the effects of a hex or enchantment, that foe becomes Poisoned for 10...22...25 seconds.
 	; Concise description
 	; Elite Spell. Deals 15...63...75 cold damage. Inflicts Poisoned condition (10...22...25 seconds) if target foe is hexed or enchanted.
-	Return 0
+	; Target: Hexed/enchanted enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	$l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1661 - $GC_I_SKILL_ID_GLOWSTONE
@@ -4662,7 +4847,10 @@ Func BestTarget_Glowstone($a_f_AggroRange)
 	; Spell. Send a projectile that strikes for 5...41...50 earth damage if it hits. If this spell hits a weakened  foe, you gain 5 Energy plus 1 Energy for every 2 ranks of Energy Storage.
 	; Concise description
 	; Spell. Projectile: deals 5...41...50 earth damage. You gain 5 Energy plus 1 Energy for every 2 ranks of Energy Storage if target foe is Weakened.
-	Return 0
+	; Target: Weakened enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1662 - $GC_I_SKILL_ID_MIND_BLAST
@@ -4676,7 +4864,8 @@ Func BestTarget_MindBlast($a_f_AggroRange)
 	; Elite Spell. Target foe is struck for 15...51...60 fire damage. If you have more Energy than target foe, you gain 1...7...8 Energy.
 	; Concise description
 	; Elite Spell. Deals 15...51...60 fire damage. You gain 1...7...8 Energy if you have more Energy than target foe.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1664 - $GC_I_SKILL_ID_INVOKE_LIGHTNING
@@ -4690,7 +4879,8 @@ Func BestTarget_InvokeLightning($a_f_AggroRange)
 	; Elite Spell. Target foe and up to two other foes near your target are struck for 10...74...90 lightning damage. This spell has 25% armor penetration.
 	; Concise description
 	; Elite Spell. Deals 10...74...90 lightning damage. Hits two foes near target. 25% armor penetration.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1665 - $GC_I_SKILL_ID_BATTLE_CRY1
@@ -4780,7 +4970,8 @@ Func BestTarget_GlimmerOfLight($a_f_AggroRange)
 	; Elite Spell. Heal target ally for 10...94...115 Health.
 	; Concise description
 	; Elite Spell. Heals for 10...94...115.
-	Return 0
+	; Target: Lowest health ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 1687 - $GC_I_SKILL_ID_ZEALOUS_BENEDICTION
@@ -4794,11 +4985,7 @@ Func BestTarget_ZealousBenediction($a_f_AggroRange)
 	; Elite Spell. Heal target ally for 30...150...180 Health. If target was below 50% Health, you gain 7 Energy.
 	; Concise description
 	; Elite Spell. Heals for 30...150...180. You gain 7 Energy if target ally was below 50% Health.
-	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
-	Local $l_f_Hp = UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP)
-	If $l_i_Target <> 0 And $l_f_Hp < 0.5 Then Return $l_i_Target
-
-	Return 0
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 1691 - $GC_I_SKILL_ID_DISMISS_CONDITION
@@ -4812,7 +4999,11 @@ Func BestTarget_DismissCondition($a_f_AggroRange)
 	; Spell. Remove one condition from target ally. If that ally is under the effects of an enchantment, that ally is healed for 15...63...75 Health.
 	; Concise description
 	; Spell. Removes one condition. Heals for 15...63...75 if target ally is enchanted.
-	Return 0
+	; Target: Conditioned ally (highest priority), fallback to lowest health ally
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 1692 - $GC_I_SKILL_ID_DIVERT_HEXES
@@ -4826,7 +5017,10 @@ Func BestTarget_DivertHexes($a_f_AggroRange)
 	; Elite Spell. Remove up to 1...3...3 hex[es] from target ally. For each hex removed in this way, that ally loses one condition and gains 15...63...75 Health.
 	; Concise description
 	; Elite Spell. Removes 1...3...3 hex[es]. For each hex removed, target ally loses one condition and gains 15...63...75 Health.
-	Return 0
+	; Target: Hexed ally (support spell)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly")
 EndFunc
 
 ; Skill ID: 1717 - $GC_I_SKILL_ID_SUNSPEAR_SIEGE
@@ -4850,7 +5044,8 @@ Func CanUse_WieldersStrike()
 EndFunc
 
 Func BestTarget_WieldersStrike($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1741 - $GC_I_SKILL_ID_GHOSTMIRROR_LIGHT
@@ -4867,10 +5062,8 @@ Func BestTarget_GhostmirrorLight($a_f_AggroRange)
 	; Spell. Target other ally is healed for 15...75...90 Health. If you are within earshot of a spirit, you are also healed for 15...75...90 Health.
 	; Concise description
 	; Spell. Heals for 15...75...90. You gain 15...75...90 Health if you are within earshot of a spirit. Cannot self-target.
-	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
-	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.8 Then Return $l_i_Target
-
-	Return 0
+	; Target: Lowest health ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 1744 - $GC_I_SKILL_ID_CARETAKERS_CHARGE
@@ -4880,7 +5073,8 @@ Func CanUse_CaretakersCharge()
 EndFunc
 
 Func BestTarget_CaretakersCharge($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1859 - $GC_I_SKILL_ID_ALTAR_BUFF
@@ -4922,7 +5116,10 @@ Func BestTarget_BanishEnchantment($a_f_AggroRange)
 	; Spell. All enchantments are removed from caster's target foe. For each enchantment removed in this way, one skill is disabled on all foes for 6 seconds.
 	; Concise description
 	; Spell. All enchantments are removed from target foe. For each enchantment removed in this way, one skill is disabled on all foes (6 seconds).
-	Return 0
+	; Target: Enchanted enemy (highest priority)
+	Local $l_i_Target = UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1896 - $GC_I_SKILL_ID_UNYIELDING_ANGUISH
@@ -5006,7 +5203,8 @@ Func BestTarget_PowerLock($a_f_AggroRange)
 	; Spell. If target foe is casting a spell or chant, that skill is interrupted and disabled for an additional 5...11...13 seconds.
 	; Concise description
 	; Spell. Interrupts a spell or chant. Interruption effect: interrupted spell or chant is disabled for +5...11...13 seconds.
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 1995 - $GC_I_SKILL_ID_WASTE_NOT_WANT_NOT
@@ -5016,7 +5214,8 @@ Func CanUse_WasteNotWantNot()
 EndFunc
 
 Func BestTarget_WasteNotWantNot($a_f_AggroRange)
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2003 - $GC_I_SKILL_ID_CURE_HEX
@@ -5044,7 +5243,8 @@ Func BestTarget_SmiteCondition($a_f_AggroRange)
 	; Spell. Remove one condition from target ally. If a condition was removed, foes in the area take 10...50...60 holy damage.
 	; Concise description
 	; Spell. Removes a condition. Removal effect: deals 10...50...60 holy damage to foes in the area of target ally.
-	Return 0
+	; Target: Conditioned ally (support spell)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsConditioned")
 EndFunc
 
 ; Skill ID: 2019 - $GC_I_SKILL_ID_BURNING_GROUND
@@ -5197,7 +5397,10 @@ Func BestTarget_Aneurysm($a_f_AggroRange)
 	; Spell. Target foe regains all Energy. For each point of Energy gained in this way, that foe takes 1...3...3 damage and all adjacent foes lose 1 Energy. (Maximum 1...24...30).
 	; Concise description
 	; Spell. Target foe regains all Energy. For each point of Energy gained, target takes 1...3...3 damage and all adjacent foes lose 1 Energy (maximum 1...24...30).
-	Return 0
+	; Target: Highest energy caster (maximize damage)
+	Local $l_i_Target = UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCaster")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2057 - $GC_I_SKILL_ID_FOUL_FEAST
@@ -5211,7 +5414,8 @@ Func BestTarget_FoulFeast($a_f_AggroRange)
 	; Spell. All conditions are transferred from target other ally to yourself. For each condition acquired in this way, you gain 0...36...45 Health and 0...2...2 Energy. This skill recharges twice as fast if you remove Disease from your target.
 	; Concise description
 	; Spell. Transfers all conditions from target ally to yourself. You gain 0...36...45 Health and 0...2...2 Energy for each condition transferred. Half recharge if you remove Disease. Cannot self-target.
-	Return 0
+	; Target: Conditioned ally (support spell)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsConditioned")
 EndFunc
 
 ; Skill ID: 2059 - $GC_I_SKILL_ID_SHELL_SHOCK
@@ -5225,7 +5429,8 @@ Func BestTarget_ShellShock($a_f_AggroRange)
 	; Spell. Target foe is struck for 10...26...30 lightning damage and has Cracked Armor for 5...17...20 seconds. This spell has 25% armor penetration. If you are Overcast, this spell strikes adjacent foes.
 	; Concise description
 	; Spell. Deals 10...26...30 lightning damage. Inflicts Cracked Armor condition (5...17...20 seconds). 25% armor penetration. If Overcast, strikes adjacent.
-	Return 0
+	; Target: Grouped enemies (AOE if overcast)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2062 - $GC_I_SKILL_ID_HEALING_RIBBON
@@ -5239,7 +5444,8 @@ Func BestTarget_HealingRibbon($a_f_AggroRange)
 	; Spell. Target other ally is healed for 20...92...110 Health. Up to 2 additional allies near target ally are healed for 10...82...100 Health.
 	; Concise description
 	; Spell. Heals for 20...92...110. Heals two additional allies near target ally for 10...82...100. Cannot self-target.
-	Return 0
+	; Target: Lowest health ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 2076 - $GC_I_SKILL_ID_DRAIN_MINION
@@ -5253,7 +5459,8 @@ Func BestTarget_DrainMinion($a_f_AggroRange)
 	; Spell. Sacrifice target undead servant to gain 300 Health.
 	; Concise description
 	; Spell. Sacrifice target undead servant to gain 300 Health.
-	Return 0
+	; Target: Self (targets own minions)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2079 - $GC_I_SKILL_ID_FLESHREAVERS_ESCAPE
@@ -5273,7 +5480,8 @@ Func CanUse_MandragorsCharge()
 EndFunc
 
 Func BestTarget_MandragorsCharge($a_f_AggroRange)
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2084 - $GC_I_SKILL_ID_ROCK_SLIDE
@@ -5311,7 +5519,8 @@ Func BestTarget_CeilingCollapse($a_f_AggroRange)
 	; Spell. Creature causes debris to fall from the ceiling, dealing 50 damage and interrupting all foes within earshot.
 	; Concise description
 	; Spell. Creature causes debris to fall from the ceiling, dealing 50 damage and interrupting all foes within earshot.
-	Return 0
+	; Target: Grouped enemies (AOE interrupt)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2100 - $GC_I_SKILL_ID_SUMMON_SPIRITS_KURZICK
@@ -5346,7 +5555,8 @@ Func BestTarget_CryOfPain($a_f_AggroRange)
 	; Spell. Interrupt target foe's skill. If that foe was suffering from a Mesmer hex, that foe and all foes in the area take 25...50 damage and have 3...5 Health degeneration for 10 seconds.
 	; Concise description
 	; Spell. Interrupts a skill. If target foe had a Mesmer hex, deals 25...50 damage to target and foes in the area and causes 3...5 Health degeneration (10 seconds).
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 2161 - $GC_I_SKILL_ID_GOLEM_FIRE_SHIELD
@@ -5398,7 +5608,8 @@ Func CanUse_RavenSwoopAGateTooFar()
 EndFunc
 
 Func BestTarget_RavenSwoopAGateTooFar($a_f_AggroRange)
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2189 - $GC_I_SKILL_ID_ANGORODONS_GAZE
@@ -5408,7 +5619,8 @@ Func CanUse_AngorodonsGaze()
 EndFunc
 
 Func BestTarget_AngorodonsGaze($a_f_AggroRange)
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2191 - $GC_I_SKILL_ID_SLIPPERY_GROUND
@@ -5422,7 +5634,8 @@ Func BestTarget_SlipperyGround($a_f_AggroRange)
 	; Spell. If target or adjacent foes are Blind or moving, these foes are knocked down. There is a 50% chance of failure with Water Magic less than 5.
 	; Concise description
 	; Spell. Causes knock-down if this foe is Blind or moving. Affects foes adjacent to your target. 50% failure chance unless Water Magic greater than 4.
-	Return 0
+	; Target: Grouped enemies (AOE knockdown)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2192 - $GC_I_SKILL_ID_GLOWING_ICE
@@ -5436,7 +5649,10 @@ Func BestTarget_GlowingIce($a_f_AggroRange)
 	; Spell. Target foe is struck for 5...41...50 cold damage. If that foe is under the effects of a Water Magic hex, you gain 5 Energy plus 1 Energy for every 2 ranks of Energy Storage.
 	; Concise description
 	; Spell. Deals 5...41...50 cold damage. You gain 5 Energy plus 1 Energy for every 2 ranks of Energy Storage if target foe is hexed with Water Magic.
-	Return 0
+	; Target: Hexed enemy (highest priority)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2193 - $GC_I_SKILL_ID_ENERGY_BLAST
@@ -5450,7 +5666,8 @@ Func BestTarget_EnergyBlast($a_f_AggroRange)
 	; This article is about the Elementalist skill. For the monster skill of the same name, see Energy Blast (golem).
 	; Concise description
 	; green; font-weight: bold;">1...2...2
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2202 - $GC_I_SKILL_ID_MENDING_GRIP
@@ -5464,7 +5681,8 @@ Func BestTarget_MendingGrip($a_f_AggroRange)
 	; Spell. Target ally is healed for 15...63...75 Health. If that ally is under the effects of a weapon spell, that ally loses one condition.
 	; Concise description
 	; Spell. Heals for 15...63...75. Removes one condition if target ally is under a Weapon [sic] spell.
-	Return 0
+	; Target: Lowest health ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 2211 - $GC_I_SKILL_ID_ALKARS_ALCHEMICAL_ACID
@@ -5474,7 +5692,8 @@ Func CanUse_AlkarsAlchemicalAcid()
 EndFunc
 
 Func BestTarget_AlkarsAlchemicalAcid($a_f_AggroRange)
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2212 - $GC_I_SKILL_ID_LIGHT_OF_DELDRIMOR
@@ -5614,7 +5833,8 @@ Func BestTarget_EbonVanguardSniperSupport($a_f_AggroRange)
 	; Spell. Target foe is struck for 54...90 piercing damage and begins Bleeding for 5...25 seconds. This attack has a 10% chance of doing an additional +540...900 piercing damage. If this attack hits a Charr it has a 25% chance of doing an additional +540...900 piercing damage.
 	; Concise description
 	; Spell. Deals 54...90 piercing damage and inflicts Bleeding condition (5...25 seconds). 10% chance of +540...900 piercing damage. 25% chance of +540...900 piercing damage if target foe is a Charr.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2235 - $GC_I_SKILL_ID_EBON_VANGUARD_ASSASSIN_SUPPORT
@@ -5661,7 +5881,8 @@ Func BestTarget_PolymockPowerDrain($a_f_AggroRange)
 	; Spell. If target foe is casting a spell or glyph, that foe is interrupted and you gain 3 Energy.
 	; Concise description
 	; Spell. Interrupts a spell or glyph. Interruption effect: you gain 3 Energy.
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 2253 - $GC_I_SKILL_ID_POLYMOCK_OVERLOAD
@@ -5675,7 +5896,10 @@ Func BestTarget_PolymockOverload($a_f_AggroRange)
 	; Spell. Target foe takes 100 damage. If that foe was casting a spell, you deal +50 damage.
 	; Concise description
 	; Spell. Deals 100 damage. Deals 50 more damage if target foe was casting a spell.
-	Return 0
+	; Target: Casting enemy (bonus damage)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2256 - $GC_I_SKILL_ID_ORDER_OF_UNHOLY_VIGOR
@@ -5745,7 +5969,8 @@ Func BestTarget_PolymockDeathlyChill($a_f_AggroRange)
 	; Spell. Target foe is struck for 100 damage. If that foe is above 50% Health, you deal an additional 50 damage.
 	; Concise description
 	; Spell. Deals 100 damage. Deals 50 more damage if target foe's Health is above 50%.
-	Return 0
+	; Target: Highest health enemy (bonus damage)
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2262 - $GC_I_SKILL_ID_POLYMOCK_ROTTING_FLESH
@@ -5759,7 +5984,8 @@ Func BestTarget_PolymockRottingFlesh($a_f_AggroRange)
 	; Spell. Target foe becomes Diseased for 20 seconds and slowly loses Health.
 	; Concise description
 	; Spell. Inflicts Diseased condition (20 seconds). Disease causes -4 Health degeneration.
-	Return 0
+	; Target: Nearest enemy (condition application)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2263 - $GC_I_SKILL_ID_POLYMOCK_LIGHTNING_STRIKE
@@ -5773,7 +5999,8 @@ Func BestTarget_PolymockLightningStrike($a_f_AggroRange)
 	; Spell. Strike target foe for 120 damage.
 	; Concise description
 	; Spell. Deals 120 damage.
-	Return 0
+	; Target: Lowest health enemy (damage priority)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2264 - $GC_I_SKILL_ID_POLYMOCK_LIGHTNING_ORB
@@ -5787,7 +6014,8 @@ Func BestTarget_PolymockLightningOrb($a_f_AggroRange)
 	; Spell. Send out a Lightning Orb that strikes target foe for 800 damage if it hits.
 	; Concise description
 	; Spell. Projectile: deals 800 damage.
-	Return 0
+	; Target: Lowest health enemy (damage priority)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2266 - $GC_I_SKILL_ID_POLYMOCK_FLARE
@@ -5801,7 +6029,8 @@ Func BestTarget_PolymockFlare($a_f_AggroRange)
 	; Spell. Send out a Flare that strikes target foe for 120 damage if it hits.
 	; Concise description
 	; Spell. Projectile: deals 120 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2267 - $GC_I_SKILL_ID_POLYMOCK_IMMOLATE
@@ -5815,7 +6044,8 @@ Func BestTarget_PolymockImmolate($a_f_AggroRange)
 	; Spell. Target foe is set on fire for 20 seconds.
 	; Concise description
 	; Spell. Inflicts Burning condition (20 seconds). Burning causes -7 Health degeneration.
-	Return 0
+	; Target: Nearest enemy (condition application)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2268 - $GC_I_SKILL_ID_POLYMOCK_METEOR
@@ -5829,7 +6059,10 @@ Func BestTarget_PolymockMeteor($a_f_AggroRange)
 	; Spell. Target foe is struck for 600 damage. If that foe is casting a spell, that spell is interrupted.
 	; Concise description
 	; Spell. Deals 600 damage. Interrupts a spell.
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2269 - $GC_I_SKILL_ID_POLYMOCK_ICE_SPEAR
@@ -5843,7 +6076,8 @@ Func BestTarget_PolymockIceSpear($a_f_AggroRange)
 	; Spell. Send out an Ice Spear, striking target foe for 120 damage if it hits.
 	; Concise description
 	; Spell. Projectile: deals 120 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2270 - $GC_I_SKILL_ID_POLYMOCK_ICY_PRISON
@@ -5857,7 +6091,8 @@ Func BestTarget_PolymockIcyPrison($a_f_AggroRange)
 	; Polymock skill
 	; Concise description
 	; disables interrupted spell (5 seconds).
-	Return 0
+	; Target: Casting enemy (interrupt priority)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 EndFunc
 
 ; Skill ID: 2271 - $GC_I_SKILL_ID_POLYMOCK_MIND_FREEZE
@@ -5871,7 +6106,8 @@ Func BestTarget_PolymockMindFreeze($a_f_AggroRange)
 	; Spell. Target foe suffers 400 damage. If you have more Energy than target foe, that foe suffers an additional 400 damage.
 	; Concise description
 	; Spell. Deals 400 damage. Deals 400 more damage if you have more Energy than target foe.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2272 - $GC_I_SKILL_ID_POLYMOCK_ICE_SHARD_STORM
@@ -5885,7 +6121,8 @@ Func BestTarget_PolymockIceShardStorm($a_f_AggroRange)
 	; Spell. Target foe begins Bleeding for 20 seconds.
 	; Concise description
 	; Spell. Inflicts Bleeding condition (20 seconds). Bleeding causes -3 Health degeneration.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2273 - $GC_I_SKILL_ID_POLYMOCK_FROZEN_TRIDENT
@@ -5899,7 +6136,10 @@ Func BestTarget_PolymockFrozenTrident($a_f_AggroRange)
 	; Spell. Send out a fast-moving Frozen Trident that strikes target foe for 600 damage if it hits. If target foe is casting a spell, that spell is interrupted.
 	; Concise description
 	; Spell. Fast projectile: deals 600 damage. Interrupts a spell.
-	Return 0
+	; Target: Casting enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2274 - $GC_I_SKILL_ID_POLYMOCK_SMITE
@@ -5913,7 +6153,8 @@ Func BestTarget_PolymockSmite($a_f_AggroRange)
 	; Spell. Target foe takes 120 damage.
 	; Concise description
 	; Spell. Deals 120 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2275 - $GC_I_SKILL_ID_POLYMOCK_SMITE_HEX
@@ -5927,7 +6168,8 @@ Func BestTarget_PolymockSmiteHex($a_f_AggroRange)
 	; Spell. Remove the last hex placed upon you. If a hex is removed, your enemy takes 400 damage.
 	; Concise description
 	; Spell. Remove the last hex placed upon you. Removal effect: deals 400 damage to your foe.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2277 - $GC_I_SKILL_ID_POLYMOCK_STONE_DAGGERS
@@ -5941,7 +6183,8 @@ Func BestTarget_PolymockStoneDaggers($a_f_AggroRange)
 	; Spell. Send out two Stone Daggers. Each Stone Dagger strikes target foe for 60 damage if it hits.
 	; Concise description
 	; Spell. Two projectiles: deals 60 damage each.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2278 - $GC_I_SKILL_ID_POLYMOCK_OBSIDIAN_FLAME
@@ -5955,7 +6198,8 @@ Func BestTarget_PolymockObsidianFlame($a_f_AggroRange)
 	; Spell. Target foe takes 800 damage.
 	; Concise description
 	; Spell. Deals 800 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2279 - $GC_I_SKILL_ID_POLYMOCK_EARTHQUAKE
@@ -5969,7 +6213,10 @@ Func BestTarget_PolymockEarthquake($a_f_AggroRange)
 	; Spell. You invoke an Earthquake at target foe's location. Target foe is struck for 650 damage. If that foe is casting a spell, that spell is interrupted.
 	; Concise description
 	; Spell. Interrupts a spell. Deals 650 damage.
-	Return 0
+	; Target: Casting enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2282 - $GC_I_SKILL_ID_POLYMOCK_FIREBALL
@@ -5983,7 +6230,8 @@ Func BestTarget_PolymockFireball($a_f_AggroRange)
 	; Spell. Send out a ball of fire that strikes target foe for 800 damage if it hits.
 	; Concise description
 	; Spell. Projectile: deals 800 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2283 - $GC_I_SKILL_ID_POLYMOCK_RODGORTS_INVOCATION
@@ -5993,7 +6241,8 @@ Func CanUse_PolymockRodgortsInvocation()
 EndFunc
 
 Func BestTarget_PolymockRodgortsInvocation($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2288 - $GC_I_SKILL_ID_POLYMOCK_LAMENTATION
@@ -6007,7 +6256,8 @@ Func BestTarget_PolymockLamentation($a_f_AggroRange)
 	; Spell. Strike target foe for 120 damage.
 	; Concise description
 	; Spell. Deals 120 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2289 - $GC_I_SKILL_ID_POLYMOCK_SPIRIT_RIFT
@@ -6021,7 +6271,8 @@ Func BestTarget_PolymockSpiritRift($a_f_AggroRange)
 	; Spell. Open a Spirit Rift at target foe's location. After 3 seconds, that foe is struck for 850 damage.
 	; Concise description
 	; Spell. Open a Spirit Rift at target foe's location. Deals 850 damage after 3 seconds.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2293 - $GC_I_SKILL_ID_POLYMOCK_GLOWING_GAZE
@@ -6035,7 +6286,10 @@ Func BestTarget_PolymockGlowingGaze($a_f_AggroRange)
 	; Spell. Target foe takes 150 damage. If that foe is on fire, you gain 6 Energy.
 	; Concise description
 	; Spell. Deals 150 damage. You gain 6 Energy if target foe is Burning.
-	Return 0
+	; Target: Burning enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsBurning")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2294 - $GC_I_SKILL_ID_POLYMOCK_SEARING_FLAMES
@@ -6049,7 +6303,10 @@ Func BestTarget_PolymockSearingFlames($a_f_AggroRange)
 	; Spell. Target foe is struck with Searing Flames. If that foe is already on fire, that foe takes 800 damage. Otherwise, that foe begins Burning for 5 seconds.
 	; Concise description
 	; Spell. Deals 800 damage if target foe is Burning. Otherwise, that foe begins Burning (5 seconds). Burning causes -7 Health degeneration.
-	Return 0
+	; Target: Burning enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsBurning")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2297 - $GC_I_SKILL_ID_POLYMOCK_STONING
@@ -6063,7 +6320,8 @@ Func BestTarget_PolymockStoning($a_f_AggroRange)
 	; Spell. Send out a large stone, striking target foe for 800 damage if it hits.
 	; Concise description
 	; Spell. Projectile: 800 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2298 - $GC_I_SKILL_ID_POLYMOCK_ERUPTION
@@ -6077,7 +6335,8 @@ Func BestTarget_PolymockEruption($a_f_AggroRange)
 	; Spell. Cause an eruption at target foe's location. Target foe takes 400 damage and all of that foe's glyphs are disabled for 15 seconds.
 	; Concise description
 	; Spell. Deals 400 damage and disables all of target foe's glyphs (15 seconds).
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2299 - $GC_I_SKILL_ID_POLYMOCK_SHOCK_ARROW
@@ -6091,7 +6350,8 @@ Func BestTarget_PolymockShockArrow($a_f_AggroRange)
 	; Spell. Send out a Shock Arrow that flies swiftly toward target foe, striking for 150 damage if it hits. If target foe is using a glyph, that foe takes 200 additional damage.
 	; Concise description
 	; Spell. Fast projectile: deals 150 damage. Deals 200 more damage if target foe is using a glyph.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2300 - $GC_I_SKILL_ID_POLYMOCK_MIND_SHOCK
@@ -6105,7 +6365,8 @@ Func BestTarget_PolymockMindShock($a_f_AggroRange)
 	; Spell. Target foe suffers 400 damage. If you have more Energy than target foe, that foe suffers an additional 400 damage.
 	; Concise description
 	; Spell. Deals 400 damage. Deals 400 more damage if you have more Energy than target foe.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2301 - $GC_I_SKILL_ID_POLYMOCK_PIERCING_LIGHT_SPEAR
@@ -6119,7 +6380,8 @@ Func BestTarget_PolymockPiercingLightSpear($a_f_AggroRange)
 	; Spell. A Piercing Light Spear flies toward target foe and causes Bleeding for 20 seconds if it hits.
 	; Concise description
 	; Spell. Projectile: inflicts Bleeding condition (20 seconds). Bleeding causes -3 Health degeneration.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2302 - $GC_I_SKILL_ID_POLYMOCK_MIND_BLAST
@@ -6133,7 +6395,8 @@ Func BestTarget_PolymockMindBlast($a_f_AggroRange)
 	; Spell. Target foe suffers 300 damage. If you have less Energy than target foe, you gain 8 Energy.
 	; Concise description
 	; Spell. Deals 300 damage. Gain 8 Energy if you have less Energy than target foe.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2303 - $GC_I_SKILL_ID_POLYMOCK_SAVANNAH_HEAT
@@ -6147,7 +6410,8 @@ Func BestTarget_PolymockSavannahHeat($a_f_AggroRange)
 	; Spell. You create Savannah Heat at target foe's location. For 5 seconds, that foe takes 100 damage each second and an additional 50 damage for each second this spell has been in effect.
 	; Concise description
 	; Spell. Deals 100 damage each second (5 seconds) at target foe's location. Deals 50 more damage for each second since casting this spell.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2305 - $GC_I_SKILL_ID_POLYMOCK_LIGHTNING_BLAST
@@ -6161,7 +6425,8 @@ Func BestTarget_PolymockLightningBlast($a_f_AggroRange)
 	; Spell. Target foe is struck for 800 damage.
 	; Concise description
 	; Spell. Deals 800 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2306 - $GC_I_SKILL_ID_POLYMOCK_POISONED_GROUND
@@ -6175,7 +6440,8 @@ Func BestTarget_PolymockPoisonedGround($a_f_AggroRange)
 	; Spell. Target foe becomes Poisoned for 20 seconds.
 	; Concise description
 	; Spell. Inflicts Poisoned condition (20 seconds). Poison causes -4 Health degeneration.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2308 - $GC_I_SKILL_ID_POLYMOCK_SANDSTORM
@@ -6189,7 +6455,10 @@ Func BestTarget_PolymockSandstorm($a_f_AggroRange)
 	; Spell. Create a Sandstorm at target foe's location. For 10 seconds, target foe is struck for 40 damage each second. If that foe is casting a spell, that foe takes an additional 20 damage each second.
 	; Concise description
 	; Spell. Deals 40 damage each second at target foe's location (10 seconds). Deals 20 more damage each second if that foe is casting a spell.
-	Return 0
+	; Target: Casting enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2309 - $GC_I_SKILL_ID_POLYMOCK_BANISH
@@ -6203,7 +6472,8 @@ Func BestTarget_PolymockBanish($a_f_AggroRange)
 	; Spell. Target foe takes 800 damage.
 	; Concise description
 	; Spell. Deals 800 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2368 - $GC_I_SKILL_ID_MURAKAIS_CONSUMPTION
@@ -6213,7 +6483,8 @@ Func CanUse_MurakaisConsumption()
 EndFunc
 
 Func BestTarget_MurakaisConsumption($a_f_AggroRange)
-	Return 0
+	; Target lowest health ally
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 2369 - $GC_I_SKILL_ID_MURAKAIS_CENSURE
@@ -6257,7 +6528,8 @@ Func BestTarget_RavenSwoop($a_f_AggroRange)
 	; Spell. Strike target foe and all adjacent foes for 60...100 damage.
 	; Concise description
 	; Spell. Deals 60...100 damage. Also hits adjacent foes.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2390 - $GC_I_SKILL_ID_FILTHY_EXPLOSION
@@ -6309,7 +6581,8 @@ Func BestTarget_SmoothCriminal($a_f_AggroRange)
 	; Spell. For 10...20 seconds, one random spell is disabled for target foe and Smooth Criminal is replaced by that spell. You gain 5...10 Energy.
 	; Concise description
 	; Spell. (10...20 seconds.) Disables one Spell. This skill becomes that Spell. You gain 5...10 Energy.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2413 - $GC_I_SKILL_ID_TECHNOBABBLE
@@ -6323,7 +6596,8 @@ Func BestTarget_Technobabble($a_f_AggroRange)
 	; Spell. Target foe and all adjacent foes are struck for 30...40 damage. If target foe is not a boss, that foe and all adjacent foes are Dazed for 3...5 seconds.
 	; Concise description
 	; Spell. Deals 30...40 damage to target and adjacent foes. Inflicts Dazed condition (3...5 seconds) on these foes if target was not a boss.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2420 - $GC_I_SKILL_ID_EBON_ESCAPE
@@ -6337,6 +6611,9 @@ Func BestTarget_EbonEscape($a_f_AggroRange)
 	; Spell. Shadow Step to target other ally. You and that other ally are healed for 70...110 health.
 	; Concise description
 	; Spell. Heals you and target ally for 70...110. Initial effect: Shadow Step to this ally. Cannot self-target.
+	; Target: Lowest health ally (support spell, cannot self-target)
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
 	Return 0
 EndFunc
 
@@ -6347,7 +6624,8 @@ Func CanUse_DrydersFeast()
 EndFunc
 
 Func BestTarget_DrydersFeast($a_f_AggroRange)
-	Return 0
+	; Target lowest health ally
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 2517 - $GC_I_SKILL_ID_REVERSE_POLARITY_FIRE_SHIELD
@@ -6401,7 +6679,8 @@ Func CanUse_WurmSiegeEyeOfTheNorth()
 EndFunc
 
 Func BestTarget_WurmSiegeEyeOfTheNorth($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2626 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -6412,7 +6691,8 @@ Func CanUse_Enfeeble2()
 EndFunc
 
 Func BestTarget_Enfeeble2($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2629 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -6423,7 +6703,8 @@ Func CanUse_SearingFlames2()
 EndFunc
 
 Func BestTarget_SearingFlames2($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2633 - $GC_I_SKILL_ID_GLOWING_GAZE2
@@ -6433,7 +6714,8 @@ Func CanUse_GlowingGaze2()
 EndFunc
 
 Func BestTarget_GlowingGaze2($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2634 - $GC_I_SKILL_ID_STEAM2
@@ -6443,7 +6725,8 @@ Func CanUse_Steam2()
 EndFunc
 
 Func BestTarget_Steam2($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2636 - $GC_I_SKILL_ID_LIQUID_FLAM2
@@ -6453,7 +6736,8 @@ Func CanUse_LiquidFlam2()
 EndFunc
 
 Func BestTarget_LiquidFlam2($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2637 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -6464,7 +6748,8 @@ Func CanUse_SmiteCondition2()
 EndFunc
 
 Func BestTarget_SmiteCondition2($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2664 - $GC_I_SKILL_ID_SPIKE_TRAP_SPELL
@@ -6487,8 +6772,9 @@ Func BestTarget_FireAndBrimstone($a_f_AggroRange)
 	; Description
 	; Monster skill
 	; Concise description
-	; "en","wgPageContentModel":"wikitext","wgRelevantPageName":"Fire_and_Brimstone","wgRelevantArticleId":230825,"wgIsProbablyEditable":true,"wgRelevantPageIsProbablyEditable":true,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgMFDisplayWikibaseDescriptions":{"search":false,"nearby":false,"watchlist":false,"tagline":false},"wgPopupsFlags":4,"wgMediaViewerOnClick":true,"wgMediaViewerEnabledByDefault":true}; RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.options":"loading","skins.monobook.styles":"ready"};RLPAGEMODULES=["site","mediawiki.page.ready","skins.monobook.scripts","mmv.head","mmv.bootstrap.autostart","ext.popups"];
-	Return 0
+	; Notes">edit
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2686 - $GC_I_SKILL_ID_ESSENCE_STRIKE_TOGO
@@ -6498,7 +6784,8 @@ Func CanUse_EssenceStrikeTogo()
 EndFunc
 
 Func BestTarget_EssenceStrikeTogo($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2687 - $GC_I_SKILL_ID_SPIRIT_BURN_TOGO
@@ -6508,7 +6795,8 @@ Func CanUse_SpiritBurnTogo()
 EndFunc
 
 Func BestTarget_SpiritBurnTogo($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2688 - $GC_I_SKILL_ID_SPIRIT_RIFT_TOGO
@@ -6518,7 +6806,8 @@ Func CanUse_SpiritRiftTogo()
 EndFunc
 
 Func BestTarget_SpiritRiftTogo($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2689 - $GC_I_SKILL_ID_MEND_BODY_AND_SOUL_TOGO
@@ -6528,7 +6817,8 @@ Func CanUse_MendBodyAndSoulTogo()
 EndFunc
 
 Func BestTarget_MendBodyAndSoulTogo($a_f_AggroRange)
-	Return 0
+	; Target lowest health ally
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 2690 - $GC_I_SKILL_ID_OFFERING_OF_SPIRIT_TOGO
@@ -6552,7 +6842,8 @@ Func BestTarget_RedemptionOfPurity($a_f_AggroRange)
 	; Spell. Destroy target minion. That minion is replaced with a level 12 Spirit of Pain. This Spirit deals 30 damage. This Spirit dies after 150 seconds.
 	; Concise description
 	; Spell. Target minion is destroyed and replaced with a level 12 Spirit of Pain. This spirit deals 30 damage and dies after 150 seconds.
-	Return 0
+	; Target: Nearest enemy minion
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2723 - $GC_I_SKILL_ID_PURIFY_ENERGY
@@ -6594,7 +6885,10 @@ Func BestTarget_PurifyingPrayer($a_f_AggroRange)
 	; Spell. Removes 2...4...4 hexes and 2...4...4 conditions from target ally. For each hex removed, 1 foe near target ally loses an enchantment.
 	; Concise description
 	; Spell. Removes 2...4...4 hexes and 2...4...4 conditions from target ally. For each hex removed, 1 foe near target ally loses an enchantment.
-	Return 0
+	; Target: Hexed/conditioned ally (support spell)
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly|UAI_Filter_IsConditioned|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsAlly")
 EndFunc
 
 ; Skill ID: 2729 - $GC_I_SKILL_ID_PURIFY_SOUL
@@ -6632,7 +6926,8 @@ Func CanUse_RocketPropelledGobstopper()
 EndFunc
 
 Func BestTarget_RocketPropelledGobstopper($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2760 - $GC_I_SKILL_ID_RAIN_OF_TERROR_SPELL
@@ -6642,7 +6937,8 @@ Func CanUse_RainOfTerrorSpell()
 EndFunc
 
 Func BestTarget_RainOfTerrorSpell($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2762 - $GC_I_SKILL_ID_SUGAR_INFUSION
@@ -6656,7 +6952,8 @@ Func BestTarget_SugarInfusion($a_f_AggroRange)
 	; Spell. Sacrifice 25% of your current Health. Target other ally is healed for 150% of the amount you lost. If this targets Mad King Thorn, this spell heals for 200% the amount you lost.
 	; Concise description
 	; Spell. Heal target ally for 150% of your Health sacrifice. If targeting Mad King Thorn, heal for 200% of your Health sacrifice. You lose a quarter of your current health. Cannot Self Target.
-	Return 0
+	; Target: Lowest health ally (support spell, cannot self-target)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 2763 - $GC_I_SKILL_ID_FEAST_OF_VENGEANCE
@@ -6670,7 +6967,8 @@ Func BestTarget_FeastOfVengeance($a_f_AggroRange)
 	; Spell. Steal 150 Health from target foe.
 	; Concise description
 	; Spell. You steal 150 Health from target foe.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2764 - $GC_I_SKILL_ID_ANIMATE_CANDY_MINIONS
@@ -6698,7 +6996,8 @@ Func BestTarget_TasteOfUndeath($a_f_AggroRange)
 	; Monster
 	; Concise description
 	; Related skills">edit
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2766 - $GC_I_SKILL_ID_SCOURGE_OF_CANDY
@@ -6712,7 +7011,8 @@ Func BestTarget_ScourgeOfCandy($a_f_AggroRange)
 	; Monster
 	; Concise description
 	; Related skills">edit
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2768 - $GC_I_SKILL_ID_MAD_KING_PONY_SUPPORT
@@ -6726,7 +7026,8 @@ Func BestTarget_MadKingPonySupport($a_f_AggroRange)
 	; Elite Spell. Summon a level 20 Invisible Pony. This summoned pony prances to target foe. This pony lasts 60 seconds.
 	; Concise description
 	; Elite Spell. Summon a level 20 Invisible Pony. This summoned pony prances to target foe. This pony lasts 60 seconds.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2789 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -6741,7 +7042,8 @@ Func CanUse_MindShockPvp()
 EndFunc
 
 Func BestTarget_MindShockPvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2807 - $GC_I_SKILL_ID_RIDE_THE_LIGHTNING_PVP
@@ -6751,7 +7053,8 @@ Func CanUse_RideTheLightningPvp()
 EndFunc
 
 Func BestTarget_RideTheLightningPvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2809 - $GC_I_SKILL_ID_OBSIDIAN_FLAME_PVP
@@ -6761,7 +7064,8 @@ Func CanUse_ObsidianFlamePvp()
 EndFunc
 
 Func BestTarget_ObsidianFlamePvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2833 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -6774,7 +7078,10 @@ Func CanUse_EnergyDrainPvp()
 EndFunc
 
 Func BestTarget_EnergyDrainPvp($a_f_AggroRange)
-	Return 0
+	; Target highest health caster
+	Local $l_i_Target = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCaster")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2853 - $GC_I_SKILL_ID_ENERGY_TAP_PVP
@@ -6784,7 +7091,10 @@ Func CanUse_EnergyTapPvp()
 EndFunc
 
 Func BestTarget_EnergyTapPvp($a_f_AggroRange)
-	Return 0
+	; Target highest health caster
+	Local $l_i_Target = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCaster")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2856 - $GC_I_SKILL_ID_LIGHTNING_ORB_PVP
@@ -6794,7 +7104,8 @@ Func CanUse_LightningOrbPvp()
 EndFunc
 
 Func BestTarget_LightningOrbPvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2859 - $GC_I_SKILL_ID_ENFEEBLE_PVP
@@ -6804,7 +7115,8 @@ Func CanUse_EnfeeblePvp()
 EndFunc
 
 Func BestTarget_EnfeeblePvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2863 - $GC_I_SKILL_ID_DISCORD_PVP
@@ -6814,7 +7126,8 @@ Func CanUse_DiscordPvp()
 EndFunc
 
 Func BestTarget_DiscordPvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2866 - $GC_I_SKILL_ID_FLESH_OF_MY_FLESH_PVP
@@ -6825,7 +7138,8 @@ Func CanUse_FleshOfMyFleshPvp()
 EndFunc
 
 Func BestTarget_FleshOfMyFleshPvp($a_f_AggroRange)
-	Return 0
+	; Target lowest health ally
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 2870 - $GC_I_SKILL_ID_BLINDING_SURGE_PVP
@@ -6835,7 +7149,8 @@ Func CanUse_BlindingSurgePvp()
 EndFunc
 
 Func BestTarget_BlindingSurgePvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2871 - $GC_I_SKILL_ID_LIGHT_OF_DELIVERANCE_PVP
@@ -6856,7 +7171,8 @@ Func CanUse_EnfeeblingBloodPvp()
 EndFunc
 
 Func BestTarget_EnfeeblingBloodPvp($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2902 - $GC_I_SKILL_ID_REACTOR_BLAST
@@ -6880,7 +7196,8 @@ Func CanUse_NoxBeam()
 EndFunc
 
 Func BestTarget_NoxBeam($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2909 - $GC_I_SKILL_ID_NOXION_BUSTER
@@ -6890,7 +7207,8 @@ Func CanUse_NoxionBuster()
 EndFunc
 
 Func BestTarget_NoxionBuster($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2911 - $GC_I_SKILL_ID_BIT_GOLEM_BREAKER
@@ -6904,7 +7222,8 @@ Func BestTarget_BitGolemBreaker($a_f_AggroRange)
 	; Spell. Launch a projectile that strikes target foe for 30 damage and inflicts a random condition for 15 seconds.
 	; Concise description
 	; Spell. Projectile: 30 damage and inflicts a random condition (15 seconds).
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2913 - $GC_I_SKILL_ID_BIT_GOLEM_CRASH
@@ -6942,7 +7261,8 @@ Func CanUse_NoxThunder()
 EndFunc
 
 Func BestTarget_NoxThunder($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2920 - $GC_I_SKILL_ID_NOX_FIRE
@@ -6962,7 +7282,8 @@ Func CanUse_NoxKnuckle()
 EndFunc
 
 Func BestTarget_NoxKnuckle($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2922 - $GC_I_SKILL_ID_NOX_DIVIDER_DRIVE
@@ -6972,7 +7293,8 @@ Func CanUse_NoxDividerDrive()
 EndFunc
 
 Func BestTarget_NoxDividerDrive($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2927 - $GC_I_SKILL_ID_SHRINE_BACKLASH
@@ -7031,7 +7353,8 @@ Func CanUse_Snowball2()
 EndFunc
 
 Func BestTarget_Snowball2($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3021 - $GC_I_SKILL_ID_SAVANNAH_HEAT_PVP
@@ -7041,7 +7364,8 @@ Func CanUse_SavannahHeatPvp()
 EndFunc
 
 Func BestTarget_SavannahHeatPvp($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3044 - $GC_I_SKILL_ID_SPIRIT_SIPHON_MASTER_RIYO
@@ -7051,7 +7375,8 @@ Func CanUse_SpiritSiphonMasterRiyo()
 EndFunc
 
 Func BestTarget_SpiritSiphonMasterRiyo($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3058 - $GC_I_SKILL_ID_UNHOLY_FEAST_PVP
@@ -7071,7 +7396,8 @@ Func CanUse_EverlastingMobstopperSkill()
 EndFunc
 
 Func BestTarget_EverlastingMobstopperSkill($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 3078 - $GC_I_SKILL_ID_CURSE_OF_DHUUM
@@ -7161,7 +7487,8 @@ Func BestTarget_SpiritualHealing($a_f_AggroRange)
 	; Spell. Heal target other ally for 250 Health.
 	; Concise description
 	; Spell. Heals for 250 Health. Cannot self-target.
-	Return 0
+	; Target: Lowest health ally (support spell, cannot self-target)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 3089 - $GC_I_SKILL_ID_ENCASE_SKELETAL
@@ -7174,8 +7501,9 @@ Func BestTarget_EncaseSkeletal($a_f_AggroRange)
 	; Description
 	; Spirit Form skill
 	; Concise description
-	; "en","wgPageContentModel":"wikitext","wgRelevantPageName":"Encase_Skeletal","wgRelevantArticleId":228642,"wgIsProbablyEditable":true,"wgRelevantPageIsProbablyEditable":true,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgMFDisplayWikibaseDescriptions":{"search":false,"nearby":false,"watchlist":false,"tagline":false},"wgPopupsFlags":4,"wgMediaViewerOnClick":true,"wgMediaViewerEnabledByDefault":true}; RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.options":"loading","skins.monobook.styles":"ready"};RLPAGEMODULES=["site","mediawiki.page.ready","skins.monobook.scripts","mmv.head","mmv.bootstrap.autostart","ext.popups"];
-	Return 0
+	; Notes">edit
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3090 - $GC_I_SKILL_ID_REVERSAL_OF_DEATH
@@ -7189,7 +7517,8 @@ Func BestTarget_ReversalOfDeath($a_f_AggroRange)
 	; Spell. Remove 5% Death Penalty from target other ally.
 	; Concise description
 	; Spell. Remove 5% Death Penalty. Cannot self-target.
-	Return 0
+	; Target: Lowest health ally (support spell, cannot self-target)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 3091 - $GC_I_SKILL_ID_GHOSTLY_FURY
@@ -7202,8 +7531,9 @@ Func BestTarget_GhostlyFury($a_f_AggroRange)
 	; Description
 	; Spirit Form skill
 	; Concise description
-	; "en","wgPageContentModel":"wikitext","wgRelevantPageName":"Ghostly_Fury","wgRelevantArticleId":228646,"wgIsProbablyEditable":true,"wgRelevantPageIsProbablyEditable":true,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgMFDisplayWikibaseDescriptions":{"search":false,"nearby":false,"watchlist":false,"tagline":false},"wgPopupsFlags":4,"wgMediaViewerOnClick":true,"wgMediaViewerEnabledByDefault":true}; RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.options":"loading","skins.monobook.styles":"ready"};RLPAGEMODULES=["site","mediawiki.page.ready","skins.monobook.scripts","mmv.head","mmv.bootstrap.autostart","ext.popups"];
-	Return 0
+	; Notes">edit
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3135 - $GC_I_SKILL_ID_SPIRITUAL_HEALING_REAPER_SKILL
@@ -7213,7 +7543,8 @@ Func CanUse_SpiritualHealingReaperSkill()
 EndFunc
 
 Func BestTarget_SpiritualHealingReaperSkill($a_f_AggroRange)
-	Return 0
+	; Target lowest health ally
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
 EndFunc
 
 ; Skill ID: 3136 - $GC_I_SKILL_ID_GHOSTLY_FURY_REAPER_SKILL
@@ -7223,7 +7554,8 @@ Func CanUse_GhostlyFuryReaperSkill()
 EndFunc
 
 Func BestTarget_GhostlyFuryReaperSkill($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3165 - $GC_I_SKILL_ID_GOLEM_PILEBUNKER
@@ -7236,8 +7568,9 @@ Func BestTarget_GolemPilebunker($a_f_AggroRange)
 	; Description
 	; Spell
 	; Concise description
-	; 20251201191736 Cache expiry: 86400 Reduced expiry: false Complications: [] CPU time usage: 0.015 seconds Real time usage: 0.023 seconds Preprocessor visited node count: 285/1000000 Post‐expand include size: 1904/2097152 bytes Template argument size: 618/2097152 bytes Highest expansion depth: 7/100 Expensive parser function count: 0/100 Unstrip recursion depth: 0/20 Unstrip post‐expand size: 0/5000000 bytes ExtLoops count: 0/1000 -->
-	Return 0
+	; Notes">edit
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3167 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -7250,7 +7583,8 @@ Func CanUse_KorosGaze()
 EndFunc
 
 Func BestTarget_KorosGaze($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3171 - $GC_I_SKILL_ID_EBON_VANGUARD_ASSASSIN_SUPPORT_NPC
@@ -7260,7 +7594,8 @@ Func CanUse_EbonVanguardAssassinSupportNpc()
 EndFunc
 
 Func BestTarget_EbonVanguardAssassinSupportNpc($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3180 - $GC_I_SKILL_ID_SHATTER_DELUSIONS_PVP
@@ -7270,7 +7605,10 @@ Func CanUse_ShatterDelusionsPvp()
 EndFunc
 
 Func BestTarget_ShatterDelusionsPvp($a_f_AggroRange)
-	Return 0
+	; Target hexed enemy with grouped enemies nearby
+	Local $l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3184 - $GC_I_SKILL_ID_ACCUMULATED_PAIN_PVP
@@ -7280,7 +7618,8 @@ Func CanUse_AccumulatedPainPvp()
 EndFunc
 
 Func BestTarget_AccumulatedPainPvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3185 - $GC_I_SKILL_ID_PSYCHIC_INSTABILITY_PVP
@@ -7290,7 +7629,8 @@ Func CanUse_PsychicInstabilityPvp()
 EndFunc
 
 Func BestTarget_PsychicInstabilityPvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3189 - $GC_I_SKILL_ID_SPIRITUAL_PAIN_PVP
@@ -7300,7 +7640,8 @@ Func CanUse_SpiritualPainPvp()
 EndFunc
 
 Func BestTarget_SpiritualPainPvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3194 - $GC_I_SKILL_ID_MIRROR_OF_DISENCHANTMENT_PVP
@@ -7310,7 +7651,8 @@ Func CanUse_MirrorOfDisenchantmentPvp()
 EndFunc
 
 Func BestTarget_MirrorOfDisenchantmentPvp($a_f_AggroRange)
-	Return 0
+	; Target enchanted enemy
+	Return UAI_GetAgentHighest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
 EndFunc
 
 ; Skill ID: 3197 - $GC_I_SKILL_ID_ADORATION
@@ -7324,7 +7666,8 @@ Func BestTarget_Adoration($a_f_AggroRange)
 	; Spell. Heal target ally 75 Health, and give them a 1% morale boost.
 	; Concise description
 	; Spell. Heals for 75. Grants a 1% morale boost.
-	Return 0
+	; Target: Lowest health ally (support spell)
+	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 EndFunc
 
 ; Skill ID: 3232 - $GC_I_SKILL_ID_HEAL_PARTY_PVP
@@ -7344,7 +7687,8 @@ Func CanUse_ComingOfSpring()
 EndFunc
 
 Func BestTarget_ComingOfSpring($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 3245 - $GC_I_SKILL_ID_DEATHS_EMBRACE
@@ -7354,7 +7698,8 @@ Func CanUse_DeathsEmbrace()
 EndFunc
 
 Func BestTarget_DeathsEmbrace($a_f_AggroRange)
-	Return 0
+	; Self-targeted skill
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 3253 - $GC_I_SKILL_ID_ULTRA_SNOWBALL
@@ -7368,7 +7713,8 @@ Func BestTarget_UltraSnowball($a_f_AggroRange)
 	; Monster
 	; Concise description
 	; deals 100 damage. You gain 1 strike of adrenaline.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3254 - $GC_I_SKILL_ID_BLIZZARD
@@ -7382,7 +7728,8 @@ Func BestTarget_Blizzard($a_f_AggroRange)
 	; Monster
 	; Concise description
 	; Notes">edit
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3259 - $GC_I_SKILL_ID_ULTRA_SNOWBALL2
@@ -7392,7 +7739,8 @@ Func CanUse_UltraSnowball2()
 EndFunc
 
 Func BestTarget_UltraSnowball2($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3260 - $GC_I_SKILL_ID_ULTRA_SNOWBALL3
@@ -7402,7 +7750,8 @@ Func CanUse_UltraSnowball3()
 EndFunc
 
 Func BestTarget_UltraSnowball3($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3261 - $GC_I_SKILL_ID_ULTRA_SNOWBALL4
@@ -7412,7 +7761,8 @@ Func CanUse_UltraSnowball4()
 EndFunc
 
 Func BestTarget_UltraSnowball4($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3262 - $GC_I_SKILL_ID_ULTRA_SNOWBALL5
@@ -7422,7 +7772,8 @@ Func CanUse_UltraSnowball5()
 EndFunc
 
 Func BestTarget_UltraSnowball5($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3272 - $GC_I_SKILL_ID_MYSTIC_HEALING_PVP
@@ -7446,7 +7797,8 @@ Func BestTarget_StunGrenade($a_f_AggroRange)
 	; Spell. Deals 50 Blunt damage to target and adjacent foes. Target and foes in the area are Dazed for 5 seconds and Blinded for 10 seconds.
 	; Concise description
 	; Spell. Target and adjacent foes take 50 Blunt damage. Target and foes in the area are Dazed (5 seconds) and Blinded (10 seconds).
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3291 - $GC_I_SKILL_ID_FRAGMENTATION_GRENADE
@@ -7460,7 +7812,8 @@ Func BestTarget_FragmentationGrenade($a_f_AggroRange)
 	; Spell. Target and adjacent foes take 300 Piercing damage and begin bleeding for 15 seconds. Nearby foes are struck for 200 damage and begin bleeding for 10 seconds. All other foes in the area are struck for 100 damage and begin bleeding for 5 seconds.
 	; Concise description
 	; Spell. Deals 300 Piercing damage and applies Bleeding (15 seconds) to target and adjacent foes. Deals 200 Piercing damage and applies Bleeding (10 seconds) to nearby foes. Deals 100 Piercing damage and applies Bleeding (5 seconds) to other foes in the area.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3292 - $GC_I_SKILL_ID_TEAR_GAS
@@ -7474,7 +7827,8 @@ Func BestTarget_TearGas($a_f_AggroRange)
 	; Spell. Your Tear Gas explodes at target foe's location, striking adjacent foes for 50 fire damage and creating a Smoke Screen for 10 seconds. Foes inside the Smoke Screen suffer from Poison for 10 seconds and cannot cast spells.
 	; Concise description
 	; Spell. Deals 50 fire damage to target and adjacent foes. Creates a Smoke Screen (10 seconds) that applies poison (10 seconds) and prevents spellcasting.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3299 - $GC_I_SKILL_ID_PHASED_PLASMA_BURST
@@ -7488,7 +7842,8 @@ Func BestTarget_PhasedPlasmaBurst($a_f_AggroRange)
 	; Spell. Fires a projectile at target enemy. If this projectile hits, target foe takes 100 damage. Nearby foes take 50 damage.
 	; Concise description
 	; Spell. Projectile. Target foe takes 100 damage. Nearby foes takes 50 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3300 - $GC_I_SKILL_ID_PLASMA_SHOT
@@ -7502,7 +7857,8 @@ Func BestTarget_PlasmaShot($a_f_AggroRange)
 	; Spell. Fires a projectile at target enemy. If this projectile hits, target foe takes 75 damage.
 	; Concise description
 	; Spell. Projectile. Target foe takes 75 damage.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3371 - $GC_I_SKILL_ID_MIRROR_SHATTER
@@ -7554,7 +7910,8 @@ Func BestTarget_AnnihilatorBeam($a_f_AggroRange)
 	; Spell. Send out a beam that strikes all targets in a line for 300 damage.
 	; Concise description
 	; Spell. Deals 300 damage to all targets in a line.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3396 - $GC_I_SKILL_ID_LIGHTNING_HAMMER_PVP
@@ -7564,7 +7921,8 @@ Func CanUse_LightningHammerPvp()
 EndFunc
 
 Func BestTarget_LightningHammerPvp($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3398 - $GC_I_SKILL_ID_SLIPPERY_GROUND_PVP
@@ -7574,7 +7932,8 @@ Func CanUse_SlipperyGroundPvp()
 EndFunc
 
 Func BestTarget_SlipperyGroundPvp($a_f_AggroRange)
-	Return 0
+	; AOE spell - target grouped enemies
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3411 - ;  $GC_I_SKILL_ID_UNKNOWN

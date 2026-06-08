@@ -14,7 +14,8 @@ Func BestTarget_Blackout($a_f_AggroRange)
 	; Skill. For 2...5...6 seconds, all of touched target foe's skills are disabled, and all of your skills are disabled for 5 seconds.
 	; Concise description
 	; Touch Skill. (2...5...6 seconds.) Disables skills. Your skills are disabled (5 seconds).
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 154 - $GC_I_SKILL_ID_PLAGUE_TOUCH
@@ -27,7 +28,8 @@ Func BestTarget_PlagueTouch($a_f_AggroRange)
 	; Skill. Transfer 1...3...3 negative condition[s] and [its/their] remaining duration[s] from yourself to target touched foe.
 	; Concise description
 	; Touch Skill. Transfers 1...3...3 condition[s] from yourself to target foe.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 155 - $GC_I_SKILL_ID_VILE_TOUCH
@@ -40,7 +42,8 @@ Func BestTarget_VileTouch($a_f_AggroRange)
 	; Skill. Touch target foe to deal 20...56...65 damage.
 	; Concise description
 	; Touch Skill. Deals 20...56...65 damage.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 156 - $GC_I_SKILL_ID_VAMPIRIC_TOUCH
@@ -68,7 +71,8 @@ Func BestTarget_TouchOfAgony($a_f_AggroRange)
 	; Skill. Target touched foe takes 20...50...58 shadow damage.
 	; Concise description
 	; Touch Skill. Deals 20...50...58 damage.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 231 - $GC_I_SKILL_ID_SHOCK
@@ -81,7 +85,8 @@ Func BestTarget_Shock($a_f_AggroRange)
 	; Skill. Target touched foe is knocked down and struck for 10...50...60 lightning damage. This skill has 25% armor penetration.
 	; Concise description
 	; Touch Skill. Deals 10...50...60 lightning damage. Causes knock-down. 25% armor penetration.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 232 - $GC_I_SKILL_ID_LIGHTNING_TOUCH
@@ -94,7 +99,8 @@ Func BestTarget_LightningTouch($a_f_AggroRange)
 	; Skill. Target touched foe and all adjacent foes are struck for 10...50...60 lightning damage, are Blinded for 1...3...4 second[s], and have Cracked Armor for 1...8...10 second[s]. This skill has 25% armor penetration.
 	; Concise description
 	; Touch Skill. Deals 10...50...60 lightning damage. Also hits foes adjacent to target foe. Inflicts Blind (1...3...4 second[s]) and Cracked Armor (1...8...10 second[s]) on all struck foes. 25% armor penetration.
-	Return 0
+	; Target: Grouped enemies (AOE touch skill)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 300 - $GC_I_SKILL_ID_CONTEMPLATION_OF_PURITY
@@ -120,7 +126,8 @@ Func BestTarget_HolyStrike($a_f_AggroRange)
 	; Skill. Touched target foe takes 10...46...55 holy damage. If knocked down, your target takes an additional 10...46...55 holy damage.
 	; Concise description
 	; Touch Skill. Deals 10...46...55 holy damage. Deals 10...46...55 more holy damage if target is knocked down.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 389 - $GC_I_SKILL_ID_FLOURISH
@@ -146,6 +153,8 @@ Func BestTarget_CharmAnimal($a_f_AggroRange)
 	; Skill. Charm target animal. Once charmed, your animal companion will travel with you whenever you have Charm Animal equipped. You cannot charm an animal that is more than 4 levels above you.
 	; Concise description
 	; Skill. Charm target animal. Once charmed, your animal companion will travel with you whenever you have Charm Animal equipped. You cannot charm an animal that is more than 4 levels above you.
+	; Target: Nearest animal (special targeting)
+	; Note: This would need an animal filter to work properly
 	Return 0
 EndFunc
 
@@ -172,7 +181,8 @@ Func BestTarget_ThrowDirt($a_f_AggroRange)
 	; Skill. Target touched foe and foes adjacent to your target become Blinded for 3...13...15 seconds.
 	; Concise description
 	; Touch Skill. Inflicts Blindness condition (3...13...15 seconds). Also affects foes adjacent to target foe.
-	Return 0
+	; Target: Grouped enemies (AOE touch skill)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 436 - $GC_I_SKILL_ID_COMFORT_ANIMAL
@@ -357,7 +367,8 @@ Func BestTarget_SpectralAgony($a_f_AggroRange)
 	; This article is about the Monster skill. For the temporarily available Bonus Mission Pack skill, see Spectral Agony (Saul D'Alessio).
 	; Concise description
 	; green; font-weight: bold;">1...30
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 565 - $GC_I_SKILL_ID_CLAIM_RESOURCE
@@ -410,7 +421,12 @@ Func BestTarget_IronPalm($a_f_AggroRange)
 	; Skill. Target touched foe suffers 5...41...50 damage, and if that foe is suffering from a hex or condition that foe is knocked down. Iron Palm counts as a lead attack.
 	; Concise description
 	; Touch Skill. Deals 5...41...50 damage. Causes knock-down if target foe is hexed or has a condition. Counts as a lead attack.
-	Return 0
+	; Target: Conditioned/hexed enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsConditioned")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	$l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsHexed")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 810 - $GC_I_SKILL_ID_PROTECTORS_DEFENSE
@@ -432,7 +448,10 @@ Func BestTarget_ExpungeEnchantments($a_f_AggroRange)
 	; Skill. Target foe loses 1 enchantment. All of your other non-attack skills are disabled for 10...6...5 seconds. For each skill disabled in this way, target touched foe loses 1 additional enchantment.
 	; Concise description
 	; Touch Skill. Removes one enchantment for each non-attack skill you have. All your non-attack skills are disabled (10...6...5 seconds).
-	Return 0
+	; Target: Enchanted enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1033 - $GC_I_SKILL_ID_IMPALE
@@ -445,7 +464,8 @@ Func BestTarget_Impale($a_f_AggroRange)
 	; Skill. Must follow a dual attack. Target foe is struck for 25...85...100 earth damage and suffers from a Deep Wound for 5...17...20 seconds.
 	; Concise description
 	; Skill. Deals 25...85...100 earth damage. Inflicts Deep Wound condition (5...17...20 seconds). Must follow a dual attack.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1039 - $GC_I_SKILL_ID_STAR_STRIKE
@@ -471,7 +491,8 @@ Func BestTarget_PalmStrike($a_f_AggroRange)
 	; Elite Skill. Target touched foe takes 10...54...65 damage and is Crippled for 1...4...5 second[s]. This skill counts as an off-hand attack.
 	; Concise description
 	; Elite Touch Skill. Deals 10...54...65 damage and inflicts Crippled condition (1...4...5 second[s]). This skill counts as an off-hand attack.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1072 - $GC_I_SKILL_ID_STAR_SERVANT
@@ -497,7 +518,8 @@ Func BestTarget_VampiricBite($a_f_AggroRange)
 	; Skill. Touch target foe to steal up to 29...65...74 Health.
 	; Concise description
 	; Touch Skill. Steals 29...65...74 Health.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1078 - $GC_I_SKILL_ID_WALLOWS_BITE
@@ -506,7 +528,8 @@ Func CanUse_WallowsBite()
 EndFunc
 
 Func BestTarget_WallowsBite($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1079 - $GC_I_SKILL_ID_ENFEEBLING_TOUCH
@@ -519,7 +542,8 @@ Func BestTarget_EnfeeblingTouch($a_f_AggroRange)
 	; Skill. Target touched foe loses 5...41...50 Health and suffers from Weakness for 5...17...20 seconds.
 	; Concise description
 	; Touch Skill. Causes 5...41...50 Health loss. Inflicts Weakness condition (5...17...20 seconds).
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1100 - $GC_I_SKILL_ID_CELESTIAL_STORM
@@ -532,7 +556,8 @@ Func BestTarget_CelestialStorm($a_f_AggroRange)
 	; Skill. Create a celestial storm at target foe's location that lasts for 15 seconds. Each second, all foes in the area take 40 fire damage, 40 cold damage, 40 lightning damage, and 40 earth damage.
 	; Concise description
 	; Skill. Deals 40 damage of each elemental type each second (15 seconds). Hits all foes in the area of target's initial location.
-	Return 0
+	; Target: Grouped enemies (AOE damage)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1124 - $GC_I_SKILL_ID_STAR_SHINE
@@ -558,7 +583,8 @@ Func BestTarget_StonesoulStrike($a_f_AggroRange)
 	; Skill. Touched target foe takes 10...46...55 holy damage. If knocked down, your target takes an additional 10...46...55 holy damage.
 	; Concise description
 	; Touch Skill. Deals 10...46...55 holy damage. Deals 10...46...55 more holy damage if target is knocked down.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1140 - $GC_I_SKILL_ID_STORM_OF_SWORDS
@@ -584,7 +610,8 @@ Func BestTarget_Shove($a_f_AggroRange)
 	; Elite Skill. Target touched foe is knocked down. If that foe was moving, that foe's stance ends and that foe takes 15...63...75 damage before being knocked down.
 	; Concise description
 	; Elite Touch Skill. Causes knockdown. Initial effect: ends foe's stance and deals 15...63...75 damage if target foe is moving.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1147 - $GC_I_SKILL_ID_BASE_DEFENSE
@@ -597,7 +624,8 @@ Func BestTarget_BaseDefense($a_f_AggroRange)
 	; Skill. All foes in range lose 999 Health and are knocked down for 5 seconds.
 	; Concise description
 	; Skill. Causes 999 Health loss and knocks down (5 seconds). Hits all foes in range.
-	Return 0
+	; Target: Self (AOE skill)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1148 - $GC_I_SKILL_ID_CARRIER_DEFENSE
@@ -636,7 +664,8 @@ Func BestTarget_JuggernautToss($a_f_AggroRange)
 	; Skill. Target touched foe takes 50 damage and is knocked down for 5 seconds.
 	; Concise description
 	; Touch Skill. 50 damage. Causes knock-down (5 seconds).
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1178 - $GC_I_SKILL_ID_LAST_STAND
@@ -667,7 +696,8 @@ Func CanUse_SiegeTurtleAttackTheEternalGrove()
 EndFunc
 
 Func BestTarget_SiegeTurtleAttackTheEternalGrove($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1187 - $GC_I_SKILL_ID_SIEGE_TURTLE_ATTACK_FORT_ASPENWOOD
@@ -676,7 +706,8 @@ Func CanUse_SiegeTurtleAttackFortAspenwood()
 EndFunc
 
 Func BestTarget_SiegeTurtleAttackFortAspenwood($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1188 - $GC_I_SKILL_ID_SIEGE_TURTLE_ATTACK_GYALA_HATCHERY
@@ -805,7 +836,8 @@ Func CanUse_ForestsBinding()
 EndFunc
 
 Func BestTarget_ForestsBinding($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1308 - $GC_I_SKILL_ID_EXPLODING_SPORES
@@ -831,7 +863,8 @@ Func BestTarget_RageOfTheSea($a_f_AggroRange)
 	; Skill. For 2 minutes, you have +4 Health regeneration, +1 Energy regeneration, and you move 33% faster.
 	; Concise description
 	; Skill. (2 minutes.) You have +4 Health regeneration, +1 Energy regeneration, and move 33% faster.
-	Return 0
+	; Target: Self (self-buff)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1316 - $GC_I_SKILL_ID_MEDITATION_OF_THE_REAPER2
@@ -854,7 +887,8 @@ Func BestTarget_TormentSlash($a_f_AggroRange)
 	; This article is about the skill used by Torment Claws. For the skill used by Smothering Tendrils, see Torment Slash (Smothering Tendrils).
 	; Concise description
 	; Related skills">edit
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1326 - $GC_I_SKILL_ID_TRADE_WINDS
@@ -867,6 +901,10 @@ Func BestTarget_TradeWinds($a_f_AggroRange)
 	; Skill. For 10 seconds, you move with the swiftness of the Canthan fleet. This enchantment may also be applied to target allies.
 	; Concise description
 	; Skill. (10 seconds.) Target ally moves with the swiftness of the Canthan fleet.
+	; Target: Lowest health ally (support spell)
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+
 	Return 0
 EndFunc
 
@@ -880,7 +918,8 @@ Func BestTarget_DragonBlast($a_f_AggroRange)
 	; Dragon Arena skill
 	; Concise description
 	; kills target foe if it hits.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1328 - $GC_I_SKILL_ID_IMPERIAL_MAJESTY
@@ -893,7 +932,8 @@ Func BestTarget_ImperialMajesty($a_f_AggroRange)
 	; Skill. Target touched foe kowtows before you and takes 80 damage.
 	; Concise description
 	; Touch Skill. Target foe kowtows before you and takes 80 damage.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1339 - $GC_I_SKILL_ID_SYMBOLS_OF_INSPIRATION
@@ -906,7 +946,8 @@ Func BestTarget_SymbolsOfInspiration($a_f_AggroRange)
 	; Elite Skill. For 1...25...31 seconds, this skill becomes the Elite of target foe. Elite spells you cast use your Fast Casting attribute instead of their normal attributes.
 	; Concise description
 	; Elite Skill. (1...25...31 seconds.) This skill becomes the Elite of target foe. Elite spells you cast use your Fast Casting attribute instead of their normal attributes.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1386 - $GC_I_SKILL_ID_SENTRY_TRAP_SKILL
@@ -963,7 +1004,8 @@ Func BestTarget_Headbutt($a_f_AggroRange)
 	; Elite Skill. Target touched foe takes 40...88...100 damage. You are Dazed for 5...17...20 seconds.
 	; Concise description
 	; Elite Touch Skill. Deals 40...88...100 damage. You are Dazed (5...17...20 seconds).
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1407 - $GC_I_SKILL_ID_LIONS_COMFORT
@@ -1084,7 +1126,8 @@ Func BestTarget_LeaveJunundu($a_f_AggroRange)
 	; Skill. The junundu releases you from its jaws.
 	; Concise description
 	; Skill. The junundu releases you from its jaws.
-	Return 0
+	; Target: Self (special skill - releases from junundu)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1445 - $GC_I_SKILL_ID_SIGNAL_FLARE
@@ -1119,7 +1162,8 @@ Func CanUse_EhzahFromAbove()
 EndFunc
 
 Func BestTarget_EhzahFromAbove($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1454 - $GC_I_SKILL_ID_CALL_TO_THE_TORMENT
@@ -1150,7 +1194,8 @@ Func CanUse_AbaddonsFavor()
 EndFunc
 
 Func BestTarget_AbaddonsFavor($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1471 - $GC_I_SKILL_ID_SCAVENGERS_FOCUS
@@ -1172,7 +1217,10 @@ Func BestTarget_Awe($a_f_AggroRange)
 	; Skill. If this skill hits a knocked-down foe, that foe becomes Dazed for 5...13...15 seconds. Awe has half the normal range.
 	; Concise description
 	; Half Range Skill. Inflicts Dazed condition (5...13...15 seconds). No effect unless target is knocked-down.
-	Return 0
+	; Target: Knocked-down enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnockedDown")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1583 - $GC_I_SKILL_ID_LEADERS_ZEAL
@@ -1203,6 +1251,9 @@ Func BestTarget_AngelicProtection($a_f_AggroRange)
 	; Skill. For 10 seconds, any time target other ally takes more than 250...130...100 damage per second, that ally is healed for any damage over that amount.
 	; Concise description
 	; Skill. (10 seconds.) Each second that target ally takes damage over 250...130...100, that ally is healed for any damage over that amount. Cannot self target.
+	; Target: Lowest health ally (support spell, cannot self-target)
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
 	Return 0
 EndFunc
 
@@ -1255,7 +1306,8 @@ Func BestTarget_QueenBite($a_f_AggroRange)
 	; Skill. Target touched foe is struck for 80 piercing damage.
 	; Concise description
 	; Touch Skill. Deals 80 piercing damage.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1620 - $GC_I_SKILL_ID_QUEEN_THUMP
@@ -1281,7 +1333,8 @@ Func BestTarget_QueenSiege($a_f_AggroRange)
 	; Skill. Spit a projectile at target foe. It strikes for 100 earth damage and knocks down target foe if it hits. This skill cannot be used on nearby foes.
 	; Concise description
 	; Skill. Projectile: deals 100 earth damage and causes knock-down. Cannot be used on nearby foes.
-	Return 0
+	; Target: Enemy outside nearby range (projectile skill)
+	Return UAI_GetFarthestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1643 - $GC_I_SKILL_ID_ASSAULT_ENCHANTMENTS
@@ -1294,7 +1347,10 @@ Func BestTarget_AssaultEnchantments($a_f_AggroRange)
 	; Elite Skill. Must follow a dual attack. Target foe loses all enchantments.
 	; Concise description
 	; Elite Skill. Removes all enchantments. Must follow a dual attack.
-	Return 0
+	; Target: Enchanted enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1644 - $GC_I_SKILL_ID_WASTRELS_COLLAPSE
@@ -1303,7 +1359,8 @@ Func CanUse_WastrelsCollapse()
 EndFunc
 
 Func BestTarget_WastrelsCollapse($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1645 - $GC_I_SKILL_ID_LIFT_ENCHANTMENT
@@ -1316,7 +1373,10 @@ Func BestTarget_LiftEnchantment($a_f_AggroRange)
 	; Touch Skill. If target touched foe is knocked down, that foe loses one enchantment.
 	; Concise description
 	; Touch Skill. Removes one enchantment.No [sic] effect unless target foe is knocked-down.
-	Return 0
+	; Target: Knocked-down enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnockedDown")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1706 - $GC_I_SKILL_ID_CORRUPT_POWER
@@ -1329,7 +1389,8 @@ Func BestTarget_CorruptPower($a_f_AggroRange)
 	; Skill. All foes take 30 damage 5 times over the next 3 seconds. Each strike also removes one stance or enchantment from each foe.
 	; Concise description
 	; Skill. All foes take 30 damage 5 times over the next 3 seconds. Each strike also removes one stance or enchantment from each foe.
-	Return 0
+	; Target: Self (AOE skill affecting all nearby foes)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1708 - $GC_I_SKILL_ID_GAZE_OF_MOAVUKAAL
@@ -1338,7 +1399,8 @@ Func CanUse_GazeOfMoavukaal()
 EndFunc
 
 Func BestTarget_GazeOfMoavukaal($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1711 - $GC_I_SKILL_ID_THE_APOCRYPHA_IS_CHANGING_TO_ANOTHER_FORM
@@ -1382,7 +1444,8 @@ Func CanUse_LightbringersGaze()
 EndFunc
 
 Func BestTarget_LightbringersGaze($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1818 - $GC_I_SKILL_ID_MADDENED_STRIKE
@@ -1395,7 +1458,8 @@ Func BestTarget_MaddenedStrike($a_f_AggroRange)
 	; Skill. The maddened spirit touches you and drains away 700 Health.
 	; Concise description
 	; Touch Skill. The maddened spirit drains away 700 Health.
-	Return 0
+	; Target: Self (special skill - maddened spirit drains player)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1855 - $GC_I_SKILL_ID_KOURNAN_SIEGE
@@ -1408,7 +1472,8 @@ Func BestTarget_KournanSiege($a_f_AggroRange)
 	; Skill. A signal flare is fired into the air to summon siege fire from any nearby garrisons. Every 3 seconds for 12 seconds, targets hit by the siege fire take 40 damage and are interrupted. This skill is easily interrupted.
 	; Concise description
 	; Skill. (12 seconds.) A signal flare is fired into the air to summon siege fire from any nearby garrisons. Every 3 seconds, targets hit by the siege fire take 40 damage and are interrupted. Easily interrupted.
-	Return 0
+	; Target: Self (AOE skill - signal flare)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1861 - $GC_I_SKILL_ID_CHOKING_BREATH
@@ -1510,7 +1575,8 @@ Func BestTarget_WordsOfMadness($a_f_AggroRange)
 	; This article is about Abaddon's skill. For skill used by Qwytzylkak, see Words of Madness (Qwytzylkak).
 	; Concise description
 	; Notes">edit
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1876 - $GC_I_SKILL_ID_UNKNOWN_JUNUNDU_ABILITY
@@ -1523,7 +1589,8 @@ Func BestTarget_UnknownJununduAbility($a_f_AggroRange)
 	; Elite Skill. You have not taught your junundu to perform this skill.
 	; Concise description
 	; Elite Skill. You have not taught your junundu to perform this skill.
-	Return 0
+	; Target: Self (placeholder skill)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 1880 - $GC_I_SKILL_ID_TORMENT_SLASH_SMOTHERING_TENDRILS
@@ -1532,7 +1599,8 @@ Func CanUse_TormentSlashSmotheringTendrils()
 EndFunc
 
 Func BestTarget_TormentSlashSmotheringTendrils($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1884 - $GC_I_SKILL_ID_CONSUME_TORMENT
@@ -1571,7 +1639,8 @@ Func BestTarget_TouchOfAaaaarrrrrrggghhh($a_f_AggroRange)
 	; Skill. Target foe's attributes are set to 0 for 20 seconds, and target foe and another random foe swap positions.
 	; Concise description
 	; Skill. (20 seconds.) Target foe's attributes are set to 0. This foe and another random foe swap positions.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1900 - $GC_I_SKILL_ID_SIDE_STEP
@@ -1715,7 +1784,8 @@ Func CanUse_CharrSiegeAttackWhatMustBeDone()
 EndFunc
 
 Func BestTarget_CharrSiegeAttackWhatMustBeDone($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1944 - $GC_I_SKILL_ID_CHARR_SIEGE_ATTACK_AGAINST_THE_CHARR
@@ -1737,7 +1807,8 @@ Func BestTarget_Grapple($a_f_AggroRange)
 	; Skill. You and target touched foe are knocked down. You lose your current stance.
 	; Concise description
 	; Touch Skill. Causes knockdown. You are also knocked down. Your current stance ends.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2078 - $GC_I_SKILL_ID_BERSERK
@@ -1763,7 +1834,8 @@ Func BestTarget_Chomp($a_f_AggroRange)
 	; Skill. Caster gains 500 Health after destroying target touched smaller creature.
 	; Concise description
 	; Touch Skill. Gain 500 Health. Destroy target smaller creature.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2081 - $GC_I_SKILL_ID_TWISTING_JAWS
@@ -1776,7 +1848,8 @@ Func BestTarget_TwistingJaws($a_f_AggroRange)
 	; Skill. Creature steals 120 Health from target touched foe. That foe suffers from a Deep Wound and begins Bleeding for 10 seconds.
 	; Concise description
 	; Touch Skill. Steals 120 Health; inflicts a Deep Wound and Bleeding (10 seconds).
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2088 - $GC_I_SKILL_ID_TRAMPLE
@@ -1789,7 +1862,8 @@ Func BestTarget_Trample($a_f_AggroRange)
 	; Skill. Target touched foe and all adjacent foes are knocked down and struck for 80 damage.
 	; Concise description
 	; Touch Skill. Deals 80 damage; causes knock-down. Also hits adjacent foes.
-	Return 0
+	; Target: Grouped enemies (AOE touch skill)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2103 - $GC_I_SKILL_ID_NECROSIS
@@ -1837,7 +1911,8 @@ Func CanUse_UrsanStrikeBloodWashesBlood()
 EndFunc
 
 Func BestTarget_UrsanStrikeBloodWashesBlood($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2115 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -1851,7 +1926,8 @@ Func BestTarget_Firebomb($a_f_AggroRange)
 	; Skill. Launch a slow-moving firebomb at this foe. This skill cannot recharge slower than normal.
 	; Concise description
 	; Skill. Launch a slow-moving firebomb at this foe. This skill cannot recharge slower than normal.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2119 - $GC_I_SKILL_ID_SHIELD_OF_FIRE
@@ -1873,7 +1949,8 @@ Func CanUse_VolfenClawCurseOfTheNornbear()
 EndFunc
 
 Func BestTarget_VolfenClawCurseOfTheNornbear($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2130 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -1945,6 +2022,9 @@ Func BestTarget_VitalityTransfer($a_f_AggroRange)
 	; Skill. Target ally is healed for 100 Health, and the nearest foe takes 100 damage.
 	; Concise description
 	; Skill. Heals target ally for 100; the nearest foe takes 100 damage.
+	; Target: Lowest health ally (support spell)
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
+	If $l_i_Target <> 0 Then Return $l_i_Target
 	Return 0
 EndFunc
 
@@ -1954,7 +2034,8 @@ Func CanUse_EnergyBlastGolem()
 EndFunc
 
 Func BestTarget_EnergyBlastGolem($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2160 - $GC_I_SKILL_ID_CHAOTIC_ENERGY
@@ -1967,7 +2048,8 @@ Func BestTarget_ChaoticEnergy($a_f_AggroRange)
 	; Skill. 5 chaotic Energy sources strike up to 5 foes and deal 125 damage per strike.
 	; Concise description
 	; Skill. 5 chaotic energy sources strike up to 5 foes and deal 125 damage per strike.
-	Return 0
+	; Target: Self (AOE skill)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2168 - $GC_I_SKILL_ID_RAVEN_BLESSING_A_GATE_TOO_FAR
@@ -1986,7 +2068,8 @@ Func CanUse_RavenTalonsAGateTooFar()
 EndFunc
 
 Func BestTarget_RavenTalonsAGateTooFar($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2174 - $GC_I_SKILL_ID_ASPECT_OF_OAK
@@ -2011,8 +2094,9 @@ Func BestTarget_SunderingSoulcrush($a_f_AggroRange)
 	; Description
 	; Monster skill
 	; Concise description
-	; "en","wgPageContentModel":"wikitext","wgRelevantPageName":"Sundering_Soulcrush","wgRelevantArticleId":230854,"wgIsProbablyEditable":true,"wgRelevantPageIsProbablyEditable":true,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgMFDisplayWikibaseDescriptions":{"search":false,"nearby":false,"watchlist":false,"tagline":false},"wgPopupsFlags":4,"wgMediaViewerOnClick":true,"wgMediaViewerEnabledByDefault":true}; RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.options":"loading","skins.monobook.styles":"ready"};RLPAGEMODULES=["site","mediawiki.page.ready","skins.monobook.scripts","mmv.head","mmv.bootstrap.autostart","ext.popups"];
-	Return 0
+	; Notes">edit
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2180 - $GC_I_SKILL_ID_PYROCLASTIC_SHOT
@@ -2025,7 +2109,8 @@ Func BestTarget_PyroclasticShot($a_f_AggroRange)
 	; Skill. Pyroclastic fragments spew forth, dealing 80 damage to target foe and all adjacent foes. Affected foes are Crippled and begin Burning for 7 seconds. This skill causes any powder keg in target's hands to explode.
 	; Concise description
 	; Skill. Projectile: deals 80 damage and inflicts Burning and Crippled conditions (7 seconds) on target and adjacent foes. Causes any powder keg in target's hands to explode.
-	Return 0
+	; Target: Grouped enemies (AOE projectile)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2181 - $GC_I_SKILL_ID_EXPLOSIVE_FORCE
@@ -2077,6 +2162,9 @@ Func BestTarget_InspirationalSpeech($a_f_AggroRange)
 	; Skill. You lose all adrenaline and target other ally gains 1...3...4 strikes of adrenaline.
 	; Concise description
 	; Skill. Target ally gains 1...3...4 strike[s] of adrenaline. Cannot self-target. You lose all adrenaline.
+	; Target: Lowest health ally (support spell, cannot self-target)
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
 	Return 0
 EndFunc
 
@@ -2090,7 +2178,8 @@ Func BestTarget_EarBite($a_f_AggroRange)
 	; Skill. Target touched foe takes 50...70 piercing damage and begins Bleeding for 15...25 seconds.
 	; Concise description
 	; Touch Skill. Deals 50...70 piercing damage and inflicts Bleeding condition (15...25 seconds).
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2214 - $GC_I_SKILL_ID_LOW_BLOW
@@ -2103,7 +2192,10 @@ Func BestTarget_LowBlow($a_f_AggroRange)
 	; Skill. Strike target foe for 45...70 damage. If target foe is knocked down, that foe takes an additional 30...50 damage and suffers from Cracked Armor for 14...20 seconds.
 	; Concise description
 	; Touch Skill. Deals 45...70 damage. Inflicts 30...50 damage and Cracked Armor (14...20 seconds) if target foe is knocked down.
-	Return 0
+	; Target: Knocked-down enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnockedDown")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2215 - $GC_I_SKILL_ID_BRAWLING_HEADBUTT
@@ -2116,7 +2208,8 @@ Func BestTarget_BrawlingHeadbutt($a_f_AggroRange)
 	; This article is about the Deldrimor skill. For the brawling skill with the same name, see Brawling Headbutt (Brawling skill).
 	; Concise description
 	; green; font-weight: bold;">45...70
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2241 - $GC_I_SKILL_ID_GELATINOUS_CORPSE_CONSUMPTION
@@ -2168,7 +2261,8 @@ Func BestTarget_UnstableOozeExplosion($a_f_AggroRange)
 	; Monster
 	; Concise description
 	; Related skills">edit
-	Return 0
+	; Target: Self (AOE skill)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2246 - $GC_I_SKILL_ID_UNSTABLE_AURA
@@ -2207,7 +2301,8 @@ Func BestTarget_SearingBreath($a_f_AggroRange)
 	; Skill. The Great Destroyer breathes a cone of fire that hits foes for 80 fire damage and 40 more fire damage for each enchantment on them. All Destroyers in the affected area are healed for 80 Health.
 	; Concise description
 	; Skill. A cone of fire deals 80 fire damage and 40 more fire damage for each enchantment on struck foes. All Destroyers in the cone's area are healed for 80.
-	Return 0
+	; Target: Self (AOE skill - cone of fire)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2333 - $GC_I_SKILL_ID_BRAWLING
@@ -2246,7 +2341,8 @@ Func BestTarget_FlameJet($a_f_AggroRange)
 	; Skill. A jet of lava shoots out to target foe dealing 600 damage. If that foe is under the effects of an enchantment, the damage is halved.
 	; Concise description
 	; Skill. Deals 600 damage. Half that damage if target is enchanted.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2346 - $GC_I_SKILL_ID_LAVA_GROUND
@@ -2326,7 +2422,8 @@ Func CanUse_TalonStrike()
 EndFunc
 
 Func BestTarget_TalonStrike($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2364 - $GC_I_SKILL_ID_LAVA_BLAST
@@ -2361,7 +2458,8 @@ Func BestTarget_UrsanStrike($a_f_AggroRange)
 	; Skill. You deal 40...75 damage, and 40...75 slashing damage to target touched foe.
 	; Concise description
 	; Touch Skill. Deals 40...75 damage, and 40...75 slashing damage.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2376 - $GC_I_SKILL_ID_URSAN_RAGE
@@ -2374,7 +2472,8 @@ Func BestTarget_UrsanRage($a_f_AggroRange)
 	; Skill. Touch target foe and deal 60...135 physical damage to all adjacent enemies. Struck foes are also knocked down for 2 seconds.
 	; Concise description
 	; Touch Skill. Deals 60...135 physical damage. Causes knock-down. Hits foes adjacent to you.
-	Return 0
+	; Target: Grouped enemies (AOE touch skill)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2380 - $GC_I_SKILL_ID_VOLFEN_CLAW
@@ -2387,7 +2486,8 @@ Func BestTarget_VolfenClaw($a_f_AggroRange)
 	; Skill. You deal 40...60 damage and target touched foe suffers from Deep Wound for 2...5 seconds.
 	; Concise description
 	; Touch Skill. Deals 40...60 damage. Inflicts Deep Wound condition (2...5 seconds.)
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2385 - $GC_I_SKILL_ID_RAVEN_TALONS
@@ -2400,7 +2500,8 @@ Func BestTarget_RavenTalons($a_f_AggroRange)
 	; Skill. Target touched foe takes 20...35 piercing damage and is Bleeding and Crippled for 4...10 seconds.
 	; Concise description
 	; Touch Skill. Deals 20...35 piercing damage. Inflicts Bleeding and Crippled conditions (4...10 seconds).
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2389 - $GC_I_SKILL_ID_TOTEM_OF_MAN
@@ -2545,7 +2646,8 @@ Func BestTarget_Gloat($a_f_AggroRange)
 	; Skill. After killing an enemy, all Charr within earshot gain 10 Energy and 5 adrenaline.
 	; Concise description
 	; Skill. After killing an enemy, all Charr within earshot gain 10 Energy and 5 adrenaline.
-	Return 0
+	; Target: Self (passive skill - triggers after kill)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2484 - $GC_I_SKILL_ID_METAMORPHOSIS
@@ -2610,7 +2712,9 @@ Func BestTarget_OozeCombination($a_f_AggroRange)
 	; Skill. Combine with target touched ooze.
 	; Concise description
 	; Touch Skill. Combine with another Ooze.
-	Return 0
+	; Target: Nearest ooze (special targeting - would need ooze filter)
+	; For now, target nearest living creature
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2493 - $GC_I_SKILL_ID_OOZE_DIVISION
@@ -2684,7 +2788,10 @@ Func BestTarget_SoulrendingShriek($a_f_AggroRange)
 	; Skill. Target foe takes 40 damage. If target is enchanted, that foe loses one enchantment and is Dazed for 8 seconds.
 	; Concise description
 	; Skill. 40 damage. Removes one enchantment and inflicts Dazed condition (8 seconds) if target foe is enchanted.
-	Return 0
+	; Target: Enchanted enemy (highest priority), fallback to nearest enemy
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsEnchanted")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2505 - $GC_I_SKILL_ID_SIEGE_DEVOURER_FEAST
@@ -2709,8 +2816,9 @@ Func BestTarget_DevourerBite($a_f_AggroRange)
 	; Description
 	; Devourer skill
 	; Concise description
-	; 20251201190305 Cache expiry: 86400 Reduced expiry: false Complications: [] CPU time usage: 0.016 seconds Real time usage: 0.028 seconds Preprocessor visited node count: 282/1000000 Post‐expand include size: 2278/2097152 bytes Template argument size: 494/2097152 bytes Highest expansion depth: 7/100 Expensive parser function count: 0/100 Unstrip recursion depth: 0/20 Unstrip post‐expand size: 0/5000000 bytes ExtLoops count: 0/1000 -->
-	Return 0
+	; Notes">edit
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2507 - $GC_I_SKILL_ID_SIEGE_DEVOURER_SWIPE
@@ -2736,7 +2844,8 @@ Func BestTarget_DevourerSiege($a_f_AggroRange)
 	; Skill. Launch two projectiles at target foe's location. Foes near that location are struck for 150 fire damage and knocked down. This skill cannot target a foe near you.
 	; Concise description
 	; Skill. Two projectiles: deal 150 fire damage; causes knock-down. Hits foes near target. Cannot target foes near you.
-	Return 0
+	; Target: Enemy outside nearby range (projectile skill)
+	Return UAI_GetFarthestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2513 - $GC_I_SKILL_ID_DISMOUNT_SIEGE_DEVOURER
@@ -2762,7 +2871,8 @@ Func BestTarget_Mount($a_f_AggroRange)
 	; "Mount" redirects here. For temporary skills acquired in mount forms, see List of temporary skills#Mount skills.
 	; Concise description
 	; Notes">edit
-	Return 0
+	; Target: Self (mount skill)
+	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
 EndFunc
 
 ; Skill ID: 2518 - $GC_I_SKILL_ID_TENGUS_GAZE
@@ -2843,7 +2953,8 @@ Func BestTarget_ThrowRock($a_f_AggroRange)
 	; Skill. Throw a rock at your target. If it strikes a foe, that foe is knocked down and becomes Crippled for 10 seconds.
 	; Concise description
 	; Skill. Throw a rock at your target, causing knockdown and inflicting Crippled condition (10 seconds.)
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2662 - $GC_I_SKILL_ID_NIGHTMARISH_AURA
@@ -2869,7 +2980,8 @@ Func BestTarget_SiegeStrike($a_f_AggroRange)
 	; Skill. Target foe is struck for 200 damage and knocked down.
 	; Concise description
 	; Skill. Deals 200 damage and causes knockdown.
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2665 - $GC_I_SKILL_ID_BARBED_BOMB
@@ -2980,12 +3092,14 @@ Func CanUse_AncestorsRagePvP()
 EndFunc
 
 Func BestTarget_AncestorsRagePvP($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2894 - $GC_I_SKILL_ID_BAMPH_LITE
 Func BestTarget_BamphLite($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2903 - $GC_I_SKILL_ID_REACTOR_BLAST_TIMER
@@ -3033,7 +3147,8 @@ Func CanUse_NoxLockOn()
 EndFunc
 
 Func BestTarget_NoxLockOn($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2926 - $GC_I_SKILL_ID_BAMPH_LIFESTEAL
@@ -3042,7 +3157,8 @@ Func BestTarget_BamphLifesteal($a_f_AggroRange)
 	; Skill. Bamph Lifesteal
 	; Concise description
 	; Skill. Bamph Lifesteal
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2931 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -3053,7 +3169,8 @@ Func CanUse_DelayedBlastBamph()
 EndFunc
 
 Func BestTarget_DelayedBlastBamph($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3000 - $GC_I_SKILL_ID_GUNTHERS_GAZE
@@ -3098,7 +3215,8 @@ Func CanUse_CharmAnimalCodex()
 EndFunc
 
 Func BestTarget_CharmAnimalCodex($a_f_AggroRange)
-	Return 0
+	; Target nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3083 - $GC_I_SKILL_ID_TOUCH_OF_DHUUM
@@ -3111,7 +3229,8 @@ Func BestTarget_TouchOfDhuum($a_f_AggroRange)
 	; Skill. Steal 100 Health from target touched foe. That foe receives 15% Death Penalty. If Touch of Dhuum steals health from a foe with 60% Death Penalty, that foe dies.
 	; Concise description
 	; Touch Skill. Steal 100 Health from target foe. That foe receives 15% Death Penalty. If Touch of Dhuum steals health from a foe with 60% Death Penalty, that foe dies.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3144 - $GC_I_SKILL_ID_HEAL_AS_ONE_PvP
@@ -3161,6 +3280,9 @@ Func BestTarget_SacrificePawn($a_f_AggroRange)
 	; Skill. Drains the life of target ally, killing them and healing the caster for an amount equal to that ally's current Health.
 	; Concise description
 	; Skill. Kills target ally. Caster gains Health equal to that ally's current Health.
+	; Target: Lowest health ally (support spell - sacrifices ally)
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 Then Return $l_i_Target
 	Return 0
 EndFunc
 
@@ -3198,7 +3320,8 @@ Func BestTarget_DamageAssessment($a_f_AggroRange)
 	; Skill. You lose all conditions. Shadowstep directly away from target enemy.
 	; Concise description
 	; Skill. You lose all conditions. Shadowstep directly away from target enemy.
-	Return 0
+	; Target: Nearest enemy (shadowstep away from them)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3305 - ;  $GC_I_SKILL_ID_UNKNOWN
@@ -3212,7 +3335,8 @@ Func BestTarget_SmashOfTheTitans($a_f_AggroRange)
 	; Remove all enchantments from target foe. All adjacent foes are knocked down and struck for 150 damage.
 	; Concise description
 	; Touch Skill. Target foe loses all Enchantments. All Adjacent Foes are Knocked Down and struck for 150 damage. [sic]
-	Return 0
+	; Target: Grouped enemies (AOE touch skill)
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3384 - $GC_I_SKILL_ID_ANNIHILATOR_TOSS
@@ -3225,7 +3349,8 @@ Func BestTarget_AnnihilatorToss($a_f_AggroRange)
 	; Skill. Throw target touched foe into lava. Only works near a suitably hot lava pit.
 	; Concise description
 	; Touch Skill. Throw target into lava. Only works near very hot lava.
-	Return 0
+	; Target: Nearest enemy (touch skill)
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 3402 - $GC_I_SKILL_ID_TONIC_TIPSINESS
@@ -3268,6 +3393,7 @@ Func BestTarget_ShadowTheft($a_f_AggroRange)
 	; Elite Skill. Shadow Step to target foe. For 5...17...20 seconds that foe's attributes are reduced by 1...4...5 and your attributes are increased by 1...4...5. This skill counts as a Lead Attack. PvE Skill
 	; Concise description
 	; Elite Skill. Shadow Step to target foe. For 5...17...20 seconds that foe's attributes are reduced by 1...4...5 and your attributes are increased by 1...4...5. Counts as a Lead Attack. PvE Skill
-	Return 0
+	; Target: Nearest enemy
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
