@@ -1471,7 +1471,7 @@ Func Map_GetExitPortalsCoords($a_i_FromMapID, $a_i_ToMapID)
 					Local $l_ai_Coords[2] = [-11310, 20455]
 			EndSwitch
 
-		Case $GC_I_MAP_ID_JAYA_BLUFF
+		Case $GC_I_MAP_ID_JAYA_BLUFFS
 			Switch $a_i_ToMapID
 				Case $GC_I_MAP_ID_HAIJU_LAGOON
 					Local $l_ai_Coords[2] = [23655, 1767]
@@ -1689,7 +1689,7 @@ Func Map_GetExitPortalsCoords($a_i_FromMapID, $a_i_ToMapID)
 
 		Case $GC_I_MAP_ID_HAIJU_LAGOON
 			Switch $a_i_ToMapID
-				Case $GC_I_MAP_ID_JAYA_BLUFF
+				Case $GC_I_MAP_ID_JAYA_BLUFFS
 					Local $l_ai_Coords[2] = [-13680, -7569]
 				Case $GC_I_MAP_ID_ZEN_DAIJUN_OUTPOST
 					Local $l_ai_Coords[2] = [15973, -22787]
@@ -1797,7 +1797,7 @@ Func Map_GetExitPortalsCoords($a_i_FromMapID, $a_i_ToMapID)
 
 		Case $GC_I_MAP_ID_SEITUNG_HARBOR
 			Switch $a_i_ToMapID
-				Case $GC_I_MAP_ID_JAYA_BLUFF
+				Case $GC_I_MAP_ID_JAYA_BLUFFS
 					Local $l_ai_Coords[2] = [16669, 17695]
 				Case $GC_I_MAP_ID_KAINENG_DOCKS
 					Local $l_ai_Coords[2] = [17598, 9443]
@@ -3400,11 +3400,11 @@ Func Map_GetConnectedMaps($a_i_MapID)
 		Case $GC_I_MAP_ID_KINYA_PROVINCE
 			Local $l_a_Connected[] = [$GC_I_MAP_ID_PANJIANG_PENINSULA, $GC_I_MAP_ID_RAN_MUSU_GARDENS, $GC_I_MAP_ID_SUNQUA_VALE]
 		Case $GC_I_MAP_ID_HAIJU_LAGOON
-			Local $l_a_Connected[] = [$GC_I_MAP_ID_JAYA_BLUFF, $GC_I_MAP_ID_ZEN_DAIJUN_OUTPOST]
-		Case $GC_I_MAP_ID_JAYA_BLUFF
+			Local $l_a_Connected[] = [$GC_I_MAP_ID_JAYA_BLUFFS, $GC_I_MAP_ID_ZEN_DAIJUN_OUTPOST]
+		Case $GC_I_MAP_ID_JAYA_BLUFFS
 			Local $l_a_Connected[] = [$GC_I_MAP_ID_HAIJU_LAGOON, $GC_I_MAP_ID_SEITUNG_HARBOR]
 		Case $GC_I_MAP_ID_SEITUNG_HARBOR
-			Local $l_a_Connected[] = [$GC_I_MAP_ID_JAYA_BLUFF, $GC_I_MAP_ID_KAINENG_DOCKS, $GC_I_MAP_ID_SAOSHANG_TRAIL, $GC_I_MAP_ID_ZEN_DAIJUN_EXPLORABLE]
+			Local $l_a_Connected[] = [$GC_I_MAP_ID_JAYA_BLUFFS, $GC_I_MAP_ID_KAINENG_DOCKS, $GC_I_MAP_ID_SAOSHANG_TRAIL, $GC_I_MAP_ID_ZEN_DAIJUN_EXPLORABLE]
 		Case $GC_I_MAP_ID_LINNOK_COURTYARD
 			Local $l_a_Connected[] = [$GC_I_MAP_ID_SAOSHANG_TRAIL, $GC_I_MAP_ID_SHING_JEA_MONASTERY]
 		Case $GC_I_MAP_ID_SAOSHANG_TRAIL

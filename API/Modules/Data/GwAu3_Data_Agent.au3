@@ -780,20 +780,33 @@ EndFunc
 
 #EndRegion Agent Related
 
-Func Agent_GetDistance($a_i_Agent1ID, $a_i_Agent2ID = 0)
-    If $a_i_Agent2ID = 0 Then $a_i_Agent2ID = Agent_GetMyID()
-
+Func Agent_GetDistance($a_i_Agent1ID, $a_i_Agent2ID = -2)
     Local $l_f_X1 = Agent_GetAgentInfo($a_i_Agent1ID, "X")
     Local $l_f_Y1 = Agent_GetAgentInfo($a_i_Agent1ID, "Y")
     Local $l_f_X2 = Agent_GetAgentInfo($a_i_Agent2ID, "X")
     Local $l_f_Y2 = Agent_GetAgentInfo($a_i_Agent2ID, "Y")
 
-    Return Sqrt(($l_f_X1 - $l_f_X2)^2 + ($l_f_Y1 - $l_f_Y2)^2)
+    Local $l_f_DX = $l_f_X1 - $l_f_X2
+    Local $l_f_DY = $l_f_Y1 - $l_f_Y2
+
+    Return Sqrt($l_f_DX * $l_f_DX + $l_f_DY * $l_f_DY)
 EndFunc
 
 Func Agent_GetDistanceToXY($a_f_X, $a_f_Y, $a_i_AgentID = -2)
 	Return Sqrt(($a_f_X - Agent_GetAgentInfo($a_i_AgentID, "X")) ^ 2 + ($a_f_Y - Agent_GetAgentInfo($a_i_AgentID, "Y")) ^ 2)
 EndFunc   ;==>GetDistanceToXY
+
+Func Agent_GetDistanceSq($a_i_Agent1ID, $a_i_Agent2ID = -2)
+    Local $l_f_X1 = Agent_GetAgentInfo($a_i_Agent1ID, "X")
+    Local $l_f_Y1 = Agent_GetAgentInfo($a_i_Agent1ID, "Y")
+    Local $l_f_X2 = Agent_GetAgentInfo($a_i_Agent2ID, "X")
+    Local $l_f_Y2 = Agent_GetAgentInfo($a_i_Agent2ID, "Y")
+
+    Local $l_f_DX = $l_f_X1 - $l_f_X2
+    Local $l_f_DY = $l_f_Y1 - $l_f_Y2
+
+    Return ($l_f_DX * $l_f_DX + $l_f_DY * $l_f_DY)
+EndFunc
 
 #Region Effect Related
 Func Agent_GetAgentEffectArrayInfo($a_i_AgentID = -2, $a_s_Info = "")

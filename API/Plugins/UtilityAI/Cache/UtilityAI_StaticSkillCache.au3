@@ -1,7 +1,11 @@
 #include-once
+Global $g_p_StaticSkillbarPtr = 0
 
 ; ========== Static Skill data ==========
 Global $g_amx2_StaticSkillCache[9][43]
+
+; Priority slots tagged at cache time: [0] = count, [1..count] = skill slot numbers (1-8)
+Global $g_ai_PrioritySlots[9]
 
 Global Enum $GC_UAI_STATIC_SKILL_SkillID, _
     $GC_UAI_STATIC_SKILL_Campaign, _
@@ -50,7 +54,7 @@ Global Enum $GC_UAI_STATIC_SKILL_SkillID, _
 
 ; ========== Cache Static Skill data ==========
 Func UAI_StaticDataSkill($a_i_SkillID)
-    Static $ss_StructInfo = Memory_CreateStructure( _
+    Static $s_d_StructInfo = Memory_CreateStructure( _
         "long SkillID[0x0];" & _
         "long Campaign[0x8];" & _
         "long SkillType[0xC];" & _
@@ -99,22 +103,39 @@ Func UAI_StaticDataSkill($a_i_SkillID)
     Local $l_p_SkillPtr = Skill_GetSkillPtr($a_i_SkillID)
     If $l_p_SkillPtr = 0 Then Return SetError(1, 0, 0)
 
-    Return Memory_ReadStruct($l_p_SkillPtr, $ss_StructInfo)
+    Return Memory_ReadStruct($l_p_SkillPtr, $s_d_StructInfo)
 EndFunc
 
 Func UAI_CacheSkillBar()
-	$g_amx2_StaticSkillCache = 0			; resets the array if we cache a different skill bar
-	Global $g_amx2_StaticSkillCache[9][43]
+    $g_p_StaticSkillbarPtr = 0
+	$g_amx2_StaticSkillCache = 0 ; resets the array if we cache a different skill bar
 
-    For $i = 1 To 8
-        Local $l_i_SkillID = Skill_GetSkillbarInfo($i, "SkillID")
+	Global $g_amx2_StaticSkillCache[9][43] ; fresh re-declare -> all cells zeroed
+	Global $g_ai_PrioritySlots[9] ; reset priority list
+	Local $l_i_PriorityCount = 0
 
-        If $l_i_SkillID = 0 Then
-            For $j = 0 To 42
-                $g_amx2_StaticSkillCache[$i][$j] = 0
-            Next
-            ContinueLoop
+    Local $l_p_SkillbarArray = World_GetWorldInfo("SkillbarArray")
+    Local $l_i_SkillbarArraySize = World_GetWorldInfo("SkillbarArraySize")
+    If $l_p_SkillbarArray = 0 Or $l_i_SkillbarArraySize = 0 Then Return SetError(1, 0, False)
+
+    Local $l_i_MyID = Agent_GetMyID()
+    If $l_i_MyID = 0 Then Return SetError(1, 0, False)
+
+    For $i = 0 To $l_i_SkillbarArraySize - 1
+        Local $l_p_CurrentPtr = $l_p_SkillbarArray + (0xBC * $i)
+        Local $l_i_AgentID = Memory_Read($l_p_CurrentPtr, "long")
+
+        If $l_i_AgentID = $l_i_MyID Then
+            $g_p_StaticSkillbarPtr = $l_p_CurrentPtr
+            ExitLoop
         EndIf
+    Next
+
+    For $skillSlot = 1 To 8
+        Local $l_i_SkillID = Skill_GetSkillbarInfo($skillSlot, "SkillID")
+
+        ; Empty slot: row is already zeroed by the re-declare above, nothing to do
+        If $l_i_SkillID = 0 Then ContinueLoop
 
         Local $l_av_SkillData = UAI_StaticDataSkill($l_i_SkillID)
         If @error Or Not IsArray($l_av_SkillData) Then ContinueLoop
@@ -123,32 +144,65 @@ Func UAI_CacheSkillBar()
         If $l_i_Max > 42 Then $l_i_Max = 42
 
         For $j = 0 To $l_i_Max
-            $g_amx2_StaticSkillCache[$i][$j] = $l_av_SkillData[$j]
+            $g_amx2_StaticSkillCache[$skillSlot][$j] = $l_av_SkillData[$j]
         Next
 
-        Local $l_i_Overcast = $g_amx2_StaticSkillCache[$i][$GC_UAI_STATIC_SKILL_Overcast]
+        Local $l_i_Overcast = $g_amx2_StaticSkillCache[$skillSlot][$GC_UAI_STATIC_SKILL_Overcast]
         Switch $l_i_Overcast
 			Case 5
-				$g_amx2_StaticSkillCache[$i][$GC_UAI_STATIC_SKILL_Overcast] = 5
+				$g_amx2_StaticSkillCache[$skillSlot][$GC_UAI_STATIC_SKILL_Overcast] = 5
 			Case 10
-                $g_amx2_StaticSkillCache[$i][$GC_UAI_STATIC_SKILL_Overcast] = 10
+                $g_amx2_StaticSkillCache[$skillSlot][$GC_UAI_STATIC_SKILL_Overcast] = 10
             Case Else
-                $g_amx2_StaticSkillCache[$i][$GC_UAI_STATIC_SKILL_Overcast] = 0
+                $g_amx2_StaticSkillCache[$skillSlot][$GC_UAI_STATIC_SKILL_Overcast] = 0
         EndSwitch
 
-        ; Traitement spécial pour EnergyCost
-        Local $l_i_EnergyCost = $g_amx2_StaticSkillCache[$i][$GC_UAI_STATIC_SKILL_EnergyCost]
+        ; Special handling for energy cost
+        Local $l_i_EnergyCost = $g_amx2_StaticSkillCache[$skillSlot][$GC_UAI_STATIC_SKILL_EnergyCost]
         Switch $l_i_EnergyCost
             Case 11
-                $g_amx2_StaticSkillCache[$i][$GC_UAI_STATIC_SKILL_EnergyCost] = 15
+                $g_amx2_StaticSkillCache[$skillSlot][$GC_UAI_STATIC_SKILL_EnergyCost] = 15
             Case 12
-                $g_amx2_StaticSkillCache[$i][$GC_UAI_STATIC_SKILL_EnergyCost] = 25
+                $g_amx2_StaticSkillCache[$skillSlot][$GC_UAI_STATIC_SKILL_EnergyCost] = 25
         EndSwitch
 
-        ; Traitement spécial pour Aftercast (conversion en ms)
-        $g_amx2_StaticSkillCache[$i][$GC_UAI_STATIC_SKILL_Aftercast] = _
-            $g_amx2_StaticSkillCache[$i][$GC_UAI_STATIC_SKILL_Aftercast] * 750
+        ; Special handling for aftercast delay (conversion to ms)
+        $g_amx2_StaticSkillCache[$skillSlot][$GC_UAI_STATIC_SKILL_Aftercast] = _
+            $g_amx2_StaticSkillCache[$skillSlot][$GC_UAI_STATIC_SKILL_Aftercast] * 1000
+
+        ; Tag priority slots once, here, so the runtime loop only visits these slots
+        If UAI_SlotIsPriority($skillSlot) Then
+            $l_i_PriorityCount += 1
+            $g_ai_PrioritySlots[$l_i_PriorityCount] = $skillSlot
+        EndIf
     Next
+
+    $g_ai_PrioritySlots[0] = $l_i_PriorityCount
+EndFunc
+
+; Internal: does this (already-cached) slot qualify as a priority skill?
+; Encodes the priority criteria that previously lived inside UAI_PrioritySkills.
+Func UAI_SlotIsPriority($a_i_Slot)
+    Static $s_ai_SpecialFlags[3] = [$GC_I_SKILL_SPECIAL_FLAG_RESURRECTION, $GC_I_SKILL_SPECIAL_FLAG_ELITE, $GC_I_SKILL_SPECIAL_FLAG_PVE]
+    Static $s_ai_Effect2Flags[4] = [$GC_I_SKILL_EFFECT2_ENERGY_STEAL, $GC_I_SKILL_EFFECT2_ENERGY_GAIN, _
+        $GC_I_SKILL_EFFECT2_HEX_REMOVAL, $GC_I_SKILL_EFFECT2_CONDITION_REMOVAL]
+    Static $s_ai_SkillTypes[4] = [$GC_I_SKILL_TYPE_WELL, $GC_I_SKILL_TYPE_GLYPH, $GC_I_SKILL_TYPE_PREPARATION, $GC_I_SKILL_TYPE_ITEM_SPELL]
+
+    Local $l_i_Special = $g_amx2_StaticSkillCache[$a_i_Slot][$GC_UAI_STATIC_SKILL_Special]
+    Local $l_i_Effect2 = $g_amx2_StaticSkillCache[$a_i_Slot][$GC_UAI_STATIC_SKILL_Effect2]
+    Local $l_i_Type = $g_amx2_StaticSkillCache[$a_i_Slot][$GC_UAI_STATIC_SKILL_SkillType]
+
+    For $l_i_Flag In $s_ai_SpecialFlags
+        If BitAND($l_i_Special, $l_i_Flag) Then Return True
+    Next
+    For $l_i_Flag In $s_ai_Effect2Flags
+        If BitAND($l_i_Effect2, $l_i_Flag) Then Return True
+    Next
+    For $l_i_PriorityType In $s_ai_SkillTypes
+        If $l_i_Type = $l_i_PriorityType Then Return True
+    Next
+
+    Return False
 EndFunc
 
 Func UAI_GetStaticSkillInfo($a_i_Slot, $a_i_InfoType)

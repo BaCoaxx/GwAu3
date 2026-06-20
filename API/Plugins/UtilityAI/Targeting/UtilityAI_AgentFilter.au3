@@ -61,6 +61,20 @@ Func UAI_Filter_IsDeadAlly($a_i_AgentID)
 	Return True
 EndFunc
 
+Func UAI_Filter_IsLivingNPC($a_i_AgentID)
+	If UAI_GetAgentInfoByID($a_i_AgentID, $GC_UAI_AGENT_Allegiance) <> 6 Then Return False
+	If UAI_GetAgentInfoByID($a_i_AgentID, $GC_UAI_AGENT_HP) <= 0 Then Return False
+	If UAI_GetAgentInfoByID($a_i_AgentID, $GC_UAI_AGENT_IsDead) Then Return False
+	Return True
+EndFunc
+
+Func UAI_Filter_IsDeadNPC($a_i_AgentID)
+	If UAI_GetAgentInfoByID($a_i_AgentID, $GC_UAI_AGENT_Allegiance) <> 6 Then Return False
+	If UAI_GetAgentInfoByID($a_i_AgentID, $GC_UAI_AGENT_HP) > 0 Then Return False
+	If Not UAI_GetAgentInfoByID($a_i_AgentID, $GC_UAI_AGENT_IsDead) Then Return False
+	Return True
+EndFunc
+
 Func UAI_Filter_IsBoss($a_i_AgentID)
 	If Not UAI_GetAgentInfoByID($a_i_AgentID, $GC_UAI_AGENT_HasBossGlow) Then Return False
 	Return True

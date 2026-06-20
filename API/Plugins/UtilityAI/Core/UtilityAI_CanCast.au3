@@ -2,29 +2,30 @@
 
 ;Check if auto attack can be made
 Func UAI_CanAutoAttack()
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Spirit_Shackles) Then Return False
+	If Not UAI_GetPlayerInfo($GC_UAI_AGENT_IsHexed) Then Return True
 
-	Local $l_i_CommingDamage = 0
+	;~ Specific hex checks
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPIRIT_SHACKLES) Then Return False
+
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_INEPTITUDE) Then Return False
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_CLUMSINESS) Then Return False
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_WANDERING_EYE) Then Return False
 
 	; Check for hexes that punish attacking
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Ineptitude) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_Ineptitude, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Clumsiness) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_Clumsiness, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Wandering_Eye) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_Wandering_Eye, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Wandering_Eye_PvP) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_Wandering_Eye_PvP, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Spiteful_Spirit) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_Spiteful_Spirit, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Spoil_Victor) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_Spoil_Victor, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Empathy) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_Empathy, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Empathy_PvP) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_Empathy_PvP, "Scale")
+	Local $l_i_IncomingDamage = 0
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_EMPATHY) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_EMPATHY, $GC_UAI_EFFECT_Scale)
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPITEFUL_SPIRIT) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPITEFUL_SPIRIT, $GC_UAI_EFFECT_Scale)
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPOIL_VICTOR) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPOIL_VICTOR, $GC_UAI_EFFECT_Scale)
 
-	If $l_i_CommingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + 50) Then Return False
+	If $l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + 50) Then Return False
 
 	Return True
 EndFunc
 
 ; Check if I have resource to use the skill
-Func UAI_CanCast($a_i_SkillSlot)
+Func UAI_CanUse($a_i_SkillSlot)
 	;~ EARLY CHECK IF CAST IS SENSIBLE AT ALL
-	If UAI_IsCastSensible($a_i_SkillSlot) = False Then Return False
+	If Not UAI_IsCastSensible($a_i_SkillSlot) Then Return False
 
 	;~ ADRENALINE
 	If UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Adrenaline) <> 0 Then
@@ -44,134 +45,114 @@ Func UAI_CanCast($a_i_SkillSlot)
 		$l_i_TotalHealthCost = UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP) * $l_i_BaseSacrificeCost / 100
 
 		; Check effects that modify sacrifice cost
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Awaken_the_Blood) Then
-			$l_i_TotalHealthCost = $l_i_TotalHealthCost + ($l_i_TotalHealthCost * 0.5) ; +50% cost
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Scourge_Sacrifice) Then
-			$l_i_TotalHealthCost = $l_i_TotalHealthCost * 2 ; Double cost
-		EndIf
+		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Awaken_the_Blood) Then $l_i_TotalHealthCost = $l_i_TotalHealthCost + ($l_i_TotalHealthCost * 0.5) ; +50% cost
+		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Scourge_Sacrifice) Then $l_i_TotalHealthCost = $l_i_TotalHealthCost * 2 ; Double cost
 	EndIf
 
 	; Masochism: Sacrifice 5% of max HP when casting ANY spell
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Masochism) Then
-		$l_i_TotalHealthCost = $l_i_TotalHealthCost + (UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP) * 0.05)
-	EndIf
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Masochism) Then $l_i_TotalHealthCost = $l_i_TotalHealthCost + (UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP) * 0.05)
 
 	; Check if we have enough HP for the total health cost
-	If $l_i_TotalHealthCost > 0 Then
-		If UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) <= $l_i_TotalHealthCost Then Return False
-	EndIf
+	If $l_i_TotalHealthCost > 0 And UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) <= $l_i_TotalHealthCost Then Return False
 
 	;~ OVERCAST
 	Local $l_i_OvercastCost = Skill_GetSkillInfo(UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_SkillID), "Overcast")
 	If $l_i_OvercastCost <> 0 Then
 		Local $l_i_CurrentOvercast = UAI_GetPlayerInfo($GC_UAI_AGENT_Overcast)
 		Local $l_i_MaxEnergy = UAI_GetPlayerInfo($GC_UAI_AGENT_MaxEnergy)
-
+		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Glyph_of_Energy) Then $l_i_OvercastCost = 0
 		If ($l_i_CurrentOvercast + $l_i_OvercastCost) >= ($l_i_MaxEnergy * 0.5) Then Return False
 	EndIf
 
 	;~ ENERGY
-	If UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_EnergyCost) <> 0 Then
-		Local $l_i_BaseEnergyCost = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_EnergyCost)
-		Local $l_i_EnergyCost = $l_i_BaseEnergyCost
-		Local $l_i_CurrentEnergy = UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentEnergy)
-		Local $l_i_SkillType = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_SkillType)
-		Local $l_i_Combo = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Combo)
-		Local $l_i_WeaponReq = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_WeaponReq)
+	Local $l_i_BaseEnergyCost = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_EnergyCost)
+	Local $l_i_EnergyCost = $l_i_BaseEnergyCost
+	Local $l_i_CurrentEnergy  = UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentEnergy)
 
-		; Check effects that INCREASE energy cost
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Quickening_Zephyr) Then
-			$l_i_EnergyCost = $l_i_EnergyCost * 1.3 ; +30% energy cost
-		EndIf
+	; Single-valued skill properties the modifiers are gated on (read once)
+	Local $l_i_SkillType = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_SkillType)
+	Local $l_i_Attribute = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Attribute)
+	Local $l_i_Target = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Target)
+	Local $l_i_WeaponReq = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_WeaponReq)
+	Local $l_i_Combo = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Combo)
+	Local $l_b_WotEP = False
 
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Natures_Renewal) Then
-			If $l_i_SkillType = $GC_I_SKILL_TYPE_HEX Or $l_i_SkillType = $GC_I_SKILL_TYPE_ENCHANTMENT Then
-				$l_i_EnergyCost = $l_i_EnergyCost * 2 ; Double cost for hexes/enchantments
-			EndIf
-		EndIf
+	; Ungated multiplicative increase (applies to all skills)
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Quickening_Zephyr) Then $l_i_EnergyCost *= 1.3 ; +30%
 
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Primal_Echoes) Then
-			If $l_i_SkillType = $GC_I_SKILL_TYPE_SIGNET Then
-				$l_i_EnergyCost = $l_i_EnergyCost + 10 ; Signets cost +10 energy
-			EndIf
-		EndIf
+	; Type-gated increases AND reductions: only the skill's one type runs
+	Switch $l_i_SkillType
+		Case $GC_I_SKILL_TYPE_HEX
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Natures_Renewal) Then $l_i_EnergyCost *= 2 ; double cost
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Anguished_Was_Lingwah) And _
+				($l_i_Attribute = $GC_I_ATTRIBUTE_COMMUNING Or _
+				$l_i_Attribute = $GC_I_ATTRIBUTE_RESTORATION_MAGIC Or _
+				$l_i_Attribute = $GC_I_ATTRIBUTE_CHANNELING_MAGIC Or _
+				$l_i_Attribute = $GC_I_ATTRIBUTE_SPAWNING_POWER) Then _
+				$l_i_EnergyCost -= 5 ; Ritualist hexes -5
 
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Roaring_Winds) Then
-			If $l_i_SkillType = $GC_I_SKILL_TYPE_CHANT Or $l_i_SkillType = $GC_I_SKILL_TYPE_SHOUT Then
-				$l_i_EnergyCost = $l_i_EnergyCost + 5 ; Chants/shouts cost +5 energy (average rank)
-			EndIf
-		EndIf
+		Case $GC_I_SKILL_TYPE_ENCHANTMENT
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Natures_Renewal) Then $l_i_EnergyCost *= 2 ; double cost
+			;~ If UAI_AgentHasEffect($GC_I_SKILL_ID_Air_of_Enchantment) Then $l_i_EnergyCost -= 10 ; Target not set at this stage
 
-		; Check for energy cost REDUCTION effects
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Glyph_of_Lesser_Energy) Then
-			$l_i_EnergyCost = $l_i_EnergyCost - 18 ; -18 energy (max rank)
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Glyph_of_Energy) Then
-			$l_i_EnergyCost = $l_i_EnergyCost - 25 ; -25 energy (max rank)
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Energizing_Wind) Then
-			$l_i_EnergyCost = $l_i_EnergyCost - 15 ; -15 energy
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Divine_Spirit) And (UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Attribute) = $GC_I_ATTRIBUTE_HEALING_PRAYERS Or _
-			UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Attribute) = $GC_I_ATTRIBUTE_SMITING_PRAYERS Or _
-			UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Attribute) = $GC_I_ATTRIBUTE_PROTECTION_PRAYERS Or _
-			UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Attribute) = $GC_I_ATTRIBUTE_DIVINE_FAVOR) Then
-			$l_i_EnergyCost = $l_i_EnergyCost - 5 ; Monk spells -5 energy
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Cultists_Fervor) Then
-			If UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Attribute) >= $GC_I_ATTRIBUTE_BLOOD_MAGIC And UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Attribute) <= $GC_I_ATTRIBUTE_SOUL_REAPING Then
-				$l_i_EnergyCost = $l_i_EnergyCost - 6 ; Necro spells -6 energy (max rank)
-			EndIf
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Air_of_Enchantment) Then
-			If $l_i_SkillType = $GC_I_SKILL_TYPE_ENCHANTMENT And UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Target) <> 0 Then
-				$l_i_EnergyCost = $l_i_EnergyCost - 5 ; Enchantments on allies -5 energy
-			EndIf
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_SELFLESS_SPIRIT_LUXON) Or UAI_PlayerHasEffect($GC_I_SKILL_ID_SELFLESS_SPIRIT_KURZICK) Then
-			If UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Target) <> 0 Then ; Target another ally
-				$l_i_EnergyCost = $l_i_EnergyCost - 3 ; Spells on allies -3 energy
-			EndIf
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Healers_Covenant) And UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Attribute) = $GC_I_ATTRIBUTE_HEALING_PRAYERS Then
-			$l_i_EnergyCost = $l_i_EnergyCost - 3 ; Healing Prayers -3 energy
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Attuned_Was_Songkai) Then
-			If $l_i_SkillType = $GC_I_SKILL_TYPE_SPELL Or $l_i_SkillType = $GC_I_SKILL_TYPE_RITUAL Then
-				$l_i_EnergyCost = $l_i_EnergyCost - ($l_i_BaseEnergyCost * 0.5) ; -50% cost
-			EndIf
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Anguished_Was_Lingwah) Then
-			If $l_i_SkillType = $GC_I_SKILL_TYPE_HEX And UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Attribute) >= $GC_I_ATTRIBUTE_CHANNELING_MAGIC And UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Attribute) <= $GC_I_ATTRIBUTE_SPAWNING_POWER Then
-				$l_i_EnergyCost = $l_i_EnergyCost - 5 ; Ritualist hexes -5 energy
-			EndIf
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Renewing_Memories) Then
-			If $l_i_SkillType = $GC_I_SKILL_TYPE_WEAPON_SPELL Or $l_i_SkillType = $GC_I_SKILL_TYPE_ITEM_SPELL Then
-				$l_i_EnergyCost = $l_i_EnergyCost - ($l_i_BaseEnergyCost * 0.35) ; -35% cost
-			EndIf
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Soul_Twisting) And $l_i_SkillType = $GC_I_SKILL_TYPE_RITUAL Then
-			$l_i_EnergyCost = $l_i_EnergyCost - 15 ; Binding rituals -15 energy
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Way_of_the_Empty_Palm) Then
-			If $l_i_Combo = $GC_I_SKILL_COMBO_OFF_HAND_ATTACK Or $l_i_Combo = $GC_I_SKILL_COMBO_DUAL_ATTACK Then
-				$l_i_EnergyCost = 0 ; Off-hand and dual attacks cost 0
-			EndIf
-		EndIf
-		If UAI_PlayerHasEffect($GC_I_SKILL_ID_Expert_Focus) And $l_i_WeaponReq = $GC_I_WEAPON_TYPE_BOW Then
-			$l_i_EnergyCost = $l_i_EnergyCost - 2 ; Bow attacks -2 energy
-		EndIf
+		Case $GC_I_SKILL_TYPE_SIGNET
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Primal_Echoes) Then $l_i_EnergyCost += 10 ; signets +10
 
-		; Minimum cost is 1 (except for Way of the Empty Palm which makes it 0)
-		If $l_i_EnergyCost < 1 And Not UAI_PlayerHasEffect($GC_I_SKILL_ID_Way_of_the_Empty_Palm) Then
-			$l_i_EnergyCost = 1
-		EndIf
-		If $l_i_EnergyCost < 0 Then $l_i_EnergyCost = 0
+		Case $GC_I_SKILL_TYPE_CHANT, $GC_I_SKILL_TYPE_SHOUT
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Roaring_Winds) Then _
+				$l_i_EnergyCost += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_Roaring_Winds, $GC_UAI_EFFECT_Scale) ; +scaled energy
 
-		If $l_i_CurrentEnergy < $l_i_EnergyCost Then Return False
+		Case $GC_I_SKILL_TYPE_SPELL
+			If $l_i_Target <> $GC_I_SKILL_TARGET_SELF And (UAI_PlayerHasEffect($GC_I_SKILL_ID_SELFLESS_SPIRIT_LUXON) Or UAI_PlayerHasEffect($GC_I_SKILL_ID_SELFLESS_SPIRIT_KURZICK)) Then _
+				$l_i_EnergyCost -= 3 ; spells on allies -3
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Glyph_of_Lesser_Energy) Then 
+				$l_i_EnergyCost -= UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_Glyph_of_Lesser_Energy, $GC_UAI_EFFECT_Scale)
+			ElseIf UAI_PlayerHasEffect($GC_I_SKILL_ID_Glyph_of_Energy) Then
+				$l_i_EnergyCost -= UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_Glyph_of_Energy, $GC_UAI_EFFECT_Scale)
+			EndIf
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Attuned_Was_Songkai) Then _
+				$l_i_EnergyCost -= ($l_i_BaseEnergyCost * UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_Attuned_Was_Songkai, $GC_UAI_EFFECT_Scale)) ; -scaled base energy
+
+		Case $GC_I_SKILL_TYPE_RITUAL
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Attuned_Was_Songkai) Then _
+				$l_i_EnergyCost -= ($l_i_BaseEnergyCost * UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_Attuned_Was_Songkai, $GC_UAI_EFFECT_Scale)) ; -scaled base energy
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Soul_Twisting) Then $l_i_EnergyCost -= 15 ; binding rituals -15
+
+		Case $GC_I_SKILL_TYPE_WEAPON_SPELL, $GC_I_SKILL_TYPE_ITEM_SPELL
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Renewing_Memories) Then _
+				$l_i_EnergyCost -= ($l_i_BaseEnergyCost * UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_Renewing_Memories, $GC_UAI_EFFECT_Scale)) ; -scaled base energy
+	EndSwitch
+
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_Energizing_Wind) Then $l_i_EnergyCost -= 15 ; -15
+
+	; Attribute-gated reductions
+	Switch $l_i_Attribute
+		Case $GC_I_ATTRIBUTE_HEALING_PRAYERS
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Divine_Spirit) Then $l_i_EnergyCost -= 5 ; Monk spells -5
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Healers_Covenant) Then $l_i_EnergyCost -= 3 ; Healing Prayers -3
+
+		Case $GC_I_ATTRIBUTE_SMITING_PRAYERS, $GC_I_ATTRIBUTE_PROTECTION_PRAYERS, $GC_I_ATTRIBUTE_DIVINE_FAVOR
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Divine_Spirit) Then $l_i_EnergyCost -= 5 ; Monk spells -5
+
+		Case $GC_I_ATTRIBUTE_BLOOD_MAGIC To $GC_I_ATTRIBUTE_SOUL_REAPING
+			If UAI_PlayerHasEffect($GC_I_SKILL_ID_Cultists_Fervor) Then _
+				$l_i_EnergyCost -= UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_Cultists_Fervor, $GC_UAI_EFFECT_Scale) ; Necro spells -scaled energy
+	EndSwitch
+
+	; Single-property gates (weapon / combo)
+	If $l_i_WeaponReq = $GC_I_WEAPON_TYPE_BOW And UAI_PlayerHasEffect($GC_I_SKILL_ID_Expert_Focus) Then _
+		$l_i_EnergyCost -= 2 ; bow attacks -2
+
+	If ($l_i_Combo = $GC_I_SKILL_COMBO_OFF_HAND_ATTACK Or $l_i_Combo = $GC_I_SKILL_COMBO_DUAL_ATTACK) Then
+		$l_b_WotEP = UAI_PlayerHasEffect($GC_I_SKILL_ID_Way_of_the_Empty_Palm)
+		If $l_b_WotEP Then $l_i_EnergyCost = 0 ; off-hand / dual attacks cost 0
 	EndIf
+
+	; Clamp: minimum cost 1 (0 only under Way of the Empty Palm)
+	If $l_i_EnergyCost < 1 And Not $l_b_WotEP Then $l_i_EnergyCost = 1
+	If $l_i_EnergyCost < 0 Then $l_i_EnergyCost = 0
+
+	If $l_i_CurrentEnergy < $l_i_EnergyCost Then Return False
 
 	Return True
 EndFunc
@@ -392,6 +373,7 @@ Func UAI_CanDrop($a_i_SkillSlot)
 				$GC_I_SKILL_ID_TRANQUIL_WAS_TANASEN, $GC_I_SKILL_ID_MIGHTY_WAS_VORIZUN
 			Return False
 	EndSwitch
+
 	Return False
 EndFunc
 
@@ -400,19 +382,12 @@ Func UAI_IsCastSensible($a_i_SkillSlot)
     If $l_i_TargetType <> $GC_I_SKILL_TARGET_SELF Then Return True
 
     Local $l_i_SkillType = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_SkillType)
-    Local $l_i_SkillID   = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_SkillID)
+    Local $l_i_SkillID = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_SkillID)
 
     Switch $l_i_SkillType
-        Case _
-            $GC_I_SKILL_TYPE_ENCHANTMENT, _
-            $GC_I_SKILL_TYPE_WARD, _
-            $GC_I_SKILL_TYPE_SHOUT, _
-            $GC_I_SKILL_TYPE_RITUAL, _
-            $GC_I_SKILL_TYPE_FORM, _
-            $GC_I_SKILL_TYPE_ECHO_REFRAIN
-
+        Case $GC_I_SKILL_TYPE_ENCHANTMENT, $GC_I_SKILL_TYPE_WARD, $GC_I_SKILL_TYPE_SHOUT, _
+        	$GC_I_SKILL_TYPE_RITUAL, $GC_I_SKILL_TYPE_FORM, $GC_I_SKILL_TYPE_ECHO_REFRAIN
 			Return _UAI_EffectEndingSoon($l_i_SkillID, $a_i_SkillSlot)
-
 		Case $GC_I_SKILL_TYPE_STANCE
 			If Not UAI_PlayerHasEffectType("HasStance") Then Return True
 			If @extended <> $l_i_SkillID Then Return False
@@ -431,6 +406,6 @@ Func UAI_IsCastSensible($a_i_SkillSlot)
 EndFunc
 
 Func _UAI_EffectEndingSoon($a_i_SkillID, $a_i_SkillSlot)
-	Return UAI_GetPlayerEffectInfo($a_i_SkillID, $GC_UAI_EFFECT_TimeRemaining) < _
-		(UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Activation)*1000 + 1000)
+	Return UAI_GetPlayerEffectInfo($a_i_SkillID, $GC_UAI_EFFECT_TimeRemaining) <= _
+		(UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Activation) * 1000 + 1000)
 EndFunc

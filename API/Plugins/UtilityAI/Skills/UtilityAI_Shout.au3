@@ -1,11 +1,15 @@
 #include-once
 
 Func Anti_Shout()
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_CACOPHONY) Then
-		If Effect_GetEffectArg($GC_I_SKILL_ID_CACOPHONY, "Scale") > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + 50) Then Return True
-	EndIf
+	;~ Specific hex checks
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_VOCAL_MINORITY) Then Return True
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_WELL_OF_SILENCE) Then Return True
+		
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_CACOPHONY) And _
+		UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_CACOPHONY, $GC_UAI_EFFECT_Scale) > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + 50) Then
+		Return True
+	EndIf
+
 	Return False
 EndFunc
 
@@ -917,7 +921,13 @@ Func BestTarget_YouAreAllWeaklings($a_f_AggroRange)
 	; Shout. Target foe and foes adjacent to target are Weakened for 8...12 seconds.
 	; Concise description
 	; Shout. Inflicts Weakness condition (8...12 seconds). Also affects adjacent foes.
-	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
+	Local $l_i_Range = $a_f_AggroRange
+	If $l_i_Range > $GC_I_RANGE_SPELLCASTING Then $l_i_Range = $GC_I_RANGE_SPELLCASTING
+
+	$l_i_Target = UAI_GetBestAOETarget(-2, $l_i_Range, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsNotCaster")
+	If $l_i_Target <> 0 Then Return SetExtended($GC_I_UAI_OVERRIDE_FORCE_TARGET, $l_i_Target)
+
+	Return SetExtended($GC_I_UAI_OVERRIDE_FORCE_TARGET, UAI_GetBestAOETarget(-2, $l_i_Range, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy"))
 EndFunc
 
 Func CanUse_UrsanRoar()

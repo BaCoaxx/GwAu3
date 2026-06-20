@@ -2,27 +2,18 @@
 
 ; Script Start - Add your code below here
 Func Cache_SkillBar()
-	If Map_GetInstanceInfo("IsLoading") Then Return
+	If Not Map_GetInstanceInfo("IsExplorable") Then Return False
 
 	UAI_CacheSkillBar()
 
 	For $i = 1 To 8
 		$g_as_BestTargetCache[$i] = UAI_GetBestTargetFunc($i)
-	Next
-
-	For $i = 1 To 8
 		$g_as_CanUseCache[$i] = UAI_GetCanUseFunc($i)
 	Next
 
-	For $i = 1 To 8
-		Local $l_i_SkillID = UAI_GetStaticSkillInfo($i, $GC_UAI_STATIC_SKILL_SkillID)
-;~ 		Out("Skill Name:          " & $GC_AMX2_SKILL_DATA[$l_i_SkillID][1])
-;~ 		Out("    - SkillID:           " & $l_i_SkillID)
-;~ 		Out("    - BestTarget:    " & $g_as_BestTargetCache[$i])
-;~ 		Out("    - CanUse:         " & $g_as_CanUseCache[$i] & @CRLF)
-	Next
-
 	If $g_b_CacheWeaponSet Then UAI_DeterminateWeaponSets()
+
+	Return True
 EndFunc   ;==>Cache_SkillBar
 
 Func Cache_FormChangeBuild($a_i_SkillSlot)
@@ -50,7 +41,7 @@ Func Cache_EndFormChangeBuild($a_i_SkillSlot)
 EndFunc
 
 Func UAI_UpdateCache($a_f_AggroRange)
-	UAI_UpdateAgentCache($a_f_AggroRange + 100)
+	UAI_UpdateAgentCache($a_f_AggroRange + 500)
 	UAI_CacheAgentEffects()
 	UAI_CacheAgentBonds()
 	UAI_CacheAgentVisibleEffects()

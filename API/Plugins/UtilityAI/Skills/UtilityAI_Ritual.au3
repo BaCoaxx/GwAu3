@@ -497,10 +497,6 @@ EndFunc
 
 ; Skill ID: 1251 - $GC_I_SKILL_ID_LIFE
 Func CanUse_Life()
-	Local $l_i_Spirit = UAI_FindAgentByPlayerNumber(4218, -2, 2500, "UAI_Filter_IsControlledSpirit")
-
-	If $l_i_Spirit <> 0 Then Return False
-
 	Return True
 EndFunc
 

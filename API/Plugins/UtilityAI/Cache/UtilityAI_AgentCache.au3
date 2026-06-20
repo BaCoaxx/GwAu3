@@ -6,7 +6,7 @@ Global $g_i_AgentCacheCount = 0
 Global $g_i_PlayerCacheIndex = -1
 Global $g_f_PlayerCacheX = 0
 Global $g_f_PlayerCacheY = 0
-Global $g_ai_AgentIDToIndex[1]
+Global $g_m_AgentIDToIndex[]
 
 Global Enum $GC_UAI_AGENT_Ptr, _
     $GC_UAI_AGENT_Timer, _
@@ -98,7 +98,7 @@ Global Enum $GC_UAI_AGENT_Ptr, _
 
 ; ========== Cache Agents data ==========
 Func UAI_UpdateAgentCache($a_f_Range = 1320, $a_i_Type = 0xDB)
-    Static $ss_AgentStruct = Memory_CreateStructure( _
+    Static $s_d_AgentStruct = Memory_CreateStructure( _
         "dword Timer[0x14];" & _
         "long ID[0x2C];" & _
         "float Z[0x30];" & _
@@ -161,21 +161,34 @@ Func UAI_UpdateAgentCache($a_f_Range = 1320, $a_i_Type = 0xDB)
     $g_f_PlayerCacheX = Agent_GetAgentInfo(-2, "X")
     $g_f_PlayerCacheY = Agent_GetAgentInfo(-2, "Y")
 
-    Local $l_ap_AgentArray = Agent_GetAgentArray($a_i_Type)
-    If Not IsArray($l_ap_AgentArray) Or $l_ap_AgentArray[0] = 0 Then Return SetError(2, 0, False)
+    Local $l_i_MaxAgents = Agent_GetMaxAgents()
+    If $l_i_MaxAgents <= 0 Then Return SetError(2, 0, False)
 
-    Local $l_i_TotalAgents = $l_ap_AgentArray[0]
+    Local $l_p_AgentBase = Memory_Read($g_p_AgentBase)
+    Local $l_p_AgentPtrBuffer = DllStructCreate("ptr[" & $l_i_MaxAgents & "]")
+    DllCall($g_h_Kernel32, "bool", "ReadProcessMemory", _
+        "handle", $g_h_GWProcess, _
+        "ptr", $l_p_AgentBase, _
+        "struct*", $l_p_AgentPtrBuffer, _
+        "ulong_ptr", 4 * $l_i_MaxAgents, _
+        "ulong_ptr*", 0)
+
+    If UBound($g_amx2_AgentCache, 1) < $l_i_MaxAgents + 1 Then _
+        ReDim $g_amx2_AgentCache[$l_i_MaxAgents + 1][$GC_UAI_AGENT_COUNT]
+
     Local $l_f_RangeSquared = $a_f_Range * $a_f_Range
-
-    ReDim $g_amx2_AgentCache[$l_i_TotalAgents + 1][$GC_UAI_AGENT_COUNT]
-
     Local $l_i_CacheIndex = 0
-    For $i = 1 To $l_i_TotalAgents
-        Local $l_p_AgentPtr = $l_ap_AgentArray[$i]
+    Local $l_p_AgentPtr, $l_av_Data
+
+    For $i = 1 To $l_i_MaxAgents
+        $l_p_AgentPtr = DllStructGetData($l_p_AgentPtrBuffer, 1, $i)
         If $l_p_AgentPtr = 0 Then ContinueLoop
 
-        Local $l_av_Data = Memory_ReadStruct($l_p_AgentPtr, $ss_AgentStruct)
+        $l_av_Data = Memory_ReadStruct($l_p_AgentPtr, $s_d_AgentStruct)
         If @error Then ContinueLoop
+
+        Local $l_i_Type = $l_av_Data[12]
+        If $a_i_Type <> 0 And $l_i_Type <> $a_i_Type Then ContinueLoop
 
         Local $l_i_ID = $l_av_Data[1]
         Local $l_f_X = $l_av_Data[9]
@@ -193,7 +206,6 @@ Func UAI_UpdateAgentCache($a_f_Range = 1320, $a_i_Type = 0xDB)
         Local $l_i_Effects = $l_av_Data[37]
         Local $l_i_ModelState = $l_av_Data[38]
         Local $l_i_TypeMap = $l_av_Data[39]
-        Local $l_i_Type = $l_av_Data[12]
         Local $l_i_Owner = $l_av_Data[15]
         Local $l_i_LoginNumber = $l_av_Data[40]
         Local $l_f_MoveX = $l_av_Data[13]
@@ -304,35 +316,24 @@ Func UAI_UpdateAgentCache($a_f_Range = 1320, $a_i_Type = 0xDB)
     $g_i_AgentCacheCount = $l_i_CacheIndex
     $g_amx2_AgentCache[0][0] = $l_i_CacheIndex
 
-	UAI_BuildAgentIDMap()
+    UAI_BuildAgentIDMap()
 
     Return True
 EndFunc
 
 Func UAI_BuildAgentIDMap()
-    Local $l_i_MaxID = 0
+    Local $l_m_Empty[]
+    $g_m_AgentIDToIndex = $l_m_Empty
+
     Local $l_i_Count = $g_amx2_AgentCache[0][0]
-
     For $i = 1 To $l_i_Count
-        If $g_amx2_AgentCache[$i][$GC_UAI_AGENT_ID] > $l_i_MaxID Then
-            $l_i_MaxID = $g_amx2_AgentCache[$i][$GC_UAI_AGENT_ID]
-        EndIf
-    Next
-
-    ReDim $g_ai_AgentIDToIndex[$l_i_MaxID + 1]
-    For $i = 0 To $l_i_MaxID
-        $g_ai_AgentIDToIndex[$i] = 0
-    Next
-
-    For $i = 1 To $l_i_Count
-        Local $l_i_ID = $g_amx2_AgentCache[$i][$GC_UAI_AGENT_ID]
-        $g_ai_AgentIDToIndex[$l_i_ID] = $i
+        $g_m_AgentIDToIndex[$g_amx2_AgentCache[$i][$GC_UAI_AGENT_ID]] = $i
     Next
 EndFunc
 
 Func UAI_GetIndexByID($a_i_AgentID)
-    If $a_i_AgentID < 1 Or $a_i_AgentID >= UBound($g_ai_AgentIDToIndex) Then Return 0
-    Return $g_ai_AgentIDToIndex[$a_i_AgentID]
+    If MapExists($g_m_AgentIDToIndex, $a_i_AgentID) Then Return $g_m_AgentIDToIndex[$a_i_AgentID]
+    Return 0
 EndFunc
 
 Func UAI_GetAgentInfoByID($a_i_AgentID, $a_i_InfoType)

@@ -4,19 +4,18 @@
 Func Quest_GetQuestInfo($a_i_QuestID, $a_s_Info = "")
     Local $l_p_Ptr = 0
     Local $l_i_Size = World_GetWorldInfo("QuestLogSize")
-    If $l_i_Size = 0 Or $a_s_Info = "" Then Return -1
+    If $a_s_Info = "" Then Return 0
 
-    For $l_i_Idx = 0 To $l_i_Size
-        Local $l_ai_OffsetQuestLog[5] = [0, 0x18, 0x2C, 0x52C, 0x34 * $l_i_Idx]
+    For $i = 0 To $l_i_Size - 1
+        Local $l_ai_OffsetQuestLog[5] = [0, 0x18, 0x2C, 0x52C, 0x34 * $i]
         Local $l_ap_QuestPtr = Memory_ReadPtr($g_p_BasePointer, $l_ai_OffsetQuestLog, "long")
         If $l_ap_QuestPtr[1] = $a_i_QuestID Then $l_p_Ptr = Ptr($l_ap_QuestPtr[0])
     Next
     If $l_p_Ptr = 0 Then Return 0
 
     Switch $a_s_Info
-        Case "QuestID"
-            Return Memory_Read($l_p_Ptr, "long")
-
+        Case "HasQuest"
+            Return $l_p_Ptr <> 0
         Case "LogState"
             Return Memory_Read($l_p_Ptr + 0x4, "long")
         Case "IsCompleted"

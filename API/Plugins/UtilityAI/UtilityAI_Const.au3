@@ -3,6 +3,7 @@ Global $g_b_UAI_Debug = False
 
 Global $g_i_BestTarget = 0
 Global $g_i_ForceTarget = 0
+Global $g_i_AttackTarget = 0
 Global $g_v_AvoidPlayerNumbers = -1
 Global $g_i_LastCalledTarget = 0
 Global $g_as_BestTargetCache[9]
@@ -10,22 +11,26 @@ Global $g_as_CanUseCache[9]
 Global $g_b_CanUseSkill = True
 Global $g_b_SkillChanged = False
 Global $g_b_CacheWeaponSet = False
-Global $g_b_CallTarget = True
+Global Enum $GC_UAI_TARGET_MODE_CALL = 0, $GC_UAI_TARGET_MODE_FOLLOW
+Global $g_i_TargetMode = $GC_UAI_TARGET_MODE_CALL
 
-;Slecet your combat mode:
+; Select your combat mode:
 ; Finisher = priorize lowest hp target
 ; Pressure = priorize highest hp target
 Global $g_i_FightMode = 1
 Global Enum $g_i_FinisherMode, $g_i_PressureMode
 
-;Weapon Set Data Indices
+; Override flag for forced target on supportive skills (i.e. "You Are All Weaklings!")
+Global Const $GC_I_UAI_OVERRIDE_FORCE_TARGET = 0xF1A6 ; FLAG
+
+; Weapon Set Data Indices
 Global Const $GC_UAI_WEAPONSET_WeaponType = 0
 Global Const $GC_UAI_WEAPONSET_WeaponId = 1
 Global Const $GC_UAI_WEAPONSET_OffhandType = 2
 Global Const $GC_UAI_WEAPONSET_OffhandId = 3
 Global Const $GC_UAI_WEAPONSET_MaxHP = 4
 Global Const $GC_UAI_WEAPONSET_MaxEnergy = 5
-;New: Mod-based scores for combat decisions
+; New: Mod-based scores for combat decisions
 Global Const $GC_UAI_WEAPONSET_OffensiveScore = 6    ;Sundering, Vampiric, Zealous, Damage+%, conditions
 Global Const $GC_UAI_WEAPONSET_DefensiveScore = 7   ;Armor+, HP+, Damage reduction, Shield
 Global Const $GC_UAI_WEAPONSET_CastingScore = 8     ;HCT, HSR, 40/40
@@ -35,14 +40,14 @@ Global Const $GC_UAI_WEAPONSET_HasShield = 11       ;Has shield equipped
 Global Const $GC_UAI_WEAPONSET_HasVampiric = 12     ;Has vampiric mod
 Global Const $GC_UAI_WEAPONSET_HasZealous = 13      ;Has zealous mod
 
-;Weapon Sets 2D Array: [SetIndex 0-3][DataIndex 0-13]
+; Weapon Sets 2D Array: [SetIndex 0-3][DataIndex 0-13]
 Global $g_a2D_WeaponSets[4][14] = [ _
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], _
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], _
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], _
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-;Best set trackers: [Score/Value, SetNumber]
+; Best set trackers: [Score/Value, SetNumber]
 Global $g_ai_High_Hp_Set[2] = [0, 0]
 Global $g_ai_High_Energy_Set[2] = [0, 0]
 Global $g_ai_Best_Offensive_Set[2] = [0, 0]
@@ -52,13 +57,13 @@ Global $g_ai_Best_Enchant_Set[2] = [0, 0]
 Global $g_ai_Best_Ranged_Set[2] = [0, 0]      ;[IsRanged (0/1), SetNumber]
 Global $g_ai_Best_Vampiric_Set[2] = [0, 0]    ;[HasVampiric (0/1), SetNumber]
 Global $g_ai_Best_Zealous_Set[2] = [0, 0]     ;[HasZealous (0/1), SetNumber]
-;4 = set / 2 = weapon / 8 = Mods
+; 4 = set / 2 = weapon / 8 = Mods
 Global $g_as3_Weapon_Mods[4][2][8] = [ _
 		[["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""]], _	;weapon set 1 / Weapon per set / mod per weapon
         [["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""]], _	;weapon set 2 / Weapon per set / mod per weapon
         [["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""]], _	;weapon set 3 / Weapon per set / mod per weapon
 		[["", "", "", "", "", "", "", ""], ["", "", "", "", "", "", "", ""]]]   ;weapon set 4 / Weapon per set / mod per weapon
-;Hysteresis flags to prevent flip-flop between sets
+; Hysteresis flags to prevent flip-flop between sets
 Global $g_b_InDefensiveMode = False
 Global $g_b_InLowEnergyMode = False
 
@@ -88,7 +93,7 @@ Global $g_as2_OtherWeaponsMods [24][3] = [ _
 		 [ "Soul Reaping +1 (20% chance)",					"14061824",   ""], _
 		 [ "Spawning Magic +1 (20% chance)",				"14241824",   ""], _
 		 [ "Water Magic +1 (20% chance)",					"140B1824",   ""]]
-;[Name, effect, mods]
+; [Name, effect, mods]
 Global $g_as2_MartialWeaponsInscription[11][3] = [ _
 	["I have the power!",				"Energy +5",							"0500D822"], _
 	["Let the Memory Live Again", 		"HSR10", 								"????????"], _

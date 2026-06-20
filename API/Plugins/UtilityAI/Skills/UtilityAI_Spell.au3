@@ -1,44 +1,31 @@
 #include-once
 
 Func Anti_Spell()
-	;Return true depending on target skills
-;~ 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SHAME) Then Return True
-;~ 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_GUILT) Then Return True
-
 	;~ Generic hex checks
 	If Not UAI_GetPlayerInfo($GC_UAI_AGENT_IsHexed) Then Return False
 
 	;~ Specific hex checks
+	Local $l_i_TargetAllegiance = UAI_GetAgentInfoByID($g_i_BestTarget, $GC_UAI_AGENT_Allegiance)
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_MARK_OF_SUBVERSION) And $l_i_TargetAllegiance = $GC_I_ALLEGIANCE_ALLY Then Return True
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_MISTRUST) And $l_i_TargetAllegiance = $GC_I_ALLEGIANCE_ALLY Then Return True
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SHAME) And $l_i_TargetAllegiance = $GC_I_ALLEGIANCE_ALLY Then Return True
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_GUILT) And $l_i_TargetAllegiance = $GC_I_ALLEGIANCE_ENEMY Then Return True
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_DIVERSION) Then Return True
 
 	;~ Check for hexes that punish casting by damage
-	Local $l_i_CommingDamage = 0
-
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BACKFIRE) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_BACKFIRE, "Scale")
+	Local $l_i_IncomingDamage = 0
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BACKFIRE) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_BACKFIRE, $GC_UAI_EFFECT_Scale)
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_VISIONS_OF_REGRET) Then
-		$l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_VISIONS_OF_REGRET, "Scale")
-		If Not UAI_PlayerHasOtherMesmerHex($GC_I_SKILL_ID_VISIONS_OF_REGRET) Then
-			$l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_VISIONS_OF_REGRET, "BonusScale")
-		EndIf
+		$l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_VISIONS_OF_REGRET, $GC_UAI_EFFECT_Scale)
+		If Not UAI_PlayerHasOtherMesmerHex($GC_I_SKILL_ID_VISIONS_OF_REGRET) Then $l_i_IncomingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_VISIONS_OF_REGRET, $GC_UAI_EFFECT_BonusScale)
 	EndIf
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_VISIONS_OF_REGRET_PVP) Then
-		$l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_VISIONS_OF_REGRET_PVP, "Scale")
-		If Not UAI_PlayerHasOtherMesmerHex($GC_I_SKILL_ID_VISIONS_OF_REGRET_PVP) Then
-			$l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_VISIONS_OF_REGRET_PVP, "BonusScale")
-		EndIf
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SOUL_LEECH) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SOUL_LEECH, $GC_UAI_EFFECT_Scale)
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPITEFUL_SPIRIT) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPITEFUL_SPIRIT, $GC_UAI_EFFECT_Scale)
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPOIL_VICTOR) And UAI_GetAgentInfoByID($g_i_BestTarget, $GC_UAI_AGENT_HP) < UAI_GetPlayerInfo($GC_UAI_AGENT_HP) Then
+		$l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPOIL_VICTOR, $GC_UAI_EFFECT_Scale)
 	EndIf
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_MISTRUST) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_MISTRUST, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_MISTRUST_PVP) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_MISTRUST_PVP, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_MARK_OF_SUBVERSION) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_MARK_OF_SUBVERSION, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SOUL_LEECH) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_SOUL_LEECH, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPITEFUL_SPIRIT) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_SPITEFUL_SPIRIT, "Scale")
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPOIL_VICTOR) Then
-		If UAI_GetAgentInfoByID($g_i_BestTarget, $GC_UAI_AGENT_HP) < UAI_GetPlayerInfo($GC_UAI_AGENT_HP) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_SPOIL_VICTOR, "Scale")
-	EndIf
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPOIL_VICTOR_PVP) Then
-		If UAI_GetAgentInfoByID($g_i_BestTarget, $GC_UAI_AGENT_HP) < UAI_GetPlayerInfo($GC_UAI_AGENT_HP) Then $l_i_CommingDamage += Effect_GetEffectArg($GC_I_SKILL_ID_SPOIL_VICTOR_PVP, "Scale")
-	EndIf
-	Return $l_i_CommingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + 50)
+	
+	Return $l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + 50)
 EndFunc
 
 ; Skill ID: 5 - $GC_I_SKILL_ID_POWER_BLOCK
@@ -2654,9 +2641,8 @@ EndFunc
 Func CanUse_SpiritLight()
 	If Anti_Spell() Then Return False
 	Local $l_i_SpiritCount = UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsSpirit")
-	Local $l_i_HP = UAI_GetAgentInfoByID(-2, $GC_UAI_AGENT_HP)
-
-	If $l_i_SpiritCount <= 0 Or $l_i_HP < 0.9 Then Return False
+	Local $l_i_HP = UAI_GetPlayerInfo($GC_UAI_AGENT_HP)
+	If $l_i_SpiritCount <= 0 And $l_i_HP < 0.85 Then Return False
 	Return True
 EndFunc
 
@@ -2665,10 +2651,8 @@ Func BestTarget_SpiritLight($a_f_AggroRange)
 	; Spell. Target ally is healed for 60...156...180. If any spirits are within earshot, you don't sacrifice Health.
 	; Concise description
 	; Spell. Heals for 60...156...180. You don't sacrifice Health if you are within earshot of any spirits.
-	$l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
-	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.75 Then Return $l_i_Target
-
-	Return $l_i_Target
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
+	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.85 Then Return $l_i_Target
 EndFunc
 
 ; Skill ID: 917 - $GC_I_SKILL_ID_RUPTURE_SOUL
@@ -3202,6 +3186,7 @@ EndFunc
 ; Skill ID: 1032 - $GC_I_SKILL_ID_HEART_OF_SHADOW
 Func CanUse_HeartOfShadow()
 	If Anti_Spell() Then Return False
+	If UAI_GetPlayerInfo($GC_UAI_AGENT_HP) > 0.9 Then Return False
 	Return True
 EndFunc
 
@@ -3968,10 +3953,25 @@ Func BestTarget_MendBodyAndSoul($a_f_AggroRange)
 	; Concise description
 	; green; font-weight: bold;">20...96...115
 	Local $l_i_SpiritCount = UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsSpirit")
-	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_IsConditioned")
-	If $l_i_Target <> 0 And $l_i_SpiritCount >= 1 Then Return $l_i_Target
+	Local $l_i_TargetConditioned = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_IsConditioned")
+	Local $l_i_TargetLowest = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
 
-	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly")
+	If $l_i_TargetLowest <> 0 Then
+		Local $l_f_LowestHP = UAI_GetAgentInfoByID($l_i_TargetLowest, $GC_UAI_AGENT_HP)
+
+		If $l_f_LowestHP >= 0.85 Then
+			If $l_i_SpiritCount >= 1 And $l_i_TargetConditioned <> 0 Then Return $l_i_TargetConditioned
+			Return 0
+		EndIf
+
+		If $l_i_SpiritCount >= 1 And $l_i_TargetConditioned <> 0 And $l_i_TargetConditioned <> $l_i_TargetLowest Then
+			Local $l_f_ConditionedHP = UAI_GetAgentInfoByID($l_i_TargetConditioned, $GC_UAI_AGENT_HP)
+			Local $l_f_HPDelta = 0.10
+			If $l_f_ConditionedHP <= $l_f_LowestHP + $l_f_HPDelta Then Return $l_i_TargetConditioned
+		EndIf
+
+		Return $l_i_TargetLowest
+	EndIf
 EndFunc
 
 ; Skill ID: 1242 - $GC_I_SKILL_ID_ARCHEMORUS_STRIKE_CELESTIAL_SUMMONING
@@ -4656,6 +4656,8 @@ EndFunc
 ; Skill ID: 1526 - $GC_I_SKILL_ID_IMBUE_HEALTH
 Func CanUse_ImbueHealth()
 	If Anti_Spell() Then Return False
+	Local $l_i_HP = UAI_GetPlayerInfo($GC_UAI_AGENT_HP)
+	If $l_i_HP < 0.6 Then Return False
 	Return True
 EndFunc
 
@@ -4665,7 +4667,8 @@ Func BestTarget_ImbueHealth($a_f_AggroRange)
 	; Concise description
 	; Spell. Heals for 5...41...50% of your current Health (maximum 300). Cannot self-target.
 	; Target: Lowest health ally (support spell)
-	Return UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	Local $l_i_Target = UAI_GetAgentLowest(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingAlly|UAI_Filter_ExcludeMe")
+	If $l_i_Target <> 0 And UAI_GetAgentInfoByID($l_i_Target, $GC_UAI_AGENT_HP) < 0.7 Then Return $l_i_Target
 EndFunc
 
 ; Skill ID: 1527 - $GC_I_SKILL_ID_MYSTIC_HEALING

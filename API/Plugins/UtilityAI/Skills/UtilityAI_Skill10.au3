@@ -1549,9 +1549,9 @@ Func CanUse_JununduWail()
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_CURSE_OF_DHUUM) Or UAI_PlayerHasEffect($GC_I_SKILL_ID_FROZEN_SOIL) Then Return False
 	; Check if there are dead allies to resurrect OR no enemies for healing
 	Local $l_i_DeadAllies = UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsDeadAlly")
+	If $l_i_DeadAllies > 0 Then Return True
 	Local $l_i_Enemies = UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy")
-	; Use if there are dead allies to res, or if no enemies (for healing)
-	If $l_i_DeadAllies > 0 Or $l_i_Enemies = 0 Then Return True
+	If $l_i_Enemies = 0 And UAI_GetAgentInfoByID(-2, $GC_UAI_AGENT_HP) < 1.0 Then Return True
 	Return False
 EndFunc
 
@@ -1581,7 +1581,7 @@ EndFunc
 
 ; Skill ID: 1876 - $GC_I_SKILL_ID_UNKNOWN_JUNUNDU_ABILITY
 Func CanUse_UnknownJununduAbility()
-	Return True
+	Return False
 EndFunc
 
 Func BestTarget_UnknownJununduAbility($a_f_AggroRange)

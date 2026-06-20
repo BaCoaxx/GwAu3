@@ -3,7 +3,7 @@
 #Region World Context
 Func World_GetWorldContextPtr()
     Local $l_ai_Offset[3] = [0, 0x18, 0x2C]
-    Local $l_ap_WorldContextPtr = Memory_ReadPtr($g_p_BasePointer, $l_ai_Offset)
+    Local $l_ap_WorldContextPtr = Memory_ReadPtr($g_p_BasePointer, $l_ai_Offset, "ptr")
     Return $l_ap_WorldContextPtr[1]
 EndFunc
 

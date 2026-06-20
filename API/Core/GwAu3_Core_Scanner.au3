@@ -585,7 +585,7 @@ EndFunc
 
 Func Scanner_GetLoggedCharNames()
     Local $l_as_Array = Scanner_ScanGW()
-    If $l_as_Array[0] == 0 Then Return ''
+    If $l_as_Array[0] == 0 Then Return ""
     Local $l_s_Ret = $l_as_Array[1]
     For $l_i_Idx = 2 To $l_as_Array[0]
         $l_s_Ret &= "|" & $l_as_Array[$l_i_Idx]
@@ -616,72 +616,113 @@ Func Scanner_ScanGW()
 EndFunc
 
 Func Scanner_ScanForProcess()
-    Local $l_s_CharNameCode = BinaryToString('0x558BEC83EC105356578B7D0833F63BFE')
+    Local $l_s_TextSectionPattern = "558BEC83EC105356578B7D0833F63BFE"
+    Local $l_i_PatternBin = Binary("0x" & $l_s_TextSectionPattern)
+    Local $l_s_PatternString = BinaryToString($l_i_PatternBin)
+
     Local $l_p_CurrentSearchAddress = 0x00000000
-    Local $l_ai_MBI[7], $l_d_MBIBuffer = DllStructCreate('dword;dword;dword;dword;dword;dword;dword')
-    Local $l_i_Search, $l_s_TmpMemData, $l_d_TmpBuffer = DllStructCreate('ptr'), $l_i_Idx
+    Local $l_ai_MBI[7], $l_d_MBIBuffer = DllStructCreate("dword;dword;dword;dword;dword;dword;dword")
+    Local $l_i_Search, $l_s_TmpMemData, $l_d_TmpBuffer = DllStructCreate("ptr")
 
     While $l_p_CurrentSearchAddress < 0x01F00000
-        Local $l_ai_MBI[7]
-        DllCall($g_h_Kernel32, 'int', 'VirtualQueryEx', 'int', $g_h_GWProcess, 'int', $l_p_CurrentSearchAddress, 'ptr', DllStructGetPtr($l_d_MBIBuffer), 'int', DllStructGetSize($l_d_MBIBuffer))
-        For $l_i_Idx = 0 To 6
-            $l_ai_MBI[$l_i_Idx] = StringStripWS(DllStructGetData($l_d_MBIBuffer, ($l_i_Idx + 1)), 3)
+        Local $l_av_Ret = DllCall($g_h_Kernel32, "int", "VirtualQueryEx", _
+            "int", $g_h_GWProcess, _
+            "int", $l_p_CurrentSearchAddress, _
+            "ptr", DllStructGetPtr($l_d_MBIBuffer), _
+            "int", DllStructGetSize($l_d_MBIBuffer))
+
+        If $l_av_Ret[0] = 0 Then ExitLoop
+
+        For $i = 0 To 6
+            $l_ai_MBI[$i] = StringStripWS(DllStructGetData($l_d_MBIBuffer, ($i + 1)), 3)
         Next
+
         If $l_ai_MBI[4] = 4096 Then
-            Local $l_d_Buffer = DllStructCreate('byte[' & $l_ai_MBI[3] & ']')
-            DllCall($g_h_Kernel32, 'int', 'ReadProcessMemory', 'int', $g_h_GWProcess, 'int', $l_p_CurrentSearchAddress, 'ptr', DllStructGetPtr($l_d_Buffer), 'int', DllStructGetSize($l_d_Buffer), 'int', '')
+            Local $l_d_Buffer = DllStructCreate("byte[" & $l_ai_MBI[3] & "]")
 
-            $l_s_TmpMemData = DllStructGetData($l_d_Buffer, 1)
-            $l_s_TmpMemData = BinaryToString($l_s_TmpMemData)
+            DllCall($g_h_Kernel32, "int", "ReadProcessMemory", _
+                "int", $g_h_GWProcess, _
+                "int", $l_p_CurrentSearchAddress, _
+                "ptr", DllStructGetPtr($l_d_Buffer), _
+                "int", DllStructGetSize($l_d_Buffer), _
+                "int", "")
 
-            $l_i_Search = StringInStr($l_s_TmpMemData, $l_s_CharNameCode, 2)
-            If $l_i_Search > 0 Then
-                Return $l_ai_MBI[0]
-            EndIf
+            $l_s_TmpMemData = BinaryToString(DllStructGetData($l_d_Buffer, 1))
+
+            $l_i_Search = StringInStr($l_s_TmpMemData, $l_s_PatternString, 2)
+            If $l_i_Search > 0 Then Return $l_ai_MBI[0]
         EndIf
+
         $l_p_CurrentSearchAddress += $l_ai_MBI[3]
     WEnd
-    Return ''
+
+    Return 0
 EndFunc
 
 Func Scanner_ScanForCharname()
-    Local $l_s_CharNameCode = BinaryToString('0x6A14FF751868')
+    Local $l_s_CharNamePattern = "8B0383C410A3"
+    Local $l_i_Offset = -0xF
+
+    Local $l_i_PatternBin = Binary("0x" & $l_s_CharNamePattern)
+    Local $l_i_PatternLen = BinaryLen($l_i_PatternBin)
+    Local $l_s_PatternString = BinaryToString($l_i_PatternBin)
+
     Local $l_p_CurrentSearchAddress = 0x00000000
-    Local $l_ai_MBI[7], $l_d_MBIBuffer = DllStructCreate('dword;dword;dword;dword;dword;dword;dword')
-    Local $l_i_Search, $l_s_TmpMemData, $l_p_TmpAddress, $l_d_TmpBuffer = DllStructCreate('ptr'), $l_i_Idx
+    Local $l_ai_MBI[7], $l_d_MBIBuffer = DllStructCreate("dword;dword;dword;dword;dword;dword;dword")
+    Local $l_i_Search, $l_s_TmpMemData, $l_p_TmpAddress, $l_d_TmpBuffer = DllStructCreate("ptr")
 
     While $l_p_CurrentSearchAddress < 0x01F00000
-        Local $l_ai_MBI[7]
-        DllCall($g_h_Kernel32, 'int', 'VirtualQueryEx', 'int', $g_h_GWProcess, 'int', $l_p_CurrentSearchAddress, 'ptr', DllStructGetPtr($l_d_MBIBuffer), 'int', DllStructGetSize($l_d_MBIBuffer))
-        For $l_i_Idx = 0 To 6
-            $l_ai_MBI[$l_i_Idx] = StringStripWS(DllStructGetData($l_d_MBIBuffer, ($l_i_Idx + 1)), 3)
+        Local $l_av_Ret = DllCall($g_h_Kernel32, "int", "VirtualQueryEx", _
+            "int", $g_h_GWProcess, _
+            "int", $l_p_CurrentSearchAddress, _
+            "ptr", DllStructGetPtr($l_d_MBIBuffer), _
+            "int", DllStructGetSize($l_d_MBIBuffer))
+
+        If $l_av_Ret[0] = 0 Then ExitLoop
+        
+        For $i = 0 To 6
+            $l_ai_MBI[$i] = StringStripWS(DllStructGetData($l_d_MBIBuffer, ($i + 1)), 3)
         Next
+
         If $l_ai_MBI[4] = 4096 Then
-            Local $l_d_Buffer = DllStructCreate('byte[' & $l_ai_MBI[3] & ']')
-            DllCall($g_h_Kernel32, 'int', 'ReadProcessMemory', 'int', $g_h_GWProcess, 'int', $l_p_CurrentSearchAddress, 'ptr', DllStructGetPtr($l_d_Buffer), 'int', DllStructGetSize($l_d_Buffer), 'int', '')
+            Local $l_d_Buffer = DllStructCreate("byte[" & $l_ai_MBI[3] & "]")
 
-            $l_s_TmpMemData = DllStructGetData($l_d_Buffer, 1)
-            $l_s_TmpMemData = BinaryToString($l_s_TmpMemData)
+            DllCall($g_h_Kernel32, "int", "ReadProcessMemory", _
+                "int", $g_h_GWProcess, _
+                "int", $l_p_CurrentSearchAddress, _
+                "ptr", DllStructGetPtr($l_d_Buffer), _
+                "int", DllStructGetSize($l_d_Buffer), _
+                "int", "")
 
-            $l_i_Search = StringInStr($l_s_TmpMemData, $l_s_CharNameCode, 2)
+            $l_s_TmpMemData = BinaryToString(DllStructGetData($l_d_Buffer, 1))
+
+            $l_i_Search = StringInStr($l_s_TmpMemData, $l_s_PatternString, 2)
             If $l_i_Search > 0 Then
-                $l_p_TmpAddress = $l_p_CurrentSearchAddress + $l_i_Search - 1
-                DllCall($g_h_Kernel32, 'int', 'ReadProcessMemory', 'int', $g_h_GWProcess, 'int', $l_p_TmpAddress + 6, 'ptr', DllStructGetPtr($l_d_TmpBuffer), 'int', DllStructGetSize($l_d_TmpBuffer), 'int', '')
+                $l_p_TmpAddress = $l_p_CurrentSearchAddress + ($l_i_Search - 1)
+
+                DllCall($g_h_Kernel32, "int", "ReadProcessMemory", _
+                    "int", $g_h_GWProcess, _
+                    "int", $l_p_TmpAddress + $l_i_PatternLen + $l_i_Offset, _
+                    "ptr", DllStructGetPtr($l_d_TmpBuffer), _
+                    "int", DllStructGetSize($l_d_TmpBuffer), _
+                    "int", "")
+
                 $g_p_CharName = DllStructGetData($l_d_TmpBuffer, 1)
                 Return Player_GetCharname()
             EndIf
         EndIf
+
         $l_p_CurrentSearchAddress += $l_ai_MBI[3]
     WEnd
-    Return ''
+
+    Return ""
 EndFunc
 
 Func Scanner_ScanForGwAu3()
     Local $l_s_Header = $GC_S_GWAU3_HEADER_STR
     Local $l_p_CurrentSearchAddress = 0x00000000
-    Local $l_ai_MBI[7]
-    Local $l_d_MBIBuffer = DllStructCreate("dword;dword;dword;dword;dword;dword;dword")
-    Local $l_i_Search, $l_s_TmpMemData, $l_i_Idx
+    Local $l_ai_MBI[7], $l_d_MBIBuffer = DllStructCreate("dword;dword;dword;dword;dword;dword;dword")
+    Local $l_i_Search, $l_s_TmpMemData
 
     While True
         Local $l_av_Ret = DllCall($g_h_Kernel32, "int", "VirtualQueryEx", _
@@ -692,8 +733,8 @@ Func Scanner_ScanForGwAu3()
 
         If $l_av_Ret[0] = 0 Then ExitLoop
 
-        For $l_i_Idx = 0 To 6
-            $l_ai_MBI[$l_i_Idx] = DllStructGetData($l_d_MBIBuffer, $l_i_Idx + 1)
+        For $i = 0 To 6
+            $l_ai_MBI[$i] = DllStructGetData($l_d_MBIBuffer, $i + 1)
         Next
 
         If $l_ai_MBI[4] = 4096 Then
@@ -722,12 +763,12 @@ Func Scanner_ScanForGwAu3()
     Return 0
 EndFunc
 
-Func Scanner_AddPattern($a_s_Name, $a_s_Pattern, $a_v_OffsetOrMsg = 0, $a_s_Type = 'Ptr')
+Func Scanner_AddPattern($a_s_Name, $a_s_Pattern, $a_v_OffsetOrMsg = 0, $a_s_Type = "Ptr")
     Local $l_i_Index = $g_amx2_Patterns[0][0] + 1
     ReDim $g_amx2_Patterns[$l_i_Index + 1][6]
     $g_amx2_Patterns[0][0] = $l_i_Index
 
-    Local $l_s_FullName = 'Scan' & $a_s_Name & $a_s_Type
+    Local $l_s_FullName = "Scan" & $a_s_Name & $a_s_Type
 
     Local $l_b_IsAssertion = False
     Local $l_s_AssertionMsg = ""
@@ -750,45 +791,17 @@ Func Scanner_AddPattern($a_s_Name, $a_s_Pattern, $a_v_OffsetOrMsg = 0, $a_s_Type
     $g_amx2_Patterns[$l_i_Index][5] = $l_s_AssertionMsg
 EndFunc
 
-;~ Func Scanner_AddPattern_new($a_s_Name, $a_s_Pattern, $a_v_OffsetOrMsg = 0, $a_s_Type = 'Ptr', $a_i_OffsetIfAssertion = 0x0)
-;~     Local $l_i_Index = $g_amx2_Patterns[0][0] + 1
-;~     ReDim $g_amx2_Patterns[$l_i_Index + 1][6]
-;~     $g_amx2_Patterns[0][0] = $l_i_Index
-
-;~     Local $l_s_FullName = 'Scan' & $a_s_Name & $a_s_Type
-
-;~     Local $l_b_IsAssertion = False
-;~     Local $l_s_AssertionMsg = ""
-
-;~     If StringInStr($a_s_Pattern, ":\") Or StringInStr($a_s_Pattern, ":/") Then
-;~         $l_b_IsAssertion = True
-;~         $l_s_AssertionMsg = $a_v_OffsetOrMsg
-
-;~         Local $l_i_AssertIndex = UBound($g_amx2_AssertionPatterns)
-;~         ReDim $g_amx2_AssertionPatterns[$l_i_AssertIndex + 1][2]
-;~         $g_amx2_AssertionPatterns[$l_i_AssertIndex][0] = $a_s_Pattern
-;~         $g_amx2_AssertionPatterns[$l_i_AssertIndex][1] = $l_s_AssertionMsg
-;~     EndIf
-
-;~     $g_amx2_Patterns[$l_i_Index][0] = $l_s_FullName
-;~     $g_amx2_Patterns[$l_i_Index][1] = $a_s_Pattern
-;~     $g_amx2_Patterns[$l_i_Index][2] = $l_b_IsAssertion ? $a_i_OffsetIfAssertion : $a_v_OffsetOrMsg
-;~     $g_amx2_Patterns[$l_i_Index][3] = $a_s_Type
-;~     $g_amx2_Patterns[$l_i_Index][4] = $l_b_IsAssertion
-;~     $g_amx2_Patterns[$l_i_Index][5] = $l_s_AssertionMsg
-;~ EndFunc
-
 Func Scanner_ClearPatterns()
     ReDim $g_amx2_Patterns[1][6]
     $g_amx2_Patterns[0][0] = 0
     ReDim $g_amx2_AssertionPatterns[0][2]
 EndFunc
 
-Func Scanner_GetPatternInfo($a_s_Name, $a_s_Type = '')
-    Local $l_s_SearchName = 'Scan' & $a_s_Name & $a_s_Type
+Func Scanner_GetPatternInfo($a_s_Name, $a_s_Type = "")
+    Local $l_s_SearchName = "Scan" & $a_s_Name & $a_s_Type
     For $l_i_Idx = 1 To $g_amx2_Patterns[0][0]
         If $g_amx2_Patterns[$l_i_Idx][0] = $l_s_SearchName Or _
-           ($a_s_Type = '' And StringInStr($g_amx2_Patterns[$l_i_Idx][0], 'Scan' & $a_s_Name)) Then
+           ($a_s_Type = "" And StringInStr($g_amx2_Patterns[$l_i_Idx][0], "Scan" & $a_s_Name)) Then
             Local $l_av_Info[6]
             For $l_i_InfoIdx = 0 To 5
                 $l_av_Info[$l_i_InfoIdx] = $g_amx2_Patterns[$l_i_Idx][$l_i_InfoIdx]
@@ -822,7 +835,7 @@ Func Scanner_ScanAllPatterns()
 
     For $l_i_Idx = 1 To $g_amx2_Patterns[0][0]
         _($g_amx2_Patterns[$l_i_Idx][0] & ":")
-        Scanner_AddPatternToASM($g_amx2_Patterns[$l_i_Idx][1])
+        Scanner_AddPatternToASM($g_amx2_Patterns[$l_i_Idx][1]) 
     Next
 
     Assembler_CreateScanProcedure($l_p_GwBase)
@@ -911,14 +924,14 @@ Func Scanner_ScanAllPatterns()
     Return $l_ap_Results
 EndFunc
 
-Func Scanner_GetScanResult($a_s_Name, $a_ap_Results = 0, $a_s_Type = '')
+Func Scanner_GetScanResult($a_s_Name, $a_ap_Results = 0, $a_s_Type = "")
     If Not IsArray($a_ap_Results) Then Return 0
 
-    Local $l_s_SearchName = 'Scan' & $a_s_Name & $a_s_Type
+    Local $l_s_SearchName = "Scan" & $a_s_Name & $a_s_Type
 
     For $l_i_Idx = 1 To $g_amx2_Patterns[0][0]
         If $g_amx2_Patterns[$l_i_Idx][0] = $l_s_SearchName Or _
-           ($a_s_Type = '' And StringInStr($g_amx2_Patterns[$l_i_Idx][0], 'Scan' & $a_s_Name)) Then
+           ($a_s_Type = "" And StringInStr($g_amx2_Patterns[$l_i_Idx][0], "Scan" & $a_s_Name)) Then
             Return $a_ap_Results[$l_i_Idx]
         EndIf
     Next
@@ -931,9 +944,7 @@ Func Scanner_AddPatternToASM($a_s_Pattern)
 	$a_s_Pattern = StringReplace($a_s_Pattern, "??", "00")
 
     Local $l_i_Size = Int(0.5 * StringLen($a_s_Pattern))
-    Local $l_s_PatternHeader = "00000000" & _
-                           Utils_SwapEndian(Hex($l_i_Size, 8)) & _
-                           "00000000"
+    Local $l_s_PatternHeader = "00000000" & Utils_SwapEndian(Hex($l_i_Size, 8)) & "00000000"
 
     $g_s_ASMCode &= $l_s_PatternHeader & $a_s_Pattern
     $g_i_ASMSize += $l_i_Size + 12
@@ -946,7 +957,7 @@ Func Scanner_AddPatternToASM($a_s_Pattern)
 EndFunc
 
 Func Scanner_GetCallTargetAddress($a_p_Address)
-    Local $l_x_Offset = Memory_Read($a_p_Address + 1, 'dword')
+    Local $l_x_Offset = Memory_Read($a_p_Address + 1, "dword")
 
     If $l_x_Offset > 0x7FFFFFFF Then
         $l_x_Offset -= 0x100000000

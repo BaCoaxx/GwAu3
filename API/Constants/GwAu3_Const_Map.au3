@@ -1,5 +1,36 @@
 #include-once
 
+#Region District
+Global Const $GC_I_DISTRICT_REGION_INTERNATIONAL = -2
+Global Const $GC_I_DISTRICT_REGION_AMERICA = 0
+Global Const $GC_I_DISTRICT_REGION_KOREA = 1
+Global Const $GC_I_DISTRICT_REGION_EUROPE = 2
+Global Const $GC_I_DISTRICT_REGION_CHINA = 3
+Global Const $GC_I_DISTRICT_REGION_JAPAN = 4
+
+Global Const $GC_I_DISTRICT_LANGUAGE_ENGLISH = 0  ; used for ee, ae, international, korea, japan, china
+Global Const $GC_I_DISTRICT_LANGUAGE_FRENCH = 2
+Global Const $GC_I_DISTRICT_LANGUAGE_GERMAN = 3
+Global Const $GC_I_DISTRICT_LANGUAGE_ITALIAN = 4
+Global Const $GC_I_DISTRICT_LANGUAGE_SPANISH = 5
+Global Const $GC_I_DISTRICT_LANGUAGE_POLISH = 9
+Global Const $GC_I_DISTRICT_LANGUAGE_RUSSIAN = 10
+
+Global Const $GC_AI_DISTRICT_REGION[12] = [ _
+	$GC_I_DISTRICT_REGION_EUROPE, $GC_I_DISTRICT_REGION_EUROPE, $GC_I_DISTRICT_REGION_EUROPE, $GC_I_DISTRICT_REGION_EUROPE, _
+	$GC_I_DISTRICT_REGION_EUROPE, $GC_I_DISTRICT_REGION_EUROPE, $GC_I_DISTRICT_REGION_EUROPE, $GC_I_DISTRICT_REGION_AMERICA, _
+	$GC_I_DISTRICT_REGION_INTERNATIONAL, $GC_I_DISTRICT_REGION_KOREA, $GC_I_DISTRICT_REGION_CHINA, $GC_I_DISTRICT_REGION_JAPAN _
+]
+
+Global Const $GC_AI_DISTRICT_LANGUAGE[12] = [ _
+	$GC_I_DISTRICT_LANGUAGE_ENGLISH, $GC_I_DISTRICT_LANGUAGE_FRENCH, $GC_I_DISTRICT_LANGUAGE_GERMAN, $GC_I_DISTRICT_LANGUAGE_ITALIAN, _
+	$GC_I_DISTRICT_LANGUAGE_SPANISH, $GC_I_DISTRICT_LANGUAGE_POLISH, $GC_I_DISTRICT_LANGUAGE_RUSSIAN, $GC_I_DISTRICT_LANGUAGE_ENGLISH, _
+	$GC_I_DISTRICT_LANGUAGE_ENGLISH, $GC_I_DISTRICT_LANGUAGE_ENGLISH, $GC_I_DISTRICT_LANGUAGE_ENGLISH, $GC_I_DISTRICT_LANGUAGE_ENGLISH _
+]
+
+
+#EndRegion District
+
 #Region MapTypes
 Global Const $GC_I_MAP_TYPE_OUTPOST = 0
 Global Const $GC_I_MAP_TYPE_EXPLORABLE = 1
@@ -16,8 +47,8 @@ Global Const $GC_I_MAP_CAMPAIGN_BONUSPACK = 5
 #EndRegion Map Campaign
 
 #Region Map Continent
-Global Const $GC_I_MAP_CONTINENT_Kryta = 0
-Global Const $GC_I_MAP_CONTINENT_DevContinent = 1
+Global Const $GC_I_MAP_CONTINENT_Tyria = 0
+Global Const $GC_I_MAP_CONTINENT_Eden = 1
 Global Const $GC_I_MAP_CONTINENT_Cantha = 2
 Global Const $GC_I_MAP_CONTINENT_BattleIsles = 3
 Global Const $GC_I_MAP_CONTINENT_Elona = 4
@@ -55,29 +86,30 @@ Global Const $GC_I_MAP_REGION_Maguuma = 1
 Global Const $GC_I_MAP_REGION_Ascalon = 2
 Global Const $GC_I_MAP_REGION_NorthernShiverpeaks = 2
 Global Const $GC_I_MAP_REGION_HeroesAscent = 3
-Global Const $GC_I_MAP_REGION_CrystalDesert = 4
-Global Const $GC_I_MAP_REGION_FissureOfWoe = 5
-Global Const $GC_I_MAP_REGION_Presearing = 6
-Global Const $GC_I_MAP_REGION_Kaineng = 7
-Global Const $GC_I_MAP_REGION_Kurzick = 8
-Global Const $GC_I_MAP_REGION_Luxon = 9
-Global Const $GC_I_MAP_REGION_ShingJea = 10
-Global Const $GC_I_MAP_REGION_Kourna = 11
-Global Const $GC_I_MAP_REGION_Vaabi = 12
-Global Const $GC_I_MAP_REGION_Desolation = 13
-Global Const $GC_I_MAP_REGION_Istan = 14
-Global Const $GC_I_MAP_REGION_DomainOfAnguish = 15
-Global Const $GC_I_MAP_REGION_TarnishedCoast = 16
-Global Const $GC_I_MAP_REGION_DepthsOfTyria = 17
-Global Const $GC_I_MAP_REGION_FarShiverpeaks = 18
-Global Const $GC_I_MAP_REGION_CharrHomelands = 19
-Global Const $GC_I_MAP_REGION_BattleIslands = 20
-Global Const $GC_I_MAP_REGION_TheBattleOfJahai = 21
-Global Const $GC_I_MAP_REGION_TheFlightNorth = 22
-Global Const $GC_I_MAP_REGION_TheTenguAccords = 23
-Global Const $GC_I_MAP_REGION_TheRiseOfTheWhiteMantle = 24
-Global Const $GC_I_MAP_REGION_Swat = 25
-Global Const $GC_I_MAP_REGION_DevRegion = 26
+Global Const $GC_I_MAP_REGION_Underworld = 4
+Global Const $GC_I_MAP_REGION_CrystalDesert = 5
+Global Const $GC_I_MAP_REGION_FissureOfWoe = 6
+Global Const $GC_I_MAP_REGION_Presearing = 7
+Global Const $GC_I_MAP_REGION_Kaineng = 8
+Global Const $GC_I_MAP_REGION_Kurzick = 9
+Global Const $GC_I_MAP_REGION_Luxon = 10
+Global Const $GC_I_MAP_REGION_ShingJea = 11
+Global Const $GC_I_MAP_REGION_Kourna = 12
+Global Const $GC_I_MAP_REGION_Vaabi = 13
+Global Const $GC_I_MAP_REGION_Desolation = 14
+Global Const $GC_I_MAP_REGION_Istan = 15
+Global Const $GC_I_MAP_REGION_DomainOfAnguish = 16
+Global Const $GC_I_MAP_REGION_TarnishedCoast = 17
+Global Const $GC_I_MAP_REGION_DepthsOfTyria = 18
+Global Const $GC_I_MAP_REGION_FarShiverpeaks = 19
+Global Const $GC_I_MAP_REGION_CharrHomelands = 20
+Global Const $GC_I_MAP_REGION_BattleIslands = 21
+Global Const $GC_I_MAP_REGION_TheBattleOfJahai = 22
+Global Const $GC_I_MAP_REGION_TheFlightNorth = 23
+Global Const $GC_I_MAP_REGION_TheTenguAccords = 24
+Global Const $GC_I_MAP_REGION_TheRiseOfTheWhiteMantle = 25
+Global Const $GC_I_MAP_REGION_Swat = 26
+Global Const $GC_I_MAP_REGION_DevRegion = 27
 #EndRegion Region
 
 #Region MapIDs
@@ -276,7 +308,7 @@ Global Const $GC_I_MAP_ID_ALLCALLCLICKPOINT2 = 192
 Global Const $GC_I_MAP_ID_CAVALON = 193
 Global Const $GC_I_MAP_ID_KAINENG_CENTER = 194
 Global Const $GC_I_MAP_ID_DRAZACH_THICKET = 195
-Global Const $GC_I_MAP_ID_JAYA_BLUFF = 196
+Global Const $GC_I_MAP_ID_JAYA_BLUFFS = 196
 Global Const $GC_I_MAP_ID_SHENZUN_TUNNELS = 197
 Global Const $GC_I_MAP_ID_ARCHIPELAGOS = 198
 Global Const $GC_I_MAP_ID_MAISHANG_HILLS = 199
@@ -861,8 +893,8 @@ Global Const $GC_I_MAP_ID_THE_TENGU_ACCORDS_MISSION = 775
 Global Const $GC_I_MAP_ID_UNKNOWN_KRYTA_EXPLORABLE = 776
 Global Const $GC_I_MAP_ID_THE_BATTLE_OF_JAHAI_MISSION = 777
 Global Const $GC_I_MAP_ID_THE_FLIGHT_NORTH_MISSION = 778
-Global Const $GC_I_MAP_ID_UNKNOWN_DEV_REGION_1 = 779
-Global Const $GC_I_MAP_ID_UNKNOWN_DEV_REGION_2 = 780
+Global Const $GC_I_MAP_ID_PRESEARING_PIKEN_SQUARE = 779
+Global Const $GC_I_MAP_ID_FORSAKEN_TUNNELS_LVL1 = 780
 Global Const $GC_I_MAP_ID_SECRET_LAIR_OF_THE_SNOWMEN_LVL1 = 781
 Global Const $GC_I_MAP_ID_SECRET_LAIR_OF_THE_SNOWMEN_LVL2 = 782
 Global Const $GC_I_MAP_ID_DROKNARS_FORGE_EXPLORABLE = 783
@@ -959,10 +991,16 @@ Global Const $GC_I_MAP_ID_MINISTRY_OF_OPPRESSION_WAJJUN_BAZAAR = 873
 Global Const $GC_I_MAP_ID_THE_FINAL_CONFRONTATION = 874
 Global Const $GC_I_MAP_ID_LAKESIDE_COUNTY_1070_AE = 875
 Global Const $GC_I_MAP_ID_ASHFORD_CATACOMBS_1070_AE = 876
+Global Const $GC_I_MAP_ID_FORSAKEN_TUNNELS_LVL2 = 877
+Global Const $GC_I_MAP_ID_FORSAKEN_TUNNELS_LVL3 = 878
+Global Const $GC_I_MAP_ID_UNKOWN_REFORGED = 879
+Global Const $GC_I_MAP_ID_TUNNELS_OF_THE_FORSAKEN_LVL1 = 880
+Global Const $GC_I_MAP_ID_TUNNELS_OF_THE_FORSAKEN_LVL2 = 881
+Global Const $GC_I_MAP_ID_TUNNELS_OF_THE_FORSAKEN_LVL3 = 882
 #EndRegion MapIDs
 
 #Region MapLabels
-Global $g_as_MapLabels[880]
+Global $g_as_MapLabels[883]
 $g_as_MapLabels[0] = "662"
 $g_as_MapLabels[1] = "Gladiator's Arena"
 $g_as_MapLabels[2] = "DEV Test Arena 1v1"
@@ -1150,7 +1188,7 @@ $g_as_MapLabels[191] = "Grenth's Footprint"
 $g_as_MapLabels[193] = "Cavalon"
 $g_as_MapLabels[194] = "Kaineng Center"
 $g_as_MapLabels[195] = "Drazach Thicket"
-$g_as_MapLabels[196] = "Jaya Bluff"
+$g_as_MapLabels[196] = "Jaya Bluffs"
 $g_as_MapLabels[197] = "Shenzun Tunnels"
 $g_as_MapLabels[198] = "Archipelagos"
 $g_as_MapLabels[199] = "Maishang Hills"
@@ -1684,8 +1722,8 @@ $g_as_MapLabels[775] = "The Tengu Accords Mission"
 $g_as_MapLabels[776] = "Unknown Kryta Explorable"
 $g_as_MapLabels[777] = "The Battle of Jahai Mission"
 $g_as_MapLabels[778] = "The Flight North Mission"
-$g_as_MapLabels[779] = "Unknown Dev Region 1"
-$g_as_MapLabels[780] = "Unknown Dev Region 2"
+$g_as_MapLabels[779] = "Pre-Searing: Piken Square"
+$g_as_MapLabels[780] = "Forsaken Tunnels Level 1"
 $g_as_MapLabels[781] = "Secret Lair of the Snowmen Level 1"
 $g_as_MapLabels[782] = "Secret Lair of the Snowmen Level 2"
 $g_as_MapLabels[783] = "Droknar's Forge Explorable"
@@ -1752,884 +1790,896 @@ $g_as_MapLabels[873] = "Ministry of Oppression: Wajjun Bazaar"
 $g_as_MapLabels[874] = "The Final Confrontation"
 $g_as_MapLabels[875] = "Lakeside County: 1070 AE"
 $g_as_MapLabels[876] = "Ashford Catacombs: 1070 AE"
+$g_as_MapLabels[877] = "Forsaken Tunnels Level 2"
+$g_as_MapLabels[878] = "Forsaken Tunnels Level 3"
+$g_as_MapLabels[879] = "Unkown Reforged Map"
+$g_as_MapLabels[880] = "Tunnels of the Forsaken Level 1"
+$g_as_MapLabels[881] = "Tunnels of the Forsaken Level 2"
+$g_as_MapLabels[882] = "Tunnels of the Forsaken Level 3"
 #EndRegion MapLabels
 
 ; [MapID, "Map Name", CampaignID, "Campaign", ContinentID, "Continent", RegionID, "Region", TypeID, "Type"]
-Global $g_a2D_MapArray[876][10] = [ _
-		[1, "Gladiators Arena", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 1, "Arena"], _
-		[2, "DEV Test Arena1v1", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 1, "Arena"], _
-		[3, "Test Map", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
-		[4, "Warriors Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
-		[5, "Hunters Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
-		[6, "Wizards Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
-		[7, "Warriors Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
-		[8, "Hunters Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
-		[9, "Wizards Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
-		[10, "Bloodstone Fen", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 5, "Mission Outpost"], _
-		[11, "The Wilds", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 5, "Mission Outpost"], _
-		[12, "Aurora Glade", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 5, "Mission Outpost"], _
-		[13, "Diessa Lowlands", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[14, "Gatesof Kryta", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 5, "Mission Outpost"], _
-		[15, "DAlessio Seaboard", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 5, "Mission Outpost"], _
-		[16, "Divinity Coast", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 5, "Mission Outpost"], _
-		[17, "Talmark Wilderness", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[18, "The Black Curtain", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[19, "Sanctum Cay", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 5, "Mission Outpost"], _
-		[20, "Droknars Forge", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 13, "City"], _
-		[21, "The Frost Gate", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 5, "Mission Outpost"], _
-		[22, "Ice Cavesof Sorrow", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 5, "Mission Outpost"], _
-		[23, "Thunderhead Keep", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 5, "Mission Outpost"], _
-		[24, "Iron Minesof Moladune", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 5, "Mission Outpost"], _
-		[25, "Borlis Pass", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 5, "Mission Outpost"], _
-		[26, "Talus Chute", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[27, "Griffons Mouth", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[28, "The Great Northern Wall", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 5, "Mission Outpost"], _
-		[29, "Fort Ranik", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 5, "Mission Outpost"], _
-		[30, "Ruins of Surmia", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 5, "Mission Outpost"], _
-		[31, "Xaquang Skyway", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[32, "Nolani Academy", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 5, "Mission Outpost"], _
-		[33, "Old Ascalon", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[34, "The Fissure of Woe", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 2, "Explorable Zone"], _
-		[35, "Ember Light Camp", 1, "Prophecies", 0, "Kryta", 6, "Fissure Of Woe", 10, "Outpost"], _
-		[36, "Grendich Courthouse", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 10, "Outpost"], _
-		[37, "Glint Challenge", 4, "Eye Of The North", 0, "Kryta", 5, "Crystal Desert", 9, "Challenge"], _
-		[38, "Augury Rock", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 10, "Outpost"], _
-		[39, "Sardelac Sanitarium", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 10, "Outpost"], _
-		[40, "Piken Square", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 10, "Outpost"], _
-		[41, "Sage Lands", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[42, "Mamnoon Lagoon", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[43, "Silverwood", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[44, "Ettins Back", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[45, "Reed Bog", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[46, "The Falls", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[47, "Dry Top", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[48, "Tangle Root", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[49, "Henge of Denravi", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 13, "City"], _
-		[50, "Test Map", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 2, "Explorable Zone"], _
-		[51, "Senjis Corner", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 10, "Outpost"], _
-		[52, "Burning Isle", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 4, "Guild Hall"], _
-		[53, "Tears of the Fallen", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[54, "Scoundrels Rise", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[55, "Lions Arch", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 13, "City"], _
-		[56, "Cursed Lands", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[57, "Bergen Hot Springs", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 10, "Outpost"], _
-		[58, "North Kryta Province", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[59, "Nebo Terrace", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[60, "Majestys Rest", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[61, "Twin Serpent Lakes", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[62, "Watchtower Coast", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[63, "Stingray Strand", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[64, "Kessex Peak", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[65, "DAlessio Arena", 0, "Core", 3, "Battle Isles", 0, "Kryta", 1, "Arena"], _
-		[66, "All Call Click Point1", 0, "Core", 3, "Battle Isles", 0, "Kryta", 5, "Mission Outpost"], _
-		[67, "Burning Isle", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 2, "Explorable Zone"], _
-		[68, "Frozen Isle", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[69, "Nomads Isle", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 2, "Explorable Zone"], _
-		[70, "Druids Isle", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[71, "Isle of the Dead", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 2, "Explorable Zone"], _
-		[72, "The Underworld", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 2, "Explorable Zone"], _
-		[73, "Riverside Province", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 5, "Mission Outpost"], _
-		[74, "Tournament6", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[75, "The hall of Heroes", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[76, "Broken Tower", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[77, "Housezu Heltzer", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 13, "City"], _
-		[78, "The Courtyard", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[79, "Unholy Temples", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[80, "Burial Mounds", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[81, "Ascalon City", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 13, "City"], _
-		[82, "Tomb of the Primeval Kings", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 10, "Outpost"], _
-		[83, "The Vault", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[84, "The Underworld", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[85, "Ascalon Arena", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 1, "Arena"], _
-		[86, "Sacred Temples", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[87, "Icedome", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[88, "Iron Horse Mine", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[89, "Anvil Rock", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[90, "Lornars Pass", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[91, "Snake Dance", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[92, "Tascas Demise", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[93, "Spearhead Peak", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[94, "Ice Floe", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[95, "Witmans Folly", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[96, "Mineral Springs", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[97, "Dreadnoughts Drift", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[98, "Frozen Forest", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[99, "Travelers Vale", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[100, "Deldrimor Bowl", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[101, "Regent Valley", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[102, "The Breach", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[103, "Ascalon Foothills", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[104, "Pockmark Flats", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[105, "Dragons Gullet", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[106, "Flame Temple Corridor", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[107, "Eastern Frontier", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[108, "The Scar", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 2, "Explorable Zone"], _
-		[109, "The Amnoon Oasis", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 13, "City"], _
-		[110, "Diviners Ascent", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 2, "Explorable Zone"], _
-		[111, "Vulture Drifts", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 2, "Explorable Zone"], _
-		[112, "The Arid Sea", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 2, "Explorable Zone"], _
-		[113, "Prophets Path", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 2, "Explorable Zone"], _
-		[114, "Salt Flats", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 2, "Explorable Zone"], _
-		[115, "Skyward Reach", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 2, "Explorable Zone"], _
-		[116, "Dunes of Despair", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 5, "Mission Outpost"], _
-		[117, "Thirsty River", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 5, "Mission Outpost"], _
-		[118, "Elona Reach", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 5, "Mission Outpost"], _
-		[119, "Augury Rock", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 5, "Mission Outpost"], _
-		[120, "The Dragons Lair", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 5, "Mission Outpost"], _
-		[121, "Perdition Rock", 1, "Prophecies", 0, "Kryta", 6, "Fissure Of Woe", 2, "Explorable Zone"], _
-		[122, "Ring of Fire", 1, "Prophecies", 0, "Kryta", 6, "Fissure Of Woe", 5, "Mission Outpost"], _
-		[123, "Abaddons Mouth", 1, "Prophecies", 0, "Kryta", 6, "Fissure Of Woe", 5, "Mission Outpost"], _
-		[124, "Hells Precipice", 1, "Prophecies", 0, "Kryta", 6, "Fissure Of Woe", 5, "Mission Outpost"], _
-		[125, "Titans Tears", 1, "Prophecies", 0, "Kryta", 6, "Fissure Of Woe", 5, "Mission Outpost"], _
-		[126, "Golden Gates", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[127, "Scarred Earth", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[128, "The Eternal Grove", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
-		[129, "Lutgardis Conservatory", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
-		[130, "Vasburg Armory", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
-		[131, "Serenity Temple", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 10, "Outpost"], _
-		[132, "Ice Tooth Cave", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 10, "Outpost"], _
-		[133, "Beacons Perch", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 10, "Outpost"], _
-		[134, "Yaks Bend", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 10, "Outpost"], _
-		[135, "Frontier Gate", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 10, "Outpost"], _
-		[136, "Beetletun", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 10, "Outpost"], _
-		[137, "Fishermens Haven", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 10, "Outpost"], _
-		[138, "Temple of the Ages", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 10, "Outpost"], _
-		[139, "Ventaris Refuge", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 10, "Outpost"], _
-		[140, "Druids Overlook", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 10, "Outpost"], _
-		[141, "Maguuma Stade", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 10, "Outpost"], _
-		[142, "Quarrel Falls", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 10, "Outpost"], _
-		[143, "Ascalon Academy", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 10, "Outpost"], _
-		[144, "Gyala Hatchery", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
-		[145, "The Catacombs", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[146, "Lakeside County", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[147, "The Northlands", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[148, "Ascalon City", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 10, "Outpost"], _
-		[149, "Ascalon Academy", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 1, "Arena"], _
-		[150, "Ascalon Academy Pv Pbattle", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 1, "Arena"], _
-		[151, "Ascalon Academy", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[152, "Heroes Audience", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 10, "Outpost"], _
-		[153, "Seekers Passage", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 10, "Outpost"], _
-		[154, "Destinys Gorge", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 10, "Outpost"], _
-		[155, "Camp Rankor", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 10, "Outpost"], _
-		[156, "The Granite Citadel", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 10, "Outpost"], _
-		[157, "Marhans Grotto", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 10, "Outpost"], _
-		[158, "Port Sledge", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 10, "Outpost"], _
-		[159, "Copperhammer Mines", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 10, "Outpost"], _
-		[160, "Green Hills County", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[161, "Wizards Folly", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[162, "Pre Searing Regent Valley", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[163, "Pre Searing The Barradin Estate", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 10, "Outpost"], _
-		[164, "Pre Searing Ashford Abbey", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 10, "Outpost"], _
-		[165, "Pre Searing Foibles Fair", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 10, "Outpost"], _
-		[166, "Pre Searing Fort Ranik", 1, "Prophecies", 1, "Dev Continent", 7, "Pre Searing Ascalon", 10, "Outpost"], _
-		[167, "Burning Isle", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 3, "Guild Battle Area"], _
-		[168, "Druids Isle", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 3, "Guild Battle Area"], _
-		[169, "Unknown", 0, "Core", 3, "Battle Isles", 0, "Kryta", 21, "Dev Region"], _
-		[170, "Frozen Isle", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 3, "Guild Battle Area"], _
-		[171, "Warriors Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
-		[172, "Hunters Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
-		[173, "Wizards Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
-		[174, "Nomads Isle", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 3, "Guild Battle Area"], _
-		[175, "Isle of the Dead", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 3, "Guild Battle Area"], _
-		[176, "Frozen Isle", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 4, "Guild Hall"], _
-		[177, "Nomads Isle", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 4, "Guild Hall"], _
-		[178, "Druids Isle", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 4, "Guild Hall"], _
-		[179, "Isle of the Dead", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 4, "Guild Hall"], _
-		[180, "Fort Koga", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 1, "Arena"], _
-		[181, "Shiverpeak Arena", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 1, "Arena"], _
-		[182, "Amnoon Arena", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 1, "Arena"], _
-		[183, "Deldrimor Arena", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 1, "Arena"], _
-		[184, "The Crag", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 1, "Arena"], _
-		[185, "The Underworld", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
-		[186, "The Underworld", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
-		[187, "The Underworld", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
-		[188, "Random Arena", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 1, "Arena"], _
-		[189, "Teams Arena", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 1, "Arena"], _
-		[190, "Sorrows Furnace", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[191, "Grenths Footprint", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[192, "All Call Click Point2", 0, "Core", 3, "Battle Isles", 0, "Kryta", 5, "Mission Outpost"], _
-		[193, "Cavalon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 13, "City"], _
-		[194, "Kaineng Center", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 13, "City"], _
-		[195, "Drazach Thicket", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
-		[196, "Jaya Bluff", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[197, "Shenzun Tunnels", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[198, "Archipelagos", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
-		[199, "Maishang Hills", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
-		[200, "Mount Qinkai", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
-		[201, "Melandrus Hope", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
-		[202, "Rheas Crater", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
-		[203, "Silent Surf", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
-		[204, "Unwaking Waters Mission", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 6, "Cooperative Mission"], _
-		[205, "Morostav Trail", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
-		[206, "Deldrimor War Camp", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 10, "Outpost"], _
-		[207, "Dragons Thieves", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 2, "Explorable Zone"], _
-		[208, "Heroes Crypt", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 1, "Arena"], _
-		[209, "Mourning Veil Falls", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
-		[210, "Ferndale", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
-		[211, "Pongmei Valley", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[212, "Monastery Overlook", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[213, "Zen Daijun", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 5, "Mission Outpost"], _
-		[214, "Minister Chos Estate", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 5, "Mission Outpost"], _
-		[215, "Vizunah Square", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 6, "Cooperative Mission"], _
-		[216, "Nahpui Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 5, "Mission Outpost"], _
-		[217, "Tahnnakai Temple", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 5, "Mission Outpost"], _
-		[218, "Arborstone", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 5, "Mission Outpost"], _
-		[219, "Boreas Seabed", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 5, "Mission Outpost"], _
-		[220, "Sunjiang District", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 5, "Mission Outpost"], _
-		[221, "Fort Aspenwood", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 7, "Competitive Mission"], _
-		[222, "The Eternal Grove", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 5, "Mission Outpost"], _
-		[223, "The Jade Quarry", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 7, "Competitive Mission"], _
-		[224, "Gyala Hatchery", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 5, "Mission Outpost"], _
-		[225, "Raisu Palace", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 5, "Mission Outpost"], _
-		[226, "Imperial Sanctum", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 5, "Mission Outpost"], _
-		[227, "Unwaking Waters", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
-		[228, "Grenz Frontier", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
-		[229, "The Ancestral Lands", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
-		[230, "Amatz Basin", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 9, "Challenge"], _
-		[231, "Kaanai Canyon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
-		[232, "Shadows Passage", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[233, "Raisu Palace", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[234, "The Aurios Mines", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 9, "Challenge"], _
-		[235, "Panjiang Peninsula", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[236, "Kinya Province", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[237, "Haiju Lagoon", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[238, "Sunqua Vale", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[239, "Wajjun Bazaar", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[240, "Bukdek Byway", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[241, "The Undercity", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[242, "Shing Jea Monastery", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 13, "City"], _
-		[243, "Shing Jea Arena", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 1, "Arena"], _
-		[244, "Arborstone", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
-		[245, "Minister Chos Estate", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[246, "Zen Daijun", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[247, "Boreas Seabed", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
-		[248, "Great Temple of Balthazar", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 13, "City"], _
-		[249, "Tsumei Village", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 10, "Outpost"], _
-		[250, "Seitung Harbor", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 10, "Outpost"], _
-		[251, "Ran Musu Gardens", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 10, "Outpost"], _
-		[252, "Linnok Courtyard", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[253, "Dwayna Vs Grenth", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 1, "Arena"], _
-		[254, "Dwaynas Camp", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 5, "Mission Outpost"], _
-		[255, "Grenths Camp", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 5, "Mission Outpost"], _
-		[256, "Sunjiang District", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[257, "Minister Chos Estate", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 14, "Mission Area"], _
-		[258, "Zen Daijun", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 14, "Mission Area"], _
-		[259, "The Jade Quarry Kurzick", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
-		[260, "Nahpui Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
-		[261, "Tahnnakai Temple", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
-		[262, "Arborstone", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 14, "Mission Area"], _
-		[263, "Boreas Seabed", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
-		[264, "Sunjiang District", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
-		[265, "Nahpui Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[266, "Urgozs Warren", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 8, "Elite Mission"], _
-		[267, "The Eternal Grove", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 14, "Mission Area"], _
-		[268, "Gyala Hatchery", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
-		[269, "Tahnnakai Temple", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[270, "Raisu Palace", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
-		[271, "Imperial Sanctum", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
-		[272, "Altrumm Ruins", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 9, "Challenge"], _
-		[273, "Zos Shivros Channel", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 9, "Challenge"], _
-		[274, "Dragons Throat", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 9, "Challenge"], _
-		[275, "Isle of Weeping Stone", 0, "Core", 3, "Battle Isles", 9, "Echovald Forest", 4, "Guild Hall"], _
-		[276, "Isle of Jade", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 4, "Guild Hall"], _
-		[277, "Harvest Temple", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
-		[278, "Breaker Hollow", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
-		[279, "Leviathan Pits", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
-		[280, "Isle of the Nameless", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 2, "Explorable Zone"], _
-		[281, "Zaishen Challenge", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 11, "Zaishen Battle"], _
-		[282, "Zaishen Elite", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 11, "Zaishen Battle"], _
-		[283, "Maatu Keep", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 10, "Outpost"], _
-		[284, "Zin Ku Corridor", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 10, "Outpost"], _
-		[285, "Monastery Overlook", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[286, "Brauer Academy", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
-		[287, "Durheim Archives", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
-		[288, "Bai Paasu Reach", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
-		[289, "Seafarers Rest", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
-		[290, "Bejunkan Pier", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[291, "Vizunah Square Local Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 6, "Cooperative Mission"], _
-		[292, "Vizunah Square Foreign Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 6, "Cooperative Mission"], _
-		[293, "Fort Aspenwood Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 7, "Competitive Mission"], _
-		[294, "Fort Aspenwood Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 7, "Competitive Mission"], _
-		[295, "The Jade Quarry Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 7, "Competitive Mission"], _
-		[296, "The Jade Quarry Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 7, "Competitive Mission"], _
-		[297, "Unwaking Waters Luxon Outpost", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 6, "Cooperative Mission"], _
-		[298, "Unwaking Waters Kurzick Outpost", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 6, "Cooperative Mission"], _
-		[299, "Saltspray Beach", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
-		[300, "Etnaran Keys", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
-		[301, "Raisu Pavillion", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[302, "Kaineng Docks", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[303, "The Marketplace", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 10, "Outpost"], _
-		[304, "Vizunah Square Local Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
-		[305, "Vizunah Square Foreign Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
-		[306, "The Jade Quarry Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
-		[307, "The Deep", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 8, "Elite Mission"], _
-		[308, "Ascalon Arena", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 1, "Arena"], _
-		[309, "Annihilation", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
-		[310, "Kill Count Training", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
-		[311, "Annihilation", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
-		[312, "Obelisk Annihilation Training", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
-		[313, "Saoshang Trail", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[314, "Shiverpeak Arena", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 1, "Arena"], _
-		[315, "Unknown", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 21, "Dev Region"], _
-		[316, "Unknown", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 21, "Dev Region"], _
-		[317, "Unknown", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 21, "Dev Region"], _
-		[318, "DAlessio Arena", 0, "Core", 3, "Battle Isles", 0, "Kryta", 11, "Zaishen Battle"], _
-		[319, "Amnoon Arena", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 11, "Zaishen Battle"], _
-		[320, "Fort Koga", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
-		[321, "Heroes Crypt", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 11, "Zaishen Battle"], _
-		[322, "Shiverpeak Arena", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 11, "Zaishen Battle"], _
-		[323, "Fort Aspenwood Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 14, "Mission Area"], _
-		[324, "Fort Aspenwood Luxon", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 14, "Mission Area"], _
-		[325, "The Harvest Ceremony", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
-		[326, "The Harvest Ceremony", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
-		[327, "Imperial Sanctum", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[328, "Saltspray Beach Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
-		[329, "Saltspray Beach Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
-		[330, "Heroes Ascent", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[331, "Grenz Frontier Luxon", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
-		[332, "Grenz Frontier Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
-		[333, "The Ancestral Lands Luxon", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
-		[334, "The Ancestral Lands Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
-		[335, "Etnaran Keys Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
-		[336, "Etnaran Keys Kurzick", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
-		[337, "Kaanai Canyon Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
-		[338, "Kaanai Canyon Kurzick", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
-		[339, "DAlessio Arena", 0, "Core", 3, "Battle Isles", 0, "Kryta", 11, "Zaishen Battle"], _
-		[340, "Amnoon Arena", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 11, "Zaishen Battle"], _
-		[341, "Fort Koga", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
-		[342, "Heroes Crypt", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 11, "Zaishen Battle"], _
-		[343, "Shiverpeak Arena", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 11, "Zaishen Battle"], _
-		[344, "The hall of Heroes", 1, "Prophecies", 0, "Kryta", 4, "Heroes Ascent", 2, "Explorable Zone"], _
-		[345, "The Courtyard", 1, "Prophecies", 0, "Kryta", 4, "Heroes Ascent", 2, "Explorable Zone"], _
-		[346, "Scarred Earth", 1, "Prophecies", 0, "Kryta", 4, "Heroes Ascent", 2, "Explorable Zone"], _
-		[347, "The Underworld", 1, "Prophecies", 0, "Kryta", 4, "Heroes Ascent", 2, "Explorable Zone"], _
-		[348, "Tanglewood Copse", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
-		[349, "Saint Anjekas Shrine", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
-		[350, "Eredon Terrace", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
-		[351, "Divine Path", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[352, "Brawlers Pit", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 1, "Arena"], _
-		[353, "Petrified Arena", 0, "Core", 3, "Battle Isles", 9, "Echovald Forest", 1, "Arena"], _
-		[354, "Seabed Arena", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 1, "Arena"], _
-		[355, "Isle of Weeping Stone", 0, "Core", 3, "Battle Isles", 9, "Echovald Forest", 3, "Guild Battle Area"], _
-		[356, "Isle of Jade", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 3, "Guild Battle Area"], _
-		[357, "Imperial Isle", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 3, "Guild Battle Area"], _
-		[358, "Isle of Meditation", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
-		[359, "Imperial Isle", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 4, "Guild Hall"], _
-		[360, "Isle of Meditation", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
-		[361, "Isle of Weeping Stone", 0, "Core", 3, "Battle Isles", 9, "Echovald Forest", 2, "Explorable Zone"], _
-		[362, "Isle of Jade", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 2, "Explorable Zone"], _
-		[363, "Imperial Isle", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[364, "Isle of Meditation", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
-		[365, "Random Arenas Test", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 1, "Arena"], _
-		[366, "Shing Jea Arena", 0, "Core", 3, "Battle Isles", 11, "Shing Jea Island", 1, "Arena"], _
-		[367, "All Skills", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 2, "Explorable Zone"], _
-		[368, "Dragon Arena", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 1, "Arena"], _
-		[369, "Jahai Bluffs", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[370, "Kamadan Jewel of Istan", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
-		[371, "Marga Coast", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[372, "Fahranur", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[373, "Sunward Marches", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[374, "Roleplaying Character", 3, "Nightfall", 4, "Elona", 27, "Dev Region", 21, "Dev Region"], _
-		[375, "Barbarous Shore", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[376, "Camp Hojanu", 3, "Nightfall", 4, "Elona", 12, "Kourna", 10, "Outpost"], _
-		[377, "Bahdok Caverns", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[378, "Wehhan Terraces", 3, "Nightfall", 4, "Elona", 12, "Kourna", 10, "Outpost"], _
-		[379, "Dejarin Estate", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[380, "Arkjok Ward", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[381, "Yohlon Haven", 3, "Nightfall", 4, "Elona", 12, "Kourna", 10, "Outpost"], _
-		[382, "Gandarathe Moon Fortress", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[383, "Vortex", 3, "Nightfall", 5, "Realm Of Torment", 27, "Dev Region", 21, "Dev Region"], _
-		[384, "The Floodplain of Mahnkelon", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[385, "Lions Archduring Sunspearsin Kryta", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[386, "Turais Procession", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[387, "Sunspear Sanctuary", 3, "Nightfall", 4, "Elona", 12, "Kourna", 13, "City"], _
-		[388, "Aspenwood Gate Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
-		[389, "Aspenwood Gate Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
-		[390, "Jade Flats Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
-		[391, "Jade Flats Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
-		[392, "Yatendi Canyons", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[393, "Chantry of Secrets", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 10, "Outpost"], _
-		[394, "Garden of Seborhin", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[395, "Holdings of Chokhin", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[396, "Mihanu Township", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 10, "Outpost"], _
-		[397, "Vehjin Mines", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[398, "Basalt Grotto", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 10, "Outpost"], _
-		[399, "Forum Highlands", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[400, "Kaineng Centerduring Sunspearsin Cantha", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[401, "Sebelkeh Basilica", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[402, "Resplendent Makuun", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[403, "Honur Hill", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 10, "Outpost"], _
-		[404, "Wilderness of Bahdza", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[405, "Sun Docks", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
-		[406, "Vehtendi Valley", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[407, "Yahnur Market", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 10, "Outpost"], _
-		[408, "Here Be Dragons", 0, "Core", 3, "Battle Isles", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[409, "Here Be Dragons", 0, "Core", 3, "Battle Isles", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[410, "Here Be Dragons", 0, "Core", 3, "Battle Isles", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[411, "Here Be Dragons", 0, "Core", 3, "Battle Isles", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[412, "Here Be Dragons", 0, "Core", 3, "Battle Isles", 7, "Pre Searing Ascalon", 2, "Explorable Zone"], _
-		[413, "The Hidden City of Ahdashim", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[414, "The Kodash Bazaar", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 13, "City"], _
-		[415, "Lions Gate", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[416, "Monastery Overlook", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 14, "Mission Area"], _
-		[417, "Bejunkan Pier", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
-		[418, "Lions Gate", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 14, "Mission Area"], _
-		[419, "The Mirror of Lyss", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[420, "Securethe Refuge", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[421, "Venta Cemetery", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
-		[422, "Bad Tide Rising Kamadan", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[423, "The Tribunal", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[424, "Kodonur Crossroads", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
-		[425, "Rilohn Refuge", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
-		[426, "Pogahn Passage", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
-		[427, "Moddok Crevice", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
-		[428, "Tihark Orchard", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 5, "Mission Outpost"], _
-		[429, "Consulate", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[430, "Plains of Jarin", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[431, "Sunspear Great Hall", 3, "Nightfall", 4, "Elona", 15, "Istan", 10, "Outpost"], _
-		[432, "Cliffs of Dohjok", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[433, "Dzagonur Bastion", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 5, "Mission Outpost"], _
-		[434, "Dasha Vestibule", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 5, "Mission Outpost"], _
-		[435, "Grand Court of Sebelkeh", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 5, "Mission Outpost"], _
-		[436, "Command Post", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[437, "Jokos Domain", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
-		[438, "Bone Palace", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 10, "Outpost"], _
-		[439, "The Ruptured Heart", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
-		[440, "The Mouth of Torment", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 10, "Outpost"], _
-		[441, "The Shattered Ravines", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
-		[442, "Lair of the Forgotten", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 10, "Outpost"], _
-		[443, "Poisoned Outcrops", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
-		[444, "The Sulfurous Wastes", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
-		[445, "The Ebony Citadel of Mallyx", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 8, "Elite Mission"], _
-		[446, "The Alkali Pan", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
-		[447, "ALand of Heroes", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[448, "Crystal Overlook", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
-		[449, "Kamadan Jewel of Istan", 3, "Nightfall", 4, "Elona", 15, "Istan", 13, "City"], _
-		[450, "Gate of Torment", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 13, "City"], _
-		[451, "Gate of Anguish", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 8, "Elite Mission"], _
-		[452, "Securethe Refuge", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
-		[453, "Evacuation", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
-		[454, "Test Map", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 5, "Mission Outpost"], _
-		[455, "Nightfallen Garden", 3, "Nightfall", 4, "Elona", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[456, "Chuurhir Fields", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[457, "Beknur Harbor", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[458, "Kodonur Crossroads", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
-		[459, "Rilohn Refuge", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
-		[460, "Pogahn Passage", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
-		[461, "The Underworld", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 2, "Explorable Zone"], _
-		[462, "Heart of Abaddon", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[463, "The Underworld", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 2, "Explorable Zone"], _
-		[464, "Nightfallen Coast", 3, "Nightfall", 4, "Elona", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[465, "Nightfallen Jahai", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[466, "Depths of Madness", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[467, "Rollerbeetle Racing", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 1, "Arena"], _
-		[468, "Domain of Fear", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[469, "Gate of Fear", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 10, "Outpost"], _
-		[470, "Domain of Pain", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[471, "Bloodstone Fen", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[472, "Domain of Secrets", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[473, "Gate of Secrets", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 10, "Outpost"], _
-		[474, "Domain of Anguish", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 8, "Elite Mission"], _
-		[475, "Ooze Pit", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[476, "Jennurs Horde", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 5, "Mission Outpost"], _
-		[477, "Nundu Bay", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
-		[478, "Gate of Desolation", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 5, "Mission Outpost"], _
-		[479, "Champions Dawn", 3, "Nightfall", 4, "Elona", 15, "Istan", 10, "Outpost"], _
-		[480, "Ruins of Morah", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 5, "Mission Outpost"], _
-		[481, "Fahranur The First City", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[482, "Bjora Marches", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[483, "Zehlon Reach", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[484, "Lahtenda Bog", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[485, "Arbor Bay", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[486, "Issnur Isles", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[487, "Beknur Harbor", 3, "Nightfall", 4, "Elona", 15, "Istan", 10, "Outpost"], _
-		[488, "Mehtani Keys", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[489, "Kodlonu Hamlet", 3, "Nightfall", 4, "Elona", 15, "Istan", 10, "Outpost"], _
-		[490, "Island of Shehkah", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[491, "Jokanur Diggings", 3, "Nightfall", 4, "Elona", 15, "Istan", 5, "Mission Outpost"], _
-		[492, "Blacktide Den", 3, "Nightfall", 4, "Elona", 15, "Istan", 5, "Mission Outpost"], _
-		[493, "Consulate Docks", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
-		[494, "Gate of Pain", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 5, "Mission Outpost"], _
-		[495, "Gate of Madness", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 5, "Mission Outpost"], _
-		[496, "Abaddons Gate", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 5, "Mission Outpost"], _
-		[497, "Sunspear Arena", 3, "Nightfall", 4, "Elona", 15, "Istan", 1, "Arena"], _
-		[498, "Unknown", 3, "Nightfall", 4, "Elona", 12, "Kourna", 21, "Dev Region"], _
-		[499, "Ice Cliff Chasms", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[500, "Bokka Amphitheatre", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[501, "Riven Earth", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[502, "The Astralarium", 3, "Nightfall", 4, "Elona", 15, "Istan", 10, "Outpost"], _
-		[503, "Throne of Secrets", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[504, "Churranu Island Arena", 0, "Core", 3, "Battle Isles", 12, "Kourna", 1, "Arena"], _
-		[505, "Shing Jea Monastery", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[506, "Haiju Lagoon", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[507, "Jaya Bluffs", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[508, "Seitung Harbor", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[509, "Tsumei Village", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[510, "Seitung Harbor", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[511, "Tsumei Village", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[512, "Minister Chos Estate", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[513, "Drakkar Lake", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[514, "Island of Shehkah", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
-		[515, "Jokanur Diggings", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
-		[516, "Blacktide Den", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
-		[517, "Consulate Docks", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
-		[518, "Tihark Orchard", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 14, "Mission Area"], _
-		[519, "Dzagonur Bastion", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 14, "Mission Area"], _
-		[520, "Hidden City of Ahdashim", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 14, "Mission Area"], _
-		[521, "Grand Court of Sebelkeh", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 14, "Mission Area"], _
-		[522, "Jennurs Horde", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 14, "Mission Area"], _
-		[523, "Nundu Bay", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
-		[524, "Gates of Desolation", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 14, "Mission Area"], _
-		[525, "Ruins of Morah", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 14, "Mission Area"], _
-		[526, "Domain of Pain", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 14, "Mission Area"], _
-		[527, "Gate of Madness", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 14, "Mission Area"], _
-		[528, "Abaddons Gate", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 14, "Mission Area"], _
-		[529, "Uncharted Isle", 0, "Core", 3, "Battle Isles", 15, "Istan", 4, "Guild Hall"], _
-		[530, "Isle of Wurms", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
-		[531, "Uncharted Isle", 0, "Core", 3, "Battle Isles", 15, "Istan", 2, "Explorable Zone"], _
-		[532, "Isle of Wurms", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
-		[533, "Uncharted Isle", 0, "Core", 3, "Battle Isles", 15, "Istan", 3, "Guild Battle Area"], _
-		[534, "Isle of Wurms", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
-		[535, "Ahmtur Arena", 0, "Core", 3, "Battle Isles", 13, "Vabbi", 1, "Arena"], _
-		[536, "Sunspear Arena", 0, "Core", 3, "Battle Isles", 15, "Istan", 1, "Arena"], _
-		[537, "Corrupted Isle", 0, "Core", 3, "Battle Isles", 16, "Domain Of Anguish", 4, "Guild Hall"], _
-		[538, "Isle of Solitude", 0, "Core", 3, "Battle Isles", 12, "Kourna", 4, "Guild Hall"], _
-		[539, "Corrupted Isle", 0, "Core", 3, "Battle Isles", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[540, "Isle of Solitude", 0, "Core", 3, "Battle Isles", 12, "Kourna", 2, "Explorable Zone"], _
-		[541, "Corrupted Isle", 0, "Core", 3, "Battle Isles", 16, "Domain Of Anguish", 3, "Guild Battle Area"], _
-		[542, "Isle of Solitude", 0, "Core", 3, "Battle Isles", 12, "Kourna", 3, "Guild Battle Area"], _
-		[543, "Sun Docks", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
-		[544, "Chahbek Village", 3, "Nightfall", 4, "Elona", 15, "Istan", 5, "Mission Outpost"], _
-		[545, "Remains of Sahlahja", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 9, "Challenge"], _
-		[546, "Jaga Moraine", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[547, "Bombardment", 0, "Core", 3, "Battle Isles", 13, "Vabbi", 16, "Hero Battle Area"], _
-		[548, "Norrhart Domains", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[549, "Hero Battles", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 15, "Hero Battle Outpost"], _
-		[550, "The Beachhead", 0, "Core", 3, "Battle Isles", 15, "Istan", 16, "Hero Battle Area"], _
-		[551, "The Crossing", 0, "Core", 3, "Battle Isles", 12, "Kourna", 16, "Hero Battle Area"], _
-		[552, "Desert Sands", 0, "Core", 3, "Battle Isles", 14, "The Desolation", 16, "Hero Battle Area"], _
-		[553, "Varajar Fells", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[554, "Dajkah Inlet", 3, "Nightfall", 4, "Elona", 12, "Kourna", 9, "Challenge"], _
-		[555, "The Shadow Nexus", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 9, "Challenge"], _
-		[556, "Chahbek Village", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
-		[557, "Throne Of Secrets", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 10, "Outpost"], _
-		[558, "Sparkfly Swamp", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[559, "Gate of the Nightfallen Lands", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 10, "Outpost"], _
-		[560, "Cathedral of Flames", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[561, "The Troubled Keeper", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
-		[562, "Fortress of Jahai", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
-		[563, "Halls of Chokhin", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[564, "Citadel of Dzagon", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[565, "Dynastic Tombs", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
-		[566, "Verdant Cascades", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[567, "Cathedral of Flames Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[568, "Cathedral of Flames Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[569, "Magus Stones", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[570, "Catacombs of Kathandrax Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[571, "Catacombs of Kathandrax Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[572, "Alcazia Tangle", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[573, "Rragars Menagerie Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[574, "Rragars Menagerie Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[575, "Rragars Menagerie Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[576, "Ooze Pit", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[577, "Slavers Exile", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[578, "Oolas Lab Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[579, "Oolas Lab Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[580, "Oolas Lab Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[581, "Shards of Oor Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[582, "Shards of Oor Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[583, "Shards of Oor Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[584, "Arachnis Haunt Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[585, "Arachnis Haunt Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[586, "Burning Embers", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[587, "Burning Furnace", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[588, "Burning Temple", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[589, "Catacombs Lush", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[590, "Catacombs Stone", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[591, "Catacombs Tomb", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[592, "5teamtest", 3, "Nightfall", 4, "Elona", 12, "Kourna", 6, "Cooperative Mission"], _
-		[593, "Fetid River", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[594, "Overlook", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[595, "Cemetery", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[596, "Forgotten Shrines", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[597, "Track", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[598, "Antechamber", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[599, "Collision", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[600, "The hall of Heroes", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
-		[601, "Frozen Crevasse", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[602, "Frozen Depleted", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[603, "Frozen Fort", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[604, "Vloxen Excavations Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[605, "Vloxen Excavations Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[606, "Vloxen Excavations Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[607, "Heart of the Shiverpeaks Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[608, "Heart of the Shiverpeaks Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[609, "Heart of the Shiverpeaks Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[610, "The Journeyto Nornheim", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[611, "The Journeyto Nornheim", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[612, "Bloodstone Caves Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[613, "Bloodstone Caves Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[614, "Bloodstone Caves Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[615, "Bogroot Growths Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[616, "Bogroot Growths Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[617, "Ravens Point Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[618, "Ravens Point Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[619, "Ravens Point Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[620, "Slavers Exile Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[621, "Slavers Exile Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[622, "Slavers Exile Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[623, "Slavers Exile Lvl4", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[624, "Vloxs Falls", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 10, "Outpost"], _
-		[625, "Battledepths", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[626, "Battledepths Level2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[627, "Battledepths Level3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[628, "Sepulchre of Dragrimmar Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[629, "Sepulchre of Dragrimmar Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[630, "Frostmaws Burrows Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[631, "Frostmaws Burrows Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[632, "Frostmaws Burrows Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[633, "Frostmaws Burrows Lvl4", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[634, "Frostmaws Burrows Lvl5", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[635, "Darkrime Delves Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[636, "Darkrime Delves Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[637, "Darkrime Delves Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[638, "Gadds Encampment", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 10, "Outpost"], _
-		[639, "Umbral Grotto", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 10, "Outpost"], _
-		[640, "Rata Sum", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 13, "City"], _
-		[641, "Tarnished Haven", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 10, "Outpost"], _
-		[642, "Eye of the North", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 10, "Outpost"], _
-		[643, "Sifhalla", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 10, "Outpost"], _
-		[644, "Gunnars Hold", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 13, "City"], _
-		[645, "Olafstead", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 10, "Outpost"], _
-		[646, "hall of Monuments", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[647, "Dalada Uplands", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 2, "Explorable Zone"], _
-		[648, "Doomlore Shrine", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 13, "City"], _
-		[649, "Grothmar Wardowns", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 2, "Explorable Zone"], _
-		[650, "Longeyes Ledge", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 10, "Outpost"], _
-		[651, "Sacnoth Valley", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 2, "Explorable Zone"], _
-		[652, "Central Transfer Chamber", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 10, "Outpost"], _
-		[653, "Curseofthe Nornbear", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[654, "Blood Washes Blood", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[655, "A Gate Too Far Lvl1", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 18, "Dungeon"], _
-		[656, "A Gate Too Far Lvl2", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 18, "Dungeon"], _
-		[657, "A Gate Too Far Lvl3", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 18, "Dungeon"], _
-		[658, "The Elusive Golemancer Lvl1", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 18, "Dungeon"], _
-		[659, "The Elusive Golemancer Lvl2", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 18, "Dungeon"], _
-		[660, "The Elusive Golemancer Lvl3", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 18, "Dungeon"], _
-		[661, "Findingthe Bloodstone Lvl1", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 18, "Dungeon"], _
-		[662, "Findingthe Bloodstone Lvl2", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 18, "Dungeon"], _
-		[663, "Findingthe Bloodstone Lvl3", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 18, "Dungeon"], _
-		[664, "Genius Operated Living Enchanted Manifestation", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[665, "Againstthe Charr", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 2, "Explorable Zone"], _
-		[666, "Warband of Brothers Lvl1", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 18, "Dungeon"], _
-		[667, "Warband of Brothers Lvl2", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 18, "Dungeon"], _
-		[668, "Warband of Brothers Lvl3", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 18, "Dungeon"], _
-		[669, "Assault the Stronghold", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 2, "Explorable Zone"], _
-		[670, "Destructions Depths Lvl1", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[671, "Destructions Depths Lvl2", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[672, "Destructions Depths Lvl3", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[673, "A Timefor Heroes", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[674, "Warband Training", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 2, "Explorable Zone"], _
-		[675, "Boreal Station", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 10, "Outpost"], _
-		[676, "Catacombs of Kathandrax", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[677, "hall of Primordus", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[678, "Attack of the Nornbear", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[679, "Cinematic Cave Norn Cursed", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[680, "Cinematic Steppe Interrogation", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 14, "Mission Area"], _
-		[681, "Cinematic Interior Research", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 14, "Mission Area"], _
-		[682, "Cinematic Eye Vision A", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 14, "Mission Area"], _
-		[683, "Cinematic Eye Vision B", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 14, "Mission Area"], _
-		[684, "Cinematic Eye Vision C", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 14, "Mission Area"], _
-		[685, "Cinematic Eye Vision D", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 14, "Mission Area"], _
-		[686, "Polymock Coliseum", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[687, "Polymock Glacier", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[688, "Polymock Crossing", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 2, "Explorable Zone"], _
-		[689, "Cinematic Mountain Resolution", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 14, "Mission Area"], _
-		[690, "Cold As Ice", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[691, "Beneath Lions Arch", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[692, "Tunnels Below Cantha", 4, "Eye Of The North", 2, "Cantha", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[693, "Caverns Below Kamadan", 4, "Eye Of The North", 4, "Elona", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[694, "Cinematic Mountain Dwarfs", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[695, "Service In Defenseofthe Eye", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[696, "Manoa Norno", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[697, "Service Practice Dummy", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[698, "Hero Tutorial", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[699, "Prototype Map", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[700, "The Norn Fighting Tournament", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[701, "Secret Lairofthe Snowmen", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[702, "Norn Brawling Championship", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[703, "Kilroys Punchout Training", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[704, "Fronis Irontoes Lair", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[705, "The Justiciars End", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[706, "Designer Test Map", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[707, "The Great Norn Alemoot", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[708, "Varajar Fells", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[709, "Battlefor Nornheim", 0, "Core", 3, "Battle Isles", 12, "Kourna", 1, "Arena"], _
-		[710, "Epilogue", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[711, "Insidious Remnants", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[712, "Unknown", 0, "Core", 3, "Battle Isles", 15, "Istan", 1, "Arena"], _
-		[713, "Unknown", 0, "Core", 3, "Battle Isles", 13, "Vabbi", 1, "Arena"], _
-		[714, "Unknown", 0, "Core", 3, "Battle Isles", 14, "The Desolation", 1, "Arena"], _
-		[715, "Unknown", 5, "Bonus Mission Pack", 0, "Kryta", 25, "The Rise Of The White Mantle", 14, "Mission Area"], _
-		[716, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 14, "Mission Area"], _
-		[717, "Attackon Jaliss Camp", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[718, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 14, "Mission Area"], _
-		[719, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 14, "Mission Area"], _
-		[720, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 2, "Explorable Zone"], _
-		[721, "Costume Brawl", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 1, "Arena"], _
-		[722, "Whitefury Rapids", 0, "Core", 3, "Battle Isles", 20, "Charr Homelands", 1, "Arena"], _
-		[723, "Kysten Shore", 0, "Core", 3, "Battle Isles", 19, "Far Shiverpeaks", 1, "Arena"], _
-		[724, "Deepway Ruins", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 1, "Arena"], _
-		[725, "Plikkup Works", 0, "Core", 3, "Battle Isles", 17, "Tarnished Coast", 1, "Arena"], _
-		[726, "Kilroys Punchout Tournament", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[727, "Special Ops Flame Temple Corridor", 4, "Eye Of The North", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[728, "Special Ops Dragon Gullet", 4, "Eye Of The North", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[729, "Special Ops Grendich Courthouse", 4, "Eye Of The North", 0, "Kryta", 2, "Ascalon", 2, "Explorable Zone"], _
-		[730, "Unknown", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 14, "Mission Area"], _
-		[731, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[732, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[733, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[734, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[735, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[736, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[737, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[738, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[739, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 14, "Mission Area"], _
-		[740, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 14, "Mission Area"], _
-		[741, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 14, "Mission Area"], _
-		[742, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 14, "Mission Area"], _
-		[743, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 14, "Mission Area"], _
-		[744, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 14, "Mission Area"], _
-		[745, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 14, "Mission Area"], _
-		[746, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 14, "Mission Area"], _
-		[747, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 14, "Mission Area"], _
-		[748, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 14, "Mission Area"], _
-		[749, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 14, "Mission Area"], _
-		[750, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 14, "Mission Area"], _
-		[751, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 14, "Mission Area"], _
-		[752, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 14, "Mission Area"], _
-		[753, "Unknown", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 14, "Mission Area"], _
-		[754, "Unknown", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 14, "Mission Area"], _
-		[755, "Unknown", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 14, "Mission Area"], _
-		[756, "Unknown", 1, "Prophecies", 0, "Kryta", 27, "Dev Region", 21, "Dev Region"], _
-		[757, "Unknown", 2, "Factions", 2, "Cantha", 27, "Dev Region", 21, "Dev Region"], _
-		[758, "Unknown", 3, "Nightfall", 4, "Elona", 27, "Dev Region", 21, "Dev Region"], _
-		[759, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 17, "Eye Of The North Mission"], _
-		[760, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 17, "Eye Of The North Mission"], _
-		[761, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 17, "Eye Of The North Mission"], _
-		[762, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 17, "Eye Of The North Mission"], _
-		[763, "Unknown", 4, "Eye Of The North", 0, "Kryta", 20, "Charr Homelands", 17, "Eye Of The North Mission"], _
-		[764, "Unknown", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 17, "Eye Of The North Mission"], _
-		[765, "Unknown", 4, "Eye Of The North", 0, "Kryta", 18, "Depths Of Tyria", 17, "Eye Of The North Mission"], _
-		[766, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 17, "Eye Of The North Mission"], _
-		[767, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 17, "Eye Of The North Mission"], _
-		[768, "Unknown", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 17, "Eye Of The North Mission"], _
-		[769, "Unknown", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 17, "Eye Of The North Mission"], _
-		[770, "The Tengu Accords", 5, "Bonus Mission Pack", 2, "Cantha", 24, "The Tengu Accords", 2, "Explorable Zone"], _
-		[771, "The Battleof Jahai", 5, "Bonus Mission Pack", 4, "Elona", 22, "The Battle Of Jahai", 2, "Explorable Zone"], _
-		[772, "The Flight North", 5, "Bonus Mission Pack", 0, "Kryta", 23, "The Flight North", 2, "Explorable Zone"], _
-		[773, "The Riseofthe White Mantle", 5, "Bonus Mission Pack", 0, "Kryta", 25, "The Rise Of The White Mantle", 2, "Explorable Zone"], _
-		[774, "Unknown", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 19, "Marketplace"], _
-		[775, "Unknown", 5, "Bonus Mission Pack", 2, "Cantha", 24, "The Tengu Accords", 14, "Mission Area"], _
-		[776, "Unknown", 0, "Core", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[777, "Unknown", 5, "Bonus Mission Pack", 4, "Elona", 22, "The Battle Of Jahai", 14, "Mission Area"], _
-		[778, "Unknown", 5, "Bonus Mission Pack", 0, "Kryta", 23, "The Flight North", 14, "Mission Area"], _
-		[779, "Unknown", 0, "Core", 9, "Unknown Continent", 27, "Dev Region", 21, "Dev Region"], _
-		[780, "Unknown", 0, "Core", 9, "Unknown Continent", 27, "Dev Region", 21, "Dev Region"], _
-		[781, "Secret Lairofthe Snowmen Lvl1", 0, "Core", 0, "Kryta", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[782, "Secret Lairofthe Snowmen Lvl2", 0, "Core", 0, "Kryta", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
-		[783, "Droknars Forge", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[784, "Isleofthe Nameless", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 11, "Zaishen Battle"], _
-		[785, "Unknown", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 16, "Hero Battle Area"], _
-		[786, "Unknown", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 3, "Guild Battle Area"], _
-		[787, "Unknown", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 3, "Guild Battle Area"], _
-		[788, "Deactivating ROX", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[789, "Deactivating POX", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[790, "Deactivating NOX", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
-		[791, "Secret Underground Lair", 0, "Core", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[792, "Golem Tutorial Simulation", 0, "Core", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[793, "Snowball Dominance", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[794, "Zaishen Menagerie Grounds", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 2, "Explorable Zone"], _
-		[795, "Zaishen Menagerie", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 10, "Outpost"], _
-		[796, "Codex", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 1, "Arena"], _
-		[797, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[798, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[799, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[800, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[801, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[802, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[803, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[804, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[805, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
-		[806, "The Underworld Something Wicked This Way Comes", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 2, "Explorable Zone"], _
-		[807, "The Underworld Dont Fearthe Reapers", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 2, "Explorable Zone"], _
-		[808, "Lions Arch Halloween", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 13, "City"], _
-		[809, "Lions Arch Wintersday", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 13, "City"], _
-		[810, "Lions Arch Canthan New Year", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 13, "City"], _
-		[811, "Ascalon City Wintersday", 1, "Prophecies", 0, "Kryta", 2, "Ascalon", 13, "City"], _
-		[812, "Droknars Forge Halloween", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 13, "City"], _
-		[813, "Droknars Forge Wintersday", 1, "Prophecies", 0, "Kryta", 3, "Northern Shiverpeaks", 13, "City"], _
-		[814, "Tomb of the Primeval Kings Halloween", 1, "Prophecies", 0, "Kryta", 5, "Crystal Desert", 10, "Outpost"], _
-		[815, "Shing Jea Monastery Dragon Festival", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 13, "City"], _
-		[816, "Shing Jea Monastery Canthan New Year", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 13, "City"], _
-		[817, "Kaineng Center", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 13, "City"], _
-		[818, "Kamadan Jewel of Istan Halloween", 3, "Nightfall", 4, "Elona", 15, "Istan", 13, "City"], _
-		[819, "Kamadan Jewel of Istan Wintersday", 3, "Nightfall", 4, "Elona", 15, "Istan", 13, "City"], _
-		[820, "Kamadan Jewel of Istan Canthan New Year", 3, "Nightfall", 4, "Elona", 15, "Istan", 13, "City"], _
-		[821, "Eye of the North Wintersday", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 10, "Outpost"], _
-		[822, "Unknown", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 13, "City"], _
-		[823, "Unknown", 0, "Core", 3, "Battle Isles", 0, "Kryta", 1, "Arena"], _
-		[824, "Unknown", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 1, "Arena"], _
-		[825, "Unknown", 0, "Core", 3, "Battle Isles", 12, "Kourna", 1, "Arena"], _
-		[826, "Unknown", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 1, "Arena"], _
-		[827, "Unknown", 0, "Core", 3, "Battle Isles", 9, "Echovald Forest", 1, "Arena"], _
-		[828, "Unknown", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 1, "Arena"], _
-		[829, "Unknown", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 1, "Arena"], _
-		[830, "Unknown", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 1, "Arena"], _
-		[831, "Unknown", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 1, "Arena"], _
-		[832, "Unknown", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 1, "Arena"], _
-		[833, "Unknown", 0, "Core", 3, "Battle Isles", 15, "Istan", 1, "Arena"], _
-		[834, "Unknown", 0, "Core", 3, "Battle Isles", 11, "Shing Jea Island", 1, "Arena"], _
-		[835, "Unknown", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 1, "Arena"], _
-		[836, "Unknown", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 1, "Arena"], _
-		[837, "Warin Kryta Talmark Wilderness", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[838, "Trialof Zinn", 4, "Eye Of The North", 0, "Kryta", 17, "Tarnished Coast", 2, "Explorable Zone"], _
-		[839, "Divinity Coast", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[840, "Lions Arch Keep", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[841, "DAlessio Seaboard", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[842, "The Battle for Lions Arch", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[843, "Riverside Province", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[844, "Warin Kryta Lions Arch", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[845, "The Mausoleum", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[846, "Rise Map", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[847, "Shadowsin the Jungle", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[848, "A Vengeance of Blades", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[849, "Auspicious Beginnings", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[850, "Unknown", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[851, "Unknown", 1, "Prophecies", 0, "Kryta", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
-		[852, "Unknown", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[853, "Unknown", 1, "Prophecies", 0, "Kryta", 0, "Kryta", 2, "Explorable Zone"], _
-		[854, "Olafstead", 4, "Eye Of The North", 0, "Kryta", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
-		[855, "The Great Snowball Fight Crush Spirits", 0, "Core", 0, "Kryta", 3, "Northern Shiverpeaks", 1, "Arena"], _
-		[856, "The Great Snowball Fight Winter Wonderland", 0, "Core", 0, "Kryta", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
-		[857, "Embark Beach", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 10, "Outpost"], _
-		[858, "Unknown", 0, "Core", 0, "Kryta", 26, "SWAT", 2, "Explorable Zone"], _
-		[859, "Unknown", 0, "Core", 0, "Kryta", 26, "SWAT", 2, "Explorable Zone"], _
-		[860, "What Waitsin Shadow Dragons Throat", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[861, "A Chance Encounter Kaineng Center", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[862, "Trackingthe Corruption Marketplace", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[863, "Cantha Courier Bukdek Byway", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[864, "A Treatysa Treaty Tsumei Village", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[865, "Deadly Cargo Seitung Harbor", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[866, "The Rescue Attempt Tahnnakai Temple", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[867, "Violenceinthe Streets Wajjun Bazaar", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[868, "Sacred Psyche", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 9, "Challenge"], _
-		[869, "Calling All Thugs Shadows Passage", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[870, "Finding Jinnai Altrumm Ruins", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
-		[871, "Raidon Shing Jea Monastery Shing Jea Monastery", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[872, "Raidon Kaineng Center Kaineng Center", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[873, "Ministry of Oppression Wajjun Bazaar", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
-		[874, "The Final Confrontation", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
-		[875, "Lakeside County 1070AE", 0, "Core", 0, "Kryta", 26, "SWAT", 2, "Explorable Zone"], _
-		[876, "Ashford Catacombs 1070AE", 0, "Core", 0, "Kryta", 26, "SWAT", 2, "Explorable Zone"] _
-		]
+Global $g_a2D_MapArray[882][10] = [ _
+	[1, "Gladiators Arena", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 1, "Arena"], _
+	[2, "DEV Test Arena1v1", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 1, "Arena"], _
+	[3, "Test Map", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
+	[4, "Warriors Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
+	[5, "Hunters Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
+	[6, "Wizards Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
+	[7, "Warriors Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
+	[8, "Hunters Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
+	[9, "Wizards Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
+	[10, "Bloodstone Fen", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 5, "Mission Outpost"], _
+	[11, "The Wilds", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 5, "Mission Outpost"], _
+	[12, "Aurora Glade", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 5, "Mission Outpost"], _
+	[13, "Diessa Lowlands", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[14, "Gatesof Kryta", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 5, "Mission Outpost"], _
+	[15, "DAlessio Seaboard", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 5, "Mission Outpost"], _
+	[16, "Divinity Coast", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 5, "Mission Outpost"], _
+	[17, "Talmark Wilderness", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[18, "The Black Curtain", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[19, "Sanctum Cay", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 5, "Mission Outpost"], _
+	[20, "Droknars Forge", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 13, "City"], _
+	[21, "The Frost Gate", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 5, "Mission Outpost"], _
+	[22, "Ice Cavesof Sorrow", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 5, "Mission Outpost"], _
+	[23, "Thunderhead Keep", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 5, "Mission Outpost"], _
+	[24, "Iron Minesof Moladune", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 5, "Mission Outpost"], _
+	[25, "Borlis Pass", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 5, "Mission Outpost"], _
+	[26, "Talus Chute", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[27, "Griffons Mouth", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[28, "The Great Northern Wall", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 5, "Mission Outpost"], _
+	[29, "Fort Ranik", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 5, "Mission Outpost"], _
+	[30, "Ruins of Surmia", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 5, "Mission Outpost"], _
+	[31, "Xaquang Skyway", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[32, "Nolani Academy", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 5, "Mission Outpost"], _
+	[33, "Old Ascalon", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[34, "The Fissure of Woe", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 2, "Explorable Zone"], _
+	[35, "Ember Light Camp", 1, "Prophecies", 0, "Tyria", 6, "Fissure Of Woe", 10, "Outpost"], _
+	[36, "Grendich Courthouse", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 10, "Outpost"], _
+	[37, "Glint Challenge", 4, "Eye Of The North", 0, "Tyria", 5, "Crystal Desert", 9, "Challenge"], _
+	[38, "Augury Rock", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 10, "Outpost"], _
+	[39, "Sardelac Sanitarium", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 10, "Outpost"], _
+	[40, "Piken Square", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 10, "Outpost"], _
+	[41, "Sage Lands", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[42, "Mamnoon Lagoon", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[43, "Silverwood", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[44, "Ettins Back", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[45, "Reed Bog", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[46, "The Falls", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[47, "Dry Top", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[48, "Tangle Root", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[49, "Henge of Denravi", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 13, "City"], _
+	[50, "Test Map", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 2, "Explorable Zone"], _
+	[51, "Senjis Corner", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 10, "Outpost"], _
+	[52, "Burning Isle", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 4, "Guild Hall"], _
+	[53, "Tears of the Fallen", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[54, "Scoundrels Rise", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[55, "Lions Arch", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 13, "City"], _
+	[56, "Cursed Lands", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[57, "Bergen Hot Springs", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 10, "Outpost"], _
+	[58, "North Kryta Province", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[59, "Nebo Terrace", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[60, "Majestys Rest", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[61, "Twin Serpent Lakes", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[62, "Watchtower Coast", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[63, "Stingray Strand", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[64, "Kessex Peak", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[65, "DAlessio Arena", 0, "Core", 3, "Battle Isles", 0, "Kryta", 1, "Arena"], _
+	[66, "All Call Click Point1", 0, "Core", 3, "Battle Isles", 0, "Kryta", 5, "Mission Outpost"], _
+	[67, "Burning Isle", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 2, "Explorable Zone"], _
+	[68, "Frozen Isle", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[69, "Nomads Isle", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 2, "Explorable Zone"], _
+	[70, "Druids Isle", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[71, "Isle of the Dead", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 2, "Explorable Zone"], _
+	[72, "The Underworld", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 2, "Explorable Zone"], _
+	[73, "Riverside Province", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 5, "Mission Outpost"], _
+	[74, "Tournament6", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[75, "The hall of Heroes", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[76, "Broken Tower", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[77, "Housezu Heltzer", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 13, "City"], _
+	[78, "The Courtyard", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[79, "Unholy Temples", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[80, "Burial Mounds", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[81, "Ascalon City", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 13, "City"], _
+	[82, "Tomb of the Primeval Kings", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 10, "Outpost"], _
+	[83, "The Vault", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[84, "The Underworld", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[85, "Ascalon Arena", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 1, "Arena"], _
+	[86, "Sacred Temples", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[87, "Icedome", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[88, "Iron Horse Mine", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[89, "Anvil Rock", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[90, "Lornars Pass", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[91, "Snake Dance", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[92, "Tascas Demise", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[93, "Spearhead Peak", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[94, "Ice Floe", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[95, "Witmans Folly", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[96, "Mineral Springs", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[97, "Dreadnoughts Drift", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[98, "Frozen Forest", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[99, "Travelers Vale", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[100, "Deldrimor Bowl", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[101, "Regent Valley", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[102, "The Breach", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[103, "Ascalon Foothills", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[104, "Pockmark Flats", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[105, "Dragons Gullet", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[106, "Flame Temple Corridor", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[107, "Eastern Frontier", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[108, "The Scar", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 2, "Explorable Zone"], _
+	[109, "The Amnoon Oasis", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 13, "City"], _
+	[110, "Diviners Ascent", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 2, "Explorable Zone"], _
+	[111, "Vulture Drifts", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 2, "Explorable Zone"], _
+	[112, "The Arid Sea", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 2, "Explorable Zone"], _
+	[113, "Prophets Path", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 2, "Explorable Zone"], _
+	[114, "Salt Flats", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 2, "Explorable Zone"], _
+	[115, "Skyward Reach", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 2, "Explorable Zone"], _
+	[116, "Dunes of Despair", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 5, "Mission Outpost"], _
+	[117, "Thirsty River", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 5, "Mission Outpost"], _
+	[118, "Elona Reach", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 5, "Mission Outpost"], _
+	[119, "Augury Rock", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 5, "Mission Outpost"], _
+	[120, "The Dragons Lair", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 5, "Mission Outpost"], _
+	[121, "Perdition Rock", 1, "Prophecies", 0, "Tyria", 6, "Fissure Of Woe", 2, "Explorable Zone"], _
+	[122, "Ring of Fire", 1, "Prophecies", 0, "Tyria", 6, "Fissure Of Woe", 5, "Mission Outpost"], _
+	[123, "Abaddons Mouth", 1, "Prophecies", 0, "Tyria", 6, "Fissure Of Woe", 5, "Mission Outpost"], _
+	[124, "Hells Precipice", 1, "Prophecies", 0, "Tyria", 6, "Fissure Of Woe", 5, "Mission Outpost"], _
+	[125, "Titans Tears", 1, "Prophecies", 0, "Tyria", 6, "Fissure Of Woe", 5, "Mission Outpost"], _
+	[126, "Golden Gates", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[127, "Scarred Earth", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[128, "The Eternal Grove", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
+	[129, "Lutgardis Conservatory", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
+	[130, "Vasburg Armory", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
+	[131, "Serenity Temple", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 10, "Outpost"], _
+	[132, "Ice Tooth Cave", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 10, "Outpost"], _
+	[133, "Beacons Perch", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 10, "Outpost"], _
+	[134, "Yaks Bend", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 10, "Outpost"], _
+	[135, "Frontier Gate", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 10, "Outpost"], _
+	[136, "Beetletun", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 10, "Outpost"], _
+	[137, "Fishermens Haven", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 10, "Outpost"], _
+	[138, "Temple of the Ages", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 10, "Outpost"], _
+	[139, "Ventaris Refuge", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 10, "Outpost"], _
+	[140, "Druids Overlook", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 10, "Outpost"], _
+	[141, "Maguuma Stade", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 10, "Outpost"], _
+	[142, "Quarrel Falls", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 10, "Outpost"], _
+	[143, "Ascalon Academy", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 10, "Outpost"], _
+	[144, "Gyala Hatchery", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
+	[145, "The Catacombs", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[146, "Lakeside County", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[147, "The Northlands", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[148, "Ascalon City", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 10, "Outpost"], _
+	[149, "Ascalon Academy", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 1, "Arena"], _
+	[150, "Ascalon Academy Pv Pbattle", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 1, "Arena"], _
+	[151, "Ascalon Academy", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[152, "Heroes Audience", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 10, "Outpost"], _
+	[153, "Seekers Passage", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 10, "Outpost"], _
+	[154, "Destinys Gorge", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 10, "Outpost"], _
+	[155, "Camp Rankor", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 10, "Outpost"], _
+	[156, "The Granite Citadel", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 10, "Outpost"], _
+	[157, "Marhans Grotto", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 10, "Outpost"], _
+	[158, "Port Sledge", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 10, "Outpost"], _
+	[159, "Copperhammer Mines", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 10, "Outpost"], _
+	[160, "Green Hills County", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[161, "Wizards Folly", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[162, "Pre Searing Regent Valley", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[163, "Pre Searing The Barradin Estate", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 10, "Outpost"], _
+	[164, "Pre Searing Ashford Abbey", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 10, "Outpost"], _
+	[165, "Pre Searing Foibles Fair", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 10, "Outpost"], _
+	[166, "Pre Searing Fort Ranik", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 10, "Outpost"], _
+	[167, "Burning Isle", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 3, "Guild Battle Area"], _
+	[168, "Druids Isle", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 3, "Guild Battle Area"], _
+	[169, "Unknown", 0, "Core", 3, "Battle Isles", 0, "Kryta", 21, "Dev Region"], _
+	[170, "Frozen Isle", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 3, "Guild Battle Area"], _
+	[171, "Warriors Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
+	[172, "Hunters Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
+	[173, "Wizards Isle", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
+	[174, "Nomads Isle", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 3, "Guild Battle Area"], _
+	[175, "Isle of the Dead", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 3, "Guild Battle Area"], _
+	[176, "Frozen Isle", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 4, "Guild Hall"], _
+	[177, "Nomads Isle", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 4, "Guild Hall"], _
+	[178, "Druids Isle", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 4, "Guild Hall"], _
+	[179, "Isle of the Dead", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 4, "Guild Hall"], _
+	[180, "Fort Koga", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 1, "Arena"], _
+	[181, "Shiverpeak Arena", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 1, "Arena"], _
+	[182, "Amnoon Arena", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 1, "Arena"], _
+	[183, "Deldrimor Arena", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 1, "Arena"], _
+	[184, "The Crag", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 1, "Arena"], _
+	[185, "The Underworld", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
+	[186, "The Underworld", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
+	[187, "The Underworld", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
+	[188, "Random Arena", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 1, "Arena"], _
+	[189, "Teams Arena", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 1, "Arena"], _
+	[190, "Sorrows Furnace", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[191, "Grenths Footprint", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[192, "All Call Click Point2", 0, "Core", 3, "Battle Isles", 0, "Kryta", 5, "Mission Outpost"], _
+	[193, "Cavalon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 13, "City"], _
+	[194, "Kaineng Center", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 13, "City"], _
+	[195, "Drazach Thicket", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
+	[196, "Jaya Bluffs", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[197, "Shenzun Tunnels", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[198, "Archipelagos", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
+	[199, "Maishang Hills", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
+	[200, "Mount Qinkai", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
+	[201, "Melandrus Hope", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
+	[202, "Rheas Crater", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
+	[203, "Silent Surf", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
+	[204, "Unwaking Waters Mission", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 6, "Cooperative Mission"], _
+	[205, "Morostav Trail", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
+	[206, "Deldrimor War Camp", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 10, "Outpost"], _
+	[207, "Dragons Thieves", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 2, "Explorable Zone"], _
+	[208, "Heroes Crypt", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 1, "Arena"], _
+	[209, "Mourning Veil Falls", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
+	[210, "Ferndale", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
+	[211, "Pongmei Valley", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[212, "Monastery Overlook", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[213, "Zen Daijun", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 5, "Mission Outpost"], _
+	[214, "Minister Chos Estate", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 5, "Mission Outpost"], _
+	[215, "Vizunah Square", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 6, "Cooperative Mission"], _
+	[216, "Nahpui Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 5, "Mission Outpost"], _
+	[217, "Tahnnakai Temple", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 5, "Mission Outpost"], _
+	[218, "Arborstone", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 5, "Mission Outpost"], _
+	[219, "Boreas Seabed", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 5, "Mission Outpost"], _
+	[220, "Sunjiang District", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 5, "Mission Outpost"], _
+	[221, "Fort Aspenwood", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 7, "Competitive Mission"], _
+	[222, "The Eternal Grove", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 5, "Mission Outpost"], _
+	[223, "The Jade Quarry", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 7, "Competitive Mission"], _
+	[224, "Gyala Hatchery", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 5, "Mission Outpost"], _
+	[225, "Raisu Palace", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 5, "Mission Outpost"], _
+	[226, "Imperial Sanctum", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 5, "Mission Outpost"], _
+	[227, "Unwaking Waters", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
+	[228, "Grenz Frontier", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
+	[229, "The Ancestral Lands", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
+	[230, "Amatz Basin", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 9, "Challenge"], _
+	[231, "Kaanai Canyon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
+	[232, "Shadows Passage", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[233, "Raisu Palace", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[234, "The Aurios Mines", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 9, "Challenge"], _
+	[235, "Panjiang Peninsula", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[236, "Kinya Province", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[237, "Haiju Lagoon", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[238, "Sunqua Vale", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[239, "Wajjun Bazaar", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[240, "Bukdek Byway", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[241, "The Undercity", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[242, "Shing Jea Monastery", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 13, "City"], _
+	[243, "Shing Jea Arena", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 1, "Arena"], _
+	[244, "Arborstone", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
+	[245, "Minister Chos Estate", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[246, "Zen Daijun", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[247, "Boreas Seabed", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 2, "Explorable Zone"], _
+	[248, "Great Temple of Balthazar", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 13, "City"], _
+	[249, "Tsumei Village", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 10, "Outpost"], _
+	[250, "Seitung Harbor", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 10, "Outpost"], _
+	[251, "Ran Musu Gardens", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 10, "Outpost"], _
+	[252, "Linnok Courtyard", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[253, "Dwayna Vs Grenth", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 1, "Arena"], _
+	[254, "Dwaynas Camp", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 5, "Mission Outpost"], _
+	[255, "Grenths Camp", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 5, "Mission Outpost"], _
+	[256, "Sunjiang District", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[257, "Minister Chos Estate", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 14, "Mission Area"], _
+	[258, "Zen Daijun", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 14, "Mission Area"], _
+	[259, "The Jade Quarry Kurzick", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
+	[260, "Nahpui Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
+	[261, "Tahnnakai Temple", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
+	[262, "Arborstone", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 14, "Mission Area"], _
+	[263, "Boreas Seabed", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
+	[264, "Sunjiang District", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
+	[265, "Nahpui Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[266, "Urgozs Warren", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 8, "Elite Mission"], _
+	[267, "The Eternal Grove", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 14, "Mission Area"], _
+	[268, "Gyala Hatchery", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
+	[269, "Tahnnakai Temple", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[270, "Raisu Palace", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
+	[271, "Imperial Sanctum", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
+	[272, "Altrumm Ruins", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 9, "Challenge"], _
+	[273, "Zos Shivros Channel", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 9, "Challenge"], _
+	[274, "Dragons Throat", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 9, "Challenge"], _
+	[275, "Isle of Weeping Stone", 0, "Core", 3, "Battle Isles", 9, "Echovald Forest", 4, "Guild Hall"], _
+	[276, "Isle of Jade", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 4, "Guild Hall"], _
+	[277, "Harvest Temple", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
+	[278, "Breaker Hollow", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
+	[279, "Leviathan Pits", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
+	[280, "Isle of the Nameless", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 2, "Explorable Zone"], _
+	[281, "Zaishen Challenge", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 11, "Zaishen Battle"], _
+	[282, "Zaishen Elite", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 11, "Zaishen Battle"], _
+	[283, "Maatu Keep", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 10, "Outpost"], _
+	[284, "Zin Ku Corridor", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 10, "Outpost"], _
+	[285, "Monastery Overlook", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[286, "Brauer Academy", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
+	[287, "Durheim Archives", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
+	[288, "Bai Paasu Reach", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
+	[289, "Seafarers Rest", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
+	[290, "Bejunkan Pier", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[291, "Vizunah Square Local Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 6, "Cooperative Mission"], _
+	[292, "Vizunah Square Foreign Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 6, "Cooperative Mission"], _
+	[293, "Fort Aspenwood Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 7, "Competitive Mission"], _
+	[294, "Fort Aspenwood Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 7, "Competitive Mission"], _
+	[295, "The Jade Quarry Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 7, "Competitive Mission"], _
+	[296, "The Jade Quarry Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 7, "Competitive Mission"], _
+	[297, "Unwaking Waters Luxon Outpost", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 6, "Cooperative Mission"], _
+	[298, "Unwaking Waters Kurzick Outpost", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 6, "Cooperative Mission"], _
+	[299, "Saltspray Beach", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
+	[300, "Etnaran Keys", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
+	[301, "Raisu Pavillion", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[302, "Kaineng Docks", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[303, "The Marketplace", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 10, "Outpost"], _
+	[304, "Vizunah Square Local Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
+	[305, "Vizunah Square Foreign Quarter", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
+	[306, "The Jade Quarry Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
+	[307, "The Deep", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 8, "Elite Mission"], _
+	[308, "Ascalon Arena", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 1, "Arena"], _
+	[309, "Annihilation", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
+	[310, "Kill Count Training", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
+	[311, "Annihilation", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
+	[312, "Obelisk Annihilation Training", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
+	[313, "Saoshang Trail", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[314, "Shiverpeak Arena", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 1, "Arena"], _
+	[315, "Unknown", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 21, "Dev Region"], _
+	[316, "Unknown", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 21, "Dev Region"], _
+	[317, "Unknown", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 21, "Dev Region"], _
+	[318, "DAlessio Arena", 0, "Core", 3, "Battle Isles", 0, "Kryta", 11, "Zaishen Battle"], _
+	[319, "Amnoon Arena", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 11, "Zaishen Battle"], _
+	[320, "Fort Koga", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
+	[321, "Heroes Crypt", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 11, "Zaishen Battle"], _
+	[322, "Shiverpeak Arena", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 11, "Zaishen Battle"], _
+	[323, "Fort Aspenwood Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 14, "Mission Area"], _
+	[324, "Fort Aspenwood Luxon", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 14, "Mission Area"], _
+	[325, "The Harvest Ceremony", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
+	[326, "The Harvest Ceremony", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 14, "Mission Area"], _
+	[327, "Imperial Sanctum", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[328, "Saltspray Beach Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
+	[329, "Saltspray Beach Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
+	[330, "Heroes Ascent", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[331, "Grenz Frontier Luxon", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
+	[332, "Grenz Frontier Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
+	[333, "The Ancestral Lands Luxon", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
+	[334, "The Ancestral Lands Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 0, "Alliance Battle"], _
+	[335, "Etnaran Keys Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
+	[336, "Etnaran Keys Kurzick", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
+	[337, "Kaanai Canyon Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
+	[338, "Kaanai Canyon Kurzick", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 0, "Alliance Battle"], _
+	[339, "DAlessio Arena", 0, "Core", 3, "Battle Isles", 0, "Kryta", 11, "Zaishen Battle"], _
+	[340, "Amnoon Arena", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 11, "Zaishen Battle"], _
+	[341, "Fort Koga", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 11, "Zaishen Battle"], _
+	[342, "Heroes Crypt", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 11, "Zaishen Battle"], _
+	[343, "Shiverpeak Arena", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 11, "Zaishen Battle"], _
+	[344, "The Hall of Heroes", 1, "Prophecies", 0, "Tyria", 4, "Heroes Ascent", 2, "Explorable Zone"], _
+	[345, "The Courtyard", 1, "Prophecies", 0, "Tyria", 4, "Heroes Ascent", 2, "Explorable Zone"], _
+	[346, "Scarred Earth", 1, "Prophecies", 0, "Tyria", 4, "Heroes Ascent", 2, "Explorable Zone"], _
+	[347, "The Underworld", 1, "Prophecies", 0, "Tyria", 4, "Heroes Ascent", 2, "Explorable Zone"], _
+	[348, "Tanglewood Copse", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
+	[349, "Saint Anjekas Shrine", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
+	[350, "Eredon Terrace", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
+	[351, "Divine Path", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[352, "Brawlers Pit", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 1, "Arena"], _
+	[353, "Petrified Arena", 0, "Core", 3, "Battle Isles", 9, "Echovald Forest", 1, "Arena"], _
+	[354, "Seabed Arena", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 1, "Arena"], _
+	[355, "Isle of Weeping Stone", 0, "Core", 3, "Battle Isles", 9, "Echovald Forest", 3, "Guild Battle Area"], _
+	[356, "Isle of Jade", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 3, "Guild Battle Area"], _
+	[357, "Imperial Isle", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 3, "Guild Battle Area"], _
+	[358, "Isle of Meditation", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
+	[359, "Imperial Isle", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 4, "Guild Hall"], _
+	[360, "Isle of Meditation", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
+	[361, "Isle of Weeping Stone", 0, "Core", 3, "Battle Isles", 9, "Echovald Forest", 2, "Explorable Zone"], _
+	[362, "Isle of Jade", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 2, "Explorable Zone"], _
+	[363, "Imperial Isle", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[364, "Isle of Meditation", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
+	[365, "Random Arenas Test", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 1, "Arena"], _
+	[366, "Shing Jea Arena", 0, "Core", 3, "Battle Isles", 11, "Shing Jea Island", 1, "Arena"], _
+	[367, "All Skills", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 2, "Explorable Zone"], _
+	[368, "Dragon Arena", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 1, "Arena"], _
+	[369, "Jahai Bluffs", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[370, "Kamadan Jewel of Istan", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
+	[371, "Marga Coast", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[372, "Fahranur", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[373, "Sunward Marches", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[374, "Roleplaying Character", 3, "Nightfall", 4, "Elona", 27, "Dev Region", 21, "Dev Region"], _
+	[375, "Barbarous Shore", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[376, "Camp Hojanu", 3, "Nightfall", 4, "Elona", 12, "Kourna", 10, "Outpost"], _
+	[377, "Bahdok Caverns", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[378, "Wehhan Terraces", 3, "Nightfall", 4, "Elona", 12, "Kourna", 10, "Outpost"], _
+	[379, "Dejarin Estate", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[380, "Arkjok Ward", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[381, "Yohlon Haven", 3, "Nightfall", 4, "Elona", 12, "Kourna", 10, "Outpost"], _
+	[382, "Gandarathe Moon Fortress", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[383, "Vortex", 3, "Nightfall", 5, "Realm Of Torment", 27, "Dev Region", 21, "Dev Region"], _
+	[384, "The Floodplain of Mahnkelon", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[385, "Lions Arch during Sunspears in Kryta", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[386, "Turais Procession", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[387, "Sunspear Sanctuary", 3, "Nightfall", 4, "Elona", 12, "Kourna", 13, "City"], _
+	[388, "Aspenwood Gate Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
+	[389, "Aspenwood Gate Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
+	[390, "Jade Flats Kurzick", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 10, "Outpost"], _
+	[391, "Jade Flats Luxon", 2, "Factions", 2, "Cantha", 10, "Jade Sea", 10, "Outpost"], _
+	[392, "Yatendi Canyons", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[393, "Chantry of Secrets", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 10, "Outpost"], _
+	[394, "Garden of Seborhin", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[395, "Holdings of Chokhin", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[396, "Mihanu Township", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 10, "Outpost"], _
+	[397, "Vehjin Mines", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[398, "Basalt Grotto", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 10, "Outpost"], _
+	[399, "Forum Highlands", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[400, "Kaineng Center during Sunspears in Cantha", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[401, "Sebelkeh Basilica", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[402, "Resplendent Makuun", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[403, "Honur Hill", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 10, "Outpost"], _
+	[404, "Wilderness of Bahdza", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[405, "Sun Docks", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
+	[406, "Vehtendi Valley", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[407, "Yahnur Market", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 10, "Outpost"], _
+	[408, "Here Be Dragons", 0, "Core", 3, "Battle Isles", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[409, "Here Be Dragons", 0, "Core", 3, "Battle Isles", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[410, "Here Be Dragons", 0, "Core", 3, "Battle Isles", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[411, "Here Be Dragons", 0, "Core", 3, "Battle Isles", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[412, "Here Be Dragons", 0, "Core", 3, "Battle Isles", 7, "Pre-Searing Ascalon", 2, "Explorable Zone"], _
+	[413, "The Hidden City of Ahdashim", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[414, "The Kodash Bazaar", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 13, "City"], _
+	[415, "Lions Gate", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[416, "Monastery Overlook", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 14, "Mission Area"], _
+	[417, "Bejunkan Pier", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 14, "Mission Area"], _
+	[418, "Lions Gate", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 14, "Mission Area"], _
+	[419, "The Mirror of Lyss", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[420, "Securethe Refuge", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[421, "Venta Cemetery", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
+	[422, "Bad Tide Rising Kamadan", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[423, "The Tribunal", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[424, "Kodonur Crossroads", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
+	[425, "Rilohn Refuge", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
+	[426, "Pogahn Passage", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
+	[427, "Moddok Crevice", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
+	[428, "Tihark Orchard", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 5, "Mission Outpost"], _
+	[429, "Consulate", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[430, "Plains of Jarin", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[431, "Sunspear Great Hall", 3, "Nightfall", 4, "Elona", 15, "Istan", 10, "Outpost"], _
+	[432, "Cliffs of Dohjok", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[433, "Dzagonur Bastion", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 5, "Mission Outpost"], _
+	[434, "Dasha Vestibule", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 5, "Mission Outpost"], _
+	[435, "Grand Court of Sebelkeh", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 5, "Mission Outpost"], _
+	[436, "Command Post", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[437, "Jokos Domain", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
+	[438, "Bone Palace", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 10, "Outpost"], _
+	[439, "The Ruptured Heart", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
+	[440, "The Mouth of Torment", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 10, "Outpost"], _
+	[441, "The Shattered Ravines", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
+	[442, "Lair of the Forgotten", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 10, "Outpost"], _
+	[443, "Poisoned Outcrops", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
+	[444, "The Sulfurous Wastes", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
+	[445, "The Ebony Citadel of Mallyx", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 8, "Elite Mission"], _
+	[446, "The Alkali Pan", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
+	[447, "ALand of Heroes", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[448, "Crystal Overlook", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
+	[449, "Kamadan Jewel of Istan", 3, "Nightfall", 4, "Elona", 15, "Istan", 13, "City"], _
+	[450, "Gate of Torment", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 13, "City"], _
+	[451, "Gate of Anguish", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 8, "Elite Mission"], _
+	[452, "Securethe Refuge", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
+	[453, "Evacuation", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
+	[454, "Test Map", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 5, "Mission Outpost"], _
+	[455, "Nightfallen Garden", 3, "Nightfall", 4, "Elona", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[456, "Chuurhir Fields", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[457, "Beknur Harbor", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[458, "Kodonur Crossroads", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
+	[459, "Rilohn Refuge", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
+	[460, "Pogahn Passage", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
+	[461, "The Underworld", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 2, "Explorable Zone"], _
+	[462, "Heart of Abaddon", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[463, "The Underworld", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 2, "Explorable Zone"], _
+	[464, "Nightfallen Coast", 3, "Nightfall", 4, "Elona", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[465, "Nightfallen Jahai", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[466, "Depths of Madness", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[467, "Rollerbeetle Racing", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 1, "Arena"], _
+	[468, "Domain of Fear", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[469, "Gate of Fear", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 10, "Outpost"], _
+	[470, "Domain of Pain", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[471, "Bloodstone Fen", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[472, "Domain of Secrets", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[473, "Gate of Secrets", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 10, "Outpost"], _
+	[474, "Domain of Anguish", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 8, "Elite Mission"], _
+	[475, "Ooze Pit", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[476, "Jennurs Horde", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 5, "Mission Outpost"], _
+	[477, "Nundu Bay", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
+	[478, "Gate of Desolation", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 5, "Mission Outpost"], _
+	[479, "Champions Dawn", 3, "Nightfall", 4, "Elona", 15, "Istan", 10, "Outpost"], _
+	[480, "Ruins of Morah", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 5, "Mission Outpost"], _
+	[481, "Fahranur The First City", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[482, "Bjora Marches", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[483, "Zehlon Reach", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[484, "Lahtenda Bog", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[485, "Arbor Bay", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[486, "Issnur Isles", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[487, "Beknur Harbor", 3, "Nightfall", 4, "Elona", 15, "Istan", 10, "Outpost"], _
+	[488, "Mehtani Keys", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[489, "Kodlonu Hamlet", 3, "Nightfall", 4, "Elona", 15, "Istan", 10, "Outpost"], _
+	[490, "Island of Shehkah", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[491, "Jokanur Diggings", 3, "Nightfall", 4, "Elona", 15, "Istan", 5, "Mission Outpost"], _
+	[492, "Blacktide Den", 3, "Nightfall", 4, "Elona", 15, "Istan", 5, "Mission Outpost"], _
+	[493, "Consulate Docks", 3, "Nightfall", 4, "Elona", 12, "Kourna", 5, "Mission Outpost"], _
+	[494, "Gate of Pain", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 5, "Mission Outpost"], _
+	[495, "Gate of Madness", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 5, "Mission Outpost"], _
+	[496, "Abaddons Gate", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 5, "Mission Outpost"], _
+	[497, "Sunspear Arena", 3, "Nightfall", 4, "Elona", 15, "Istan", 1, "Arena"], _
+	[498, "Unknown", 3, "Nightfall", 4, "Elona", 12, "Kourna", 21, "Dev Region"], _
+	[499, "Ice Cliff Chasms", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[500, "Bokka Amphitheatre", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[501, "Riven Earth", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[502, "The Astralarium", 3, "Nightfall", 4, "Elona", 15, "Istan", 10, "Outpost"], _
+	[503, "Throne of Secrets", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[504, "Churranu Island Arena", 0, "Core", 3, "Battle Isles", 12, "Kourna", 1, "Arena"], _
+	[505, "Shing Jea Monastery", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[506, "Haiju Lagoon", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[507, "Jaya Bluffs", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[508, "Seitung Harbor", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[509, "Tsumei Village", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[510, "Seitung Harbor", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[511, "Tsumei Village", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[512, "Minister Chos Estate", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[513, "Drakkar Lake", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[514, "Island of Shehkah", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
+	[515, "Jokanur Diggings", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
+	[516, "Blacktide Den", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
+	[517, "Consulate Docks", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
+	[518, "Tihark Orchard", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 14, "Mission Area"], _
+	[519, "Dzagonur Bastion", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 14, "Mission Area"], _
+	[520, "Hidden City of Ahdashim", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 14, "Mission Area"], _
+	[521, "Grand Court of Sebelkeh", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 14, "Mission Area"], _
+	[522, "Jennurs Horde", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 14, "Mission Area"], _
+	[523, "Nundu Bay", 3, "Nightfall", 4, "Elona", 12, "Kourna", 14, "Mission Area"], _
+	[524, "Gates of Desolation", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 14, "Mission Area"], _
+	[525, "Ruins of Morah", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 14, "Mission Area"], _
+	[526, "Domain of Pain", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 14, "Mission Area"], _
+	[527, "Gate of Madness", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 14, "Mission Area"], _
+	[528, "Abaddons Gate", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 14, "Mission Area"], _
+	[529, "Uncharted Isle", 0, "Core", 3, "Battle Isles", 15, "Istan", 4, "Guild Hall"], _
+	[530, "Isle of Wurms", 0, "Core", 3, "Battle Isles", 0, "Kryta", 4, "Guild Hall"], _
+	[531, "Uncharted Isle", 0, "Core", 3, "Battle Isles", 15, "Istan", 2, "Explorable Zone"], _
+	[532, "Isle of Wurms", 0, "Core", 3, "Battle Isles", 0, "Kryta", 2, "Explorable Zone"], _
+	[533, "Uncharted Isle", 0, "Core", 3, "Battle Isles", 15, "Istan", 3, "Guild Battle Area"], _
+	[534, "Isle of Wurms", 0, "Core", 3, "Battle Isles", 0, "Kryta", 3, "Guild Battle Area"], _
+	[535, "Ahmtur Arena", 0, "Core", 3, "Battle Isles", 13, "Vabbi", 1, "Arena"], _
+	[536, "Sunspear Arena", 0, "Core", 3, "Battle Isles", 15, "Istan", 1, "Arena"], _
+	[537, "Corrupted Isle", 0, "Core", 3, "Battle Isles", 16, "Domain Of Anguish", 4, "Guild Hall"], _
+	[538, "Isle of Solitude", 0, "Core", 3, "Battle Isles", 12, "Kourna", 4, "Guild Hall"], _
+	[539, "Corrupted Isle", 0, "Core", 3, "Battle Isles", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[540, "Isle of Solitude", 0, "Core", 3, "Battle Isles", 12, "Kourna", 2, "Explorable Zone"], _
+	[541, "Corrupted Isle", 0, "Core", 3, "Battle Isles", 16, "Domain Of Anguish", 3, "Guild Battle Area"], _
+	[542, "Isle of Solitude", 0, "Core", 3, "Battle Isles", 12, "Kourna", 3, "Guild Battle Area"], _
+	[543, "Sun Docks", 3, "Nightfall", 4, "Elona", 15, "Istan", 2, "Explorable Zone"], _
+	[544, "Chahbek Village", 3, "Nightfall", 4, "Elona", 15, "Istan", 5, "Mission Outpost"], _
+	[545, "Remains of Sahlahja", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 9, "Challenge"], _
+	[546, "Jaga Moraine", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[547, "Bombardment", 0, "Core", 3, "Battle Isles", 13, "Vabbi", 16, "Hero Battle Area"], _
+	[548, "Norrhart Domains", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[549, "Hero Battles", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 15, "Hero Battle Outpost"], _
+	[550, "The Beachhead", 0, "Core", 3, "Battle Isles", 15, "Istan", 16, "Hero Battle Area"], _
+	[551, "The Crossing", 0, "Core", 3, "Battle Isles", 12, "Kourna", 16, "Hero Battle Area"], _
+	[552, "Desert Sands", 0, "Core", 3, "Battle Isles", 14, "The Desolation", 16, "Hero Battle Area"], _
+	[553, "Varajar Fells", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[554, "Dajkah Inlet", 3, "Nightfall", 4, "Elona", 12, "Kourna", 9, "Challenge"], _
+	[555, "The Shadow Nexus", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 9, "Challenge"], _
+	[556, "Chahbek Village", 3, "Nightfall", 4, "Elona", 15, "Istan", 14, "Mission Area"], _
+	[557, "Throne Of Secrets", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 10, "Outpost"], _
+	[558, "Sparkfly Swamp", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[559, "Gate of the Nightfallen Lands", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 10, "Outpost"], _
+	[560, "Cathedral of Flames", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[561, "The Troubled Keeper", 3, "Nightfall", 5, "Realm Of Torment", 16, "Domain Of Anguish", 2, "Explorable Zone"], _
+	[562, "Fortress of Jahai", 3, "Nightfall", 4, "Elona", 12, "Kourna", 2, "Explorable Zone"], _
+	[563, "Halls of Chokhin", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[564, "Citadel of Dzagon", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[565, "Dynastic Tombs", 3, "Nightfall", 4, "Elona", 14, "The Desolation", 2, "Explorable Zone"], _
+	[566, "Verdant Cascades", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[567, "Cathedral of Flames Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[568, "Cathedral of Flames Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[569, "Magus Stones", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[570, "Catacombs of Kathandrax Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[571, "Catacombs of Kathandrax Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[572, "Alcazia Tangle", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[573, "Rragars Menagerie Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[574, "Rragars Menagerie Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[575, "Rragars Menagerie Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[576, "Ooze Pit", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[577, "Slavers Exile", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[578, "Oolas Lab Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[579, "Oolas Lab Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[580, "Oolas Lab Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[581, "Shards of Oor Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[582, "Shards of Oor Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[583, "Shards of Oor Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[584, "Arachnis Haunt Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[585, "Arachnis Haunt Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[586, "Burning Embers", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[587, "Burning Furnace", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[588, "Burning Temple", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[589, "Catacombs Lush", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[590, "Catacombs Stone", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[591, "Catacombs Tomb", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[592, "5teamtest", 3, "Nightfall", 4, "Elona", 12, "Kourna", 6, "Cooperative Mission"], _
+	[593, "Fetid River", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[594, "Overlook", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[595, "Cemetery", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[596, "Forgotten Shrines", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[597, "Track", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[598, "Antechamber", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[599, "Collision", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[600, "The hall of Heroes", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 12, "Heroes Ascent"], _
+	[601, "Frozen Crevasse", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[602, "Frozen Depleted", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[603, "Frozen Fort", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[604, "Vloxen Excavations Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[605, "Vloxen Excavations Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[606, "Vloxen Excavations Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[607, "Heart of the Shiverpeaks Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[608, "Heart of the Shiverpeaks Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[609, "Heart of the Shiverpeaks Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[610, "The Journeyto Nornheim", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[611, "The Journeyto Nornheim", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[612, "Bloodstone Caves Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[613, "Bloodstone Caves Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[614, "Bloodstone Caves Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[615, "Bogroot Growths Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[616, "Bogroot Growths Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[617, "Ravens Point Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[618, "Ravens Point Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[619, "Ravens Point Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[620, "Slavers Exile Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[621, "Slavers Exile Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[622, "Slavers Exile Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[623, "Slavers Exile Lvl4", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[624, "Vloxs Falls", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 10, "Outpost"], _
+	[625, "Battledepths", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[626, "Battledepths Level2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[627, "Battledepths Level3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[628, "Sepulchre of Dragrimmar Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[629, "Sepulchre of Dragrimmar Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[630, "Frostmaws Burrows Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[631, "Frostmaws Burrows Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[632, "Frostmaws Burrows Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[633, "Frostmaws Burrows Lvl4", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[634, "Frostmaws Burrows Lvl5", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[635, "Darkrime Delves Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[636, "Darkrime Delves Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[637, "Darkrime Delves Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[638, "Gadds Encampment", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 10, "Outpost"], _
+	[639, "Umbral Grotto", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 10, "Outpost"], _
+	[640, "Rata Sum", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 13, "City"], _
+	[641, "Tarnished Haven", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 10, "Outpost"], _
+	[642, "Eye of the North", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 10, "Outpost"], _
+	[643, "Sifhalla", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 10, "Outpost"], _
+	[644, "Gunnars Hold", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 13, "City"], _
+	[645, "Olafstead", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 10, "Outpost"], _
+	[646, "hall of Monuments", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[647, "Dalada Uplands", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 2, "Explorable Zone"], _
+	[648, "Doomlore Shrine", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 13, "City"], _
+	[649, "Grothmar Wardowns", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 2, "Explorable Zone"], _
+	[650, "Longeyes Ledge", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 10, "Outpost"], _
+	[651, "Sacnoth Valley", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 2, "Explorable Zone"], _
+	[652, "Central Transfer Chamber", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 10, "Outpost"], _
+	[653, "Curseofthe Nornbear", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[654, "Blood Washes Blood", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[655, "A Gate Too Far Lvl1", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 18, "Dungeon"], _
+	[656, "A Gate Too Far Lvl2", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 18, "Dungeon"], _
+	[657, "A Gate Too Far Lvl3", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 18, "Dungeon"], _
+	[658, "The Elusive Golemancer Lvl1", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 18, "Dungeon"], _
+	[659, "The Elusive Golemancer Lvl2", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 18, "Dungeon"], _
+	[660, "The Elusive Golemancer Lvl3", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 18, "Dungeon"], _
+	[661, "Findingthe Bloodstone Lvl1", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 18, "Dungeon"], _
+	[662, "Findingthe Bloodstone Lvl2", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 18, "Dungeon"], _
+	[663, "Findingthe Bloodstone Lvl3", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 18, "Dungeon"], _
+	[664, "Genius Operated Living Enchanted Manifestation", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[665, "Againstthe Charr", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 2, "Explorable Zone"], _
+	[666, "Warband of Brothers Lvl1", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 18, "Dungeon"], _
+	[667, "Warband of Brothers Lvl2", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 18, "Dungeon"], _
+	[668, "Warband of Brothers Lvl3", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 18, "Dungeon"], _
+	[669, "Assault the Stronghold", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 2, "Explorable Zone"], _
+	[670, "Destructions Depths Lvl1", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[671, "Destructions Depths Lvl2", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[672, "Destructions Depths Lvl3", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[673, "A Timefor Heroes", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[674, "Warband Training", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 2, "Explorable Zone"], _
+	[675, "Boreal Station", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 10, "Outpost"], _
+	[676, "Catacombs of Kathandrax", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[677, "hall of Primordus", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[678, "Attack of the Nornbear", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[679, "Cinematic Cave Norn Cursed", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[680, "Cinematic Steppe Interrogation", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 14, "Mission Area"], _
+	[681, "Cinematic Interior Research", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 14, "Mission Area"], _
+	[682, "Cinematic Eye Vision A", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 14, "Mission Area"], _
+	[683, "Cinematic Eye Vision B", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 14, "Mission Area"], _
+	[684, "Cinematic Eye Vision C", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 14, "Mission Area"], _
+	[685, "Cinematic Eye Vision D", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 14, "Mission Area"], _
+	[686, "Polymock Coliseum", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[687, "Polymock Glacier", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[688, "Polymock Crossing", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 2, "Explorable Zone"], _
+	[689, "Cinematic Mountain Resolution", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 14, "Mission Area"], _
+	[690, "Cold As Ice", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[691, "Beneath Lions Arch", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[692, "Tunnels Below Cantha", 4, "Eye Of The North", 2, "Cantha", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[693, "Caverns Below Kamadan", 4, "Eye Of The North", 4, "Elona", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[694, "Cinematic Mountain Dwarfs", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[695, "Service In Defenseofthe Eye", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[696, "Manoa Norno", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[697, "Service Practice Dummy", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[698, "Hero Tutorial", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[699, "Prototype Map", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[700, "The Norn Fighting Tournament", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[701, "Secret Lairofthe Snowmen", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[702, "Norn Brawling Championship", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[703, "Kilroys Punchout Training", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[704, "Fronis Irontoes Lair", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[705, "The Justiciars End", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[706, "Designer Test Map", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[707, "The Great Norn Alemoot", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[708, "Varajar Fells", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[709, "Battlefor Nornheim", 0, "Core", 3, "Battle Isles", 12, "Kourna", 1, "Arena"], _
+	[710, "Epilogue", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[711, "Insidious Remnants", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[712, "Unknown", 0, "Core", 3, "Battle Isles", 15, "Istan", 1, "Arena"], _
+	[713, "Unknown", 0, "Core", 3, "Battle Isles", 13, "Vabbi", 1, "Arena"], _
+	[714, "Unknown", 0, "Core", 3, "Battle Isles", 14, "The Desolation", 1, "Arena"], _
+	[715, "Unknown", 5, "Bonus Mission Pack", 0, "Tyria", 25, "The Rise Of The White Mantle", 14, "Mission Area"], _
+	[716, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 14, "Mission Area"], _
+	[717, "Attackon Jaliss Camp", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[718, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 14, "Mission Area"], _
+	[719, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 14, "Mission Area"], _
+	[720, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 2, "Explorable Zone"], _
+	[721, "Costume Brawl", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 1, "Arena"], _
+	[722, "Whitefury Rapids", 0, "Core", 3, "Battle Isles", 20, "Charr Homelands", 1, "Arena"], _
+	[723, "Kysten Shore", 0, "Core", 3, "Battle Isles", 19, "Far Shiverpeaks", 1, "Arena"], _
+	[724, "Deepway Ruins", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 1, "Arena"], _
+	[725, "Plikkup Works", 0, "Core", 3, "Battle Isles", 17, "Tarnished Coast", 1, "Arena"], _
+	[726, "Kilroys Punchout Tournament", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[727, "Special Ops Flame Temple Corridor", 4, "Eye Of The North", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[728, "Special Ops Dragon Gullet", 4, "Eye Of The North", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[729, "Special Ops Grendich Courthouse", 4, "Eye Of The North", 0, "Tyria", 2, "Ascalon", 2, "Explorable Zone"], _
+	[730, "Unknown", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 14, "Mission Area"], _
+	[731, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[732, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[733, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[734, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[735, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[736, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[737, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[738, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[739, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 14, "Mission Area"], _
+	[740, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 14, "Mission Area"], _
+	[741, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 14, "Mission Area"], _
+	[742, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 14, "Mission Area"], _
+	[743, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 14, "Mission Area"], _
+	[744, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 14, "Mission Area"], _
+	[745, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 14, "Mission Area"], _
+	[746, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 14, "Mission Area"], _
+	[747, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 14, "Mission Area"], _
+	[748, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 14, "Mission Area"], _
+	[749, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 14, "Mission Area"], _
+	[750, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 14, "Mission Area"], _
+	[751, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 14, "Mission Area"], _
+	[752, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 14, "Mission Area"], _
+	[753, "Unknown", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 14, "Mission Area"], _
+	[754, "Unknown", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 14, "Mission Area"], _
+	[755, "Unknown", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 14, "Mission Area"], _
+	[756, "Unknown", 1, "Prophecies", 0, "Tyria", 27, "Dev Region", 21, "Dev Region"], _
+	[757, "Unknown", 2, "Factions", 2, "Cantha", 27, "Dev Region", 21, "Dev Region"], _
+	[758, "Unknown", 3, "Nightfall", 4, "Elona", 27, "Dev Region", 21, "Dev Region"], _
+	[759, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 17, "Eye Of The North Mission"], _
+	[760, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 17, "Eye Of The North Mission"], _
+	[761, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 17, "Eye Of The North Mission"], _
+	[762, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 17, "Eye Of The North Mission"], _
+	[763, "Unknown", 4, "Eye Of The North", 0, "Tyria", 20, "Charr Homelands", 17, "Eye Of The North Mission"], _
+	[764, "Unknown", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 17, "Eye Of The North Mission"], _
+	[765, "Unknown", 4, "Eye Of The North", 0, "Tyria", 18, "Depths Of Tyria", 17, "Eye Of The North Mission"], _
+	[766, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 17, "Eye Of The North Mission"], _
+	[767, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 17, "Eye Of The North Mission"], _
+	[768, "Unknown", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 17, "Eye Of The North Mission"], _
+	[769, "Unknown", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 17, "Eye Of The North Mission"], _
+	[770, "The Tengu Accords", 5, "Bonus Mission Pack", 2, "Cantha", 24, "The Tengu Accords", 2, "Explorable Zone"], _
+	[771, "The Battleof Jahai", 5, "Bonus Mission Pack", 4, "Elona", 22, "The Battle Of Jahai", 2, "Explorable Zone"], _
+	[772, "The Flight North", 5, "Bonus Mission Pack", 0, "Tyria", 23, "The Flight North", 2, "Explorable Zone"], _
+	[773, "The Riseofthe White Mantle", 5, "Bonus Mission Pack", 0, "Tyria", 25, "The Rise Of The White Mantle", 2, "Explorable Zone"], _
+	[774, "Unknown", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 19, "Marketplace"], _
+	[775, "Unknown", 5, "Bonus Mission Pack", 2, "Cantha", 24, "The Tengu Accords", 14, "Mission Area"], _
+	[776, "Unknown", 0, "Core", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[777, "Unknown", 5, "Bonus Mission Pack", 4, "Elona", 22, "The Battle Of Jahai", 14, "Mission Area"], _
+	[778, "Unknown", 5, "Bonus Mission Pack", 0, "Tyria", 23, "The Flight North", 14, "Mission Area"], _
+	[779, "Pre-Searing: Piken Square", 1, "Prophecies", 1, "Eden", 7, "Pre-Searing Ascalon", 10, "Outpost"], _
+	[780, "Forsaken Tunnels Level 1", 0, "Core", 1, "Eden", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[781, "Secret Lairofthe Snowmen Lvl1", 0, "Core", 0, "Tyria", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[782, "Secret Lairofthe Snowmen Lvl2", 0, "Core", 0, "Tyria", 18, "Depths Of Tyria", 2, "Explorable Zone"], _
+	[783, "Droknars Forge", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[784, "Isle Of The Nameless", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 11, "Zaishen Battle"], _
+	[785, "Unknown", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 16, "Hero Battle Area"], _
+	[786, "Unknown", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 3, "Guild Battle Area"], _
+	[787, "Unknown", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 3, "Guild Battle Area"], _
+	[788, "Deactivating ROX", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[789, "Deactivating POX", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[790, "Deactivating NOX", 3, "Nightfall", 4, "Elona", 13, "Vabbi", 2, "Explorable Zone"], _
+	[791, "Secret Underground Lair", 0, "Core", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[792, "Golem Tutorial Simulation", 0, "Core", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[793, "Snowball Dominance", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[794, "Zaishen Menagerie Grounds", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 2, "Explorable Zone"], _
+	[795, "Zaishen Menagerie", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 10, "Outpost"], _
+	[796, "Codex", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 1, "Arena"], _
+	[797, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[798, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[799, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[800, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[801, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[802, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[803, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[804, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[805, "Unknown", 0, "Core", 3, "Battle Isles", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[806, "The Underworld Something Wicked This Way Comes", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 2, "Explorable Zone"], _
+	[807, "The Underworld Dont Fearthe Reapers", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 2, "Explorable Zone"], _
+	[808, "Lions Arch Halloween", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 13, "City"], _
+	[809, "Lions Arch Wintersday", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 13, "City"], _
+	[810, "Lions Arch Canthan New Year", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 13, "City"], _
+	[811, "Ascalon City Wintersday", 1, "Prophecies", 0, "Tyria", 2, "Ascalon", 13, "City"], _
+	[812, "Droknars Forge Halloween", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 13, "City"], _
+	[813, "Droknars Forge Wintersday", 1, "Prophecies", 0, "Tyria", 3, "Northern Shiverpeaks", 13, "City"], _
+	[814, "Tomb of the Primeval Kings Halloween", 1, "Prophecies", 0, "Tyria", 5, "Crystal Desert", 10, "Outpost"], _
+	[815, "Shing Jea Monastery Dragon Festival", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 13, "City"], _
+	[816, "Shing Jea Monastery Canthan New Year", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 13, "City"], _
+	[817, "Kaineng Center", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 13, "City"], _
+	[818, "Kamadan Jewel of Istan Halloween", 3, "Nightfall", 4, "Elona", 15, "Istan", 13, "City"], _
+	[819, "Kamadan Jewel of Istan Wintersday", 3, "Nightfall", 4, "Elona", 15, "Istan", 13, "City"], _
+	[820, "Kamadan Jewel of Istan Canthan New Year", 3, "Nightfall", 4, "Elona", 15, "Istan", 13, "City"], _
+	[821, "Eye of the North Wintersday", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 10, "Outpost"], _
+	[822, "Unknown", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 13, "City"], _
+	[823, "Unknown", 0, "Core", 3, "Battle Isles", 0, "Tyria", 1, "Arena"], _
+	[824, "Unknown", 0, "Core", 3, "Battle Isles", 5, "Crystal Desert", 1, "Arena"], _
+	[825, "Unknown", 0, "Core", 3, "Battle Isles", 12, "Kourna", 1, "Arena"], _
+	[826, "Unknown", 0, "Core", 3, "Battle Isles", 1, "Maguuma Jungle", 1, "Arena"], _
+	[827, "Unknown", 0, "Core", 3, "Battle Isles", 9, "Echovald Forest", 1, "Arena"], _
+	[828, "Unknown", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 1, "Arena"], _
+	[829, "Unknown", 0, "Core", 3, "Battle Isles", 10, "Jade Sea", 1, "Arena"], _
+	[830, "Unknown", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 1, "Arena"], _
+	[831, "Unknown", 0, "Core", 3, "Battle Isles", 8, "Kaineng City", 1, "Arena"], _
+	[832, "Unknown", 0, "Core", 3, "Battle Isles", 6, "Fissure Of Woe", 1, "Arena"], _
+	[833, "Unknown", 0, "Core", 3, "Battle Isles", 15, "Istan", 1, "Arena"], _
+	[834, "Unknown", 0, "Core", 3, "Battle Isles", 11, "Shing Jea Island", 1, "Arena"], _
+	[835, "Unknown", 0, "Core", 3, "Battle Isles", 2, "Ascalon", 1, "Arena"], _
+	[836, "Unknown", 0, "Core", 3, "Battle Isles", 3, "Northern Shiverpeaks", 1, "Arena"], _
+	[837, "War in Kryta Talmark Wilderness", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[838, "Trialof Zinn", 4, "Eye Of The North", 0, "Tyria", 17, "Tarnished Coast", 2, "Explorable Zone"], _
+	[839, "Divinity Coast", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[840, "Lions Arch Keep", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[841, "DAlessio Seaboard", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[842, "The Battle for Lions Arch", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[843, "Riverside Province", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[844, "War in Kryta Lions Arch", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[845, "The Mausoleum", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[846, "Rise Map", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[847, "Shadowsin the Jungle", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[848, "A Vengeance of Blades", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[849, "Auspicious Beginnings", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[850, "Unknown", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[851, "Unknown", 1, "Prophecies", 0, "Tyria", 1, "Maguuma Jungle", 2, "Explorable Zone"], _
+	[852, "Unknown", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[853, "Unknown", 1, "Prophecies", 0, "Tyria", 0, "Kryta", 2, "Explorable Zone"], _
+	[854, "Olafstead", 4, "Eye Of The North", 0, "Tyria", 19, "Far Shiverpeaks", 2, "Explorable Zone"], _
+	[855, "The Great Snowball Fight Crush Spirits", 0, "Core", 0, "Tyria", 3, "Northern Shiverpeaks", 1, "Arena"], _
+	[856, "The Great Snowball Fight Winter Wonderland", 0, "Core", 0, "Tyria", 3, "Northern Shiverpeaks", 2, "Explorable Zone"], _
+	[857, "Embark Beach", 0, "Core", 3, "Battle Isles", 21, "Battle Islands", 10, "Outpost"], _
+	[858, "Unknown", 0, "Core", 0, "Tyria", 26, "SWAT", 2, "Explorable Zone"], _
+	[859, "Unknown", 0, "Core", 0, "Tyria", 26, "SWAT", 2, "Explorable Zone"], _
+	[860, "What Waitsin Shadow Dragons Throat", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[861, "A Chance Encounter Kaineng Center", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[862, "Trackingthe Corruption Marketplace", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[863, "Cantha Courier Bukdek Byway", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[864, "A Treatysa Treaty Tsumei Village", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[865, "Deadly Cargo Seitung Harbor", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[866, "The Rescue Attempt Tahnnakai Temple", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[867, "Violenceinthe Streets Wajjun Bazaar", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[868, "Sacred Psyche", 0, "Core", 3, "Battle Isles", 4, "Heroes Ascent", 9, "Challenge"], _
+	[869, "Calling All Thugs Shadows Passage", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[870, "Finding Jinnai Altrumm Ruins", 2, "Factions", 2, "Cantha", 9, "Echovald Forest", 2, "Explorable Zone"], _
+	[871, "Raidon Shing Jea Monastery Shing Jea Monastery", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[872, "Raidon Kaineng Center Kaineng Center", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[873, "Ministry of Oppression Wajjun Bazaar", 2, "Factions", 2, "Cantha", 8, "Kaineng City", 2, "Explorable Zone"], _
+	[874, "The Final Confrontation", 2, "Factions", 2, "Cantha", 11, "Shing Jea Island", 2, "Explorable Zone"], _
+	[875, "Lakeside County 1070AE", 0, "Core", 0, "Tyria", 26, "SWAT", 2, "Explorable Zone"], _
+	[876, "Ashford Catacombs 1070AE", 0, "Core", 0, "Tyria", 26, "SWAT", 2, "Explorable Zone"], _
+	[877, "Forsaken Tunnels Level 2", 0, "Core", 1, "Eden", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[878, "Forsaken Tunnels Level 3", 0, "Core", 1, "Eden", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[879, "Unkown Reforged Map", 0, "", 0, "", 0, "", 0, ""], _
+	[880, "Tunnels of the Forsaken Level 1", 0, "Core", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[881, "Tunnels of the Forsaken Level 1", 0, "Core", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"], _
+	[882, "Tunnels of the Forsaken Level 1", 0, "Core", 0, "Tyria", 18, "Depths Of Tyria", 18, "Dungeon"] _
+]

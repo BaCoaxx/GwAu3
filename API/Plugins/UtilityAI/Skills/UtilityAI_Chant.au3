@@ -2,11 +2,14 @@
 
 Func Anti_Chant()
 	;~ Specific hex checks
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_CACOPHONY) Then
-		If Effect_GetEffectArg($GC_I_SKILL_ID_CACOPHONY, "Scale") > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + 50) Then Return True
-	EndIf
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_VOCAL_MINORITY) Then Return True
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_WELL_OF_SILENCE) Then Return True
+		
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_CACOPHONY) And _
+		UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_CACOPHONY, $GC_UAI_EFFECT_Scale) > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + 50) Then
+		Return True
+	EndIf
+
 	Return False
 EndFunc
 
