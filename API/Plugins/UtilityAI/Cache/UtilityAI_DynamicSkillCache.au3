@@ -65,7 +65,3 @@ Func UAI_GetDynamicSkillInfo($a_i_Slot, $a_i_InfoType)
     If $a_i_InfoType < 0 Or $a_i_InfoType > 5 Then Return 0
     Return $g_amx2_DynamicSkillCache[$a_i_Slot][$a_i_InfoType]
 EndFunc
-
-Func UAI_GetIsCasting()
-    Return (Memory_Read($g_p_StaticSkillbarPtr + 0xB0) <> 0)
-EndFunc

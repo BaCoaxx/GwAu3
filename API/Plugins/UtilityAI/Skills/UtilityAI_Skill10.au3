@@ -1063,33 +1063,31 @@ EndFunc
 ; Skill ID: 1438 - $GC_I_SKILL_ID_JUNUNDU_FEAST
 Func CanUse_JununduFeast()
 	; Only use if there's a corpse nearby to exploit
-	If UAI_CountAgents(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsDeadEnemy") = 0 Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_JununduFeast($a_f_AggroRange)
 	; Skill. (30 seconds.) Junundu Feast is replaced with Choking Breath, Blinding Breath, or Burning Breath. Must exploit an adjacent fresh corpse.
 	; Self-target skill that exploits adjacent corpse
-	Return UAI_GetNearestAgent(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsDeadEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsDeadEnemy")
 EndFunc
 
 ; Skill ID: 1439 - $GC_I_SKILL_ID_JUNUNDU_STRIKE
 Func CanUse_JununduStrike()
 	; Touch skill - needs an enemy in adjacent range
-	If UAI_CountAgents(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") = 0 Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_JununduStrike($a_f_AggroRange)
 	; Touch Skill. Deals 150 piercing damage. You are healed for 75.
 	; Basic touch attack, target nearest enemy
-	Return UAI_GetNearestAgent(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1440 - $GC_I_SKILL_ID_JUNUNDU_SMASH
 Func CanUse_JununduSmash()
 	; AoE adjacent damage + knockdown - needs enemies nearby
-	If UAI_CountAgents(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") = 0 Then Return False
+	If Not UAI_IsAgentInRange(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") Then Return False
 	Return True
 EndFunc
 
@@ -1102,18 +1100,14 @@ EndFunc
 ; Skill ID: 1441 - $GC_I_SKILL_ID_JUNUNDU_SIEGE1
 Func CanUse_JununduSiege1()
 	; Projectile skill - cannot be used on nearby foes, needs enemy at range
-	If UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy") = 0 Then Return False
-	; Check there's an enemy outside nearby range (projectile can't hit nearby)
-	Local $l_i_NearbyCount = UAI_CountAgents(-2, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
-	Local $l_i_TotalCount = UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy")
-	If $l_i_TotalCount <= $l_i_NearbyCount Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_JununduSiege1($a_f_AggroRange)
 	; Elite Skill. Projectile: deals 400 earth damage and causes knock-down. Cannot be used on nearby foes.
 	; Target enemy outside nearby range
-	Return UAI_GetFarthestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Local $l_i_Target = UAI_GetFarthestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	If UAI_GetAgentInfoByID($g_i_BestTarget, $GC_UAI_AGENT_Distance) > $GC_I_RANGE_NEARBY Then Return $l_i_Target
 EndFunc
 
 ; Skill ID: 1443 - $GC_I_SKILL_ID_LEAVE_JUNUNDU
@@ -1479,26 +1473,23 @@ EndFunc
 ; Skill ID: 1861 - $GC_I_SKILL_ID_CHOKING_BREATH
 Func CanUse_ChokingBreath()
 	; Interrupt skill - best used when enemies are nearby
-	If UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy") = 0 Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_ChokingBreath($a_f_AggroRange)
 	; Skill. Interrupts target and adjacent foes. Causes knock-down (4 seconds) to any foe casting a spell.
-	; Prioritize casting enemies for knockdown bonus
-	Local $l_i_CastingTarget = UAI_GetNearestAgent(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
+	Local $l_i_CastingTarget = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCasting")
 	If $l_i_CastingTarget <> 0 Then Return $l_i_CastingTarget
-	; Fallback to best AoE target for adjacent interrupt
-	Local $l_i_AOETarget = UAI_GetBestAOETarget(-2, $GC_I_RANGE_EARSHOT, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
+
+	Local $l_i_AOETarget = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 	If $l_i_AOETarget <> 0 Then Return $l_i_AOETarget
-	; Fallback to nearest enemy
-	Return UAI_GetNearestAgent(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy")
+
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1862 - $GC_I_SKILL_ID_JUNUNDU_BITE
 Func CanUse_JununduBite()
 	; Touch skill - needs an enemy in adjacent range
-	If UAI_CountAgents(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") = 0 Then Return False
 	Return True
 EndFunc
 
@@ -1507,14 +1498,13 @@ Func BestTarget_JununduBite($a_f_AggroRange)
 	; Prioritize knocked down enemies for bonus heal
 	Local $l_i_KnockedTarget = UAI_GetNearestAgent(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnocked")
 	If $l_i_KnockedTarget <> 0 Then Return $l_i_KnockedTarget
-	; Fallback to any adjacent enemy
-	Return UAI_GetNearestAgent(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 1863 - $GC_I_SKILL_ID_BLINDING_BREATH
 Func CanUse_BlindingBreath()
 	; AoE adjacent damage + blindness - needs enemies in adjacent range
-	If UAI_CountAgents(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") = 0 Then Return False
+	If Not UAI_IsAgentInRange(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") Then Return False
 	Return True
 EndFunc
 
@@ -1527,20 +1517,13 @@ EndFunc
 ; Skill ID: 1864 - $GC_I_SKILL_ID_BURNING_BREATH
 Func CanUse_BurningBreath()
 	; Projectile skill - cannot be used on nearby foes, needs enemy at range
-	If UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy") = 0 Then Return False
-	; Check there's an enemy outside nearby range (projectile can't hit nearby)
-	Local $l_i_NearbyCount = UAI_CountAgents(-2, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
-	Local $l_i_TotalCount = UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy")
-	If $l_i_TotalCount <= $l_i_NearbyCount Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_BurningBreath($a_f_AggroRange)
 	; Skill. Projectile: deals 250 fire damage and inflicts Burning (5 seconds). Cannot be used on nearby foes.
-	; Target enemy outside nearby range, prioritize non-burning targets
-	Local $l_i_FarthestTarget = UAI_GetFarthestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
-	If $l_i_FarthestTarget <> 0 Then Return $l_i_FarthestTarget
-	Return 0
+	Local $l_i_Target = UAI_GetFarthestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	If UAI_GetAgentInfoByID($g_i_BestTarget, $GC_UAI_AGENT_Distance) > $GC_I_RANGE_NEARBY Then Return $l_i_Target
 EndFunc
 
 ; Skill ID: 1865 - $GC_I_SKILL_ID_JUNUNDU_WAIL
@@ -1551,7 +1534,7 @@ Func CanUse_JununduWail()
 	Local $l_i_DeadAllies = UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsDeadAlly")
 	If $l_i_DeadAllies > 0 Then Return True
 	Local $l_i_Enemies = UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy")
-	If $l_i_Enemies = 0 And UAI_GetAgentInfoByID(-2, $GC_UAI_AGENT_HP) < 1.0 Then Return True
+	If $l_i_Enemies = 0 And UAI_GetPlayerInfo($GC_UAI_AGENT_HP) <= 1.0 Then Return True
 	Return False
 EndFunc
 
@@ -3061,18 +3044,14 @@ EndFunc
 ; Skill ID: 2679 - $GC_I_SKILL_ID_JUNUNDU_SIEGE2
 Func CanUse_JununduSiege2()
 	; Projectile skill - cannot be used on nearby foes, needs enemy at range (same as JununduSiege1)
-	If UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy") = 0 Then Return False
-	; Check there's an enemy outside nearby range (projectile can't hit nearby)
-	Local $l_i_NearbyCount = UAI_CountAgents(-2, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy")
-	Local $l_i_TotalCount = UAI_CountAgents(-2, $GC_I_RANGE_EARSHOT, "UAI_Filter_IsLivingEnemy")
-	If $l_i_TotalCount <= $l_i_NearbyCount Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_JununduSiege2($a_f_AggroRange)
 	; Elite Skill. Projectile: deals 400 earth damage and causes knock-down. Cannot be used on nearby foes.
 	; Target enemy outside nearby range
-	Return UAI_GetFarthestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Local $l_i_Target = UAI_GetFarthestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	If UAI_GetAgentInfoByID($g_i_BestTarget, $GC_UAI_AGENT_Distance) > $GC_I_RANGE_NEARBY Then Return $l_i_Target
 EndFunc
 
 ; Skill ID: 2692 - $GC_I_SKILL_ID_FIRE_DART2

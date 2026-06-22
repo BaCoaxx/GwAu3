@@ -287,11 +287,11 @@ Func UAI_UpdateAgentCache($a_f_Range = 1320, $a_i_Type = 0xDB)
         $g_amx2_AgentCache[$l_i_CacheIndex][$GC_UAI_AGENT_IsWeaponSpelled] = BitAND($l_i_Effects, 0x8000) > 0
 
         $g_amx2_AgentCache[$l_i_CacheIndex][$GC_UAI_AGENT_IsKnockedDown] = ($l_i_ModelState = 0x450)
-        $g_amx2_AgentCache[$l_i_CacheIndex][$GC_UAI_AGENT_IsAttacking] = ($l_i_ModelState = 0x60 Or $l_i_ModelState = 0x440 Or $l_i_ModelState = 0x460)
-        $g_amx2_AgentCache[$l_i_CacheIndex][$GC_UAI_AGENT_IsIdle] = ($l_i_ModelState = 68 Or $l_i_ModelState = 64 Or $l_i_ModelState = 100)
+        $g_amx2_AgentCache[$l_i_CacheIndex][$GC_UAI_AGENT_IsAttacking] = ($l_i_ModelState = 0x40 Or $l_i_ModelState = 0x60 Or $l_i_ModelState = 0x440 Or $l_i_ModelState = 0x460)
+        $g_amx2_AgentCache[$l_i_CacheIndex][$GC_UAI_AGENT_IsIdle] = ($l_i_ModelState = 0x44 Or $l_i_ModelState = 0x64)
 
         $g_amx2_AgentCache[$l_i_CacheIndex][$GC_UAI_AGENT_IsMoving] = ($l_f_MoveX <> 0 Or $l_f_MoveY <> 0 Or _
-            $l_i_ModelState = 12 Or $l_i_ModelState = 76 Or $l_i_ModelState = 204)
+            $l_i_ModelState = 0x4C Or $l_i_ModelState = 0xCC)
 
         Local $l_i_Skill = $l_av_Data[47]
         $g_amx2_AgentCache[$l_i_CacheIndex][$GC_UAI_AGENT_IsCasting] = ($l_i_Skill <> 0 Or _

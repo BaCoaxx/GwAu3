@@ -902,7 +902,7 @@ Func CanUse_JununduTunnel()
 	If Anti_Stance() Then Return False
 	; Stance for movement speed and knockdown on adjacent foes when emerging
 	; Best used when there are adjacent enemies to knockdown
-	If UAI_CountAgents(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") > 0 Then Return True
+	If UAI_IsAgentInRange(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") Then Return True
 	Return False
 EndFunc
 
@@ -1269,8 +1269,8 @@ EndFunc
 
 ; Skill ID: 2334 - $GC_I_SKILL_ID_BRAWLING_BLOCK
 Func CanUse_BrawlingBlock()
-	If UAI_Filter_IsDazed(UAI_GetPlayerInfo($GC_UAI_AGENT_ID)) Then Return False
 	If Anti_Stance() Then Return False
+	If UAI_Filter_IsDazed(UAI_GetPlayerInfo($GC_UAI_AGENT_ID)) Then Return False
 	Return True
 EndFunc
 

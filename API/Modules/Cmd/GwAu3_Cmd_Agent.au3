@@ -3,7 +3,7 @@
 Func Agent_ChangeTarget($a_i_AgentID)
 	$a_i_AgentID = Agent_ConvertID($a_i_AgentID)
 
-    If $a_i_AgentID < 0 Then
+    If $a_i_AgentID <= 0 Then
         Log_Error("Invalid agent ID: " & $a_i_AgentID, "AgentMod", $g_h_EditText)
         Return False
     EndIf

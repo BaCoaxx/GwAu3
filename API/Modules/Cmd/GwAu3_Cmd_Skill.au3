@@ -7,7 +7,7 @@ Func Skill_UseSkill($a_i_SkillSlot, $a_v_TargetID = -2, $a_b_CallTarget = False)
     EndIf
 
     Local $l_i_AgentID = Agent_ConvertID($a_v_TargetID)
-    If $l_i_AgentID = 0 Then
+    If $l_i_AgentID <= 0 Then
         Log_Error("Target not found: " & $l_i_AgentID, "SkillMod", $g_h_EditText)
         Return False
     EndIf

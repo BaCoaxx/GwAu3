@@ -3273,36 +3273,52 @@ EndFunc
 ; Skill ID: 2239 - ;  $GC_I_SKILL_ID_UNKNOWN
 ; Skill ID: 2335 - $GC_I_SKILL_ID_BRAWLING_JAB1
 Func CanUse_BrawlingJab1()
+	If Anti_Attack() Then Return False
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	If UAI_GetDynamicSkillInfo(3, $GC_UAI_DYNAMIC_SKILL_IsRecharged) Then Return False
 	If UAI_GetDynamicSkillInfo(4, $GC_UAI_DYNAMIC_SKILL_Adrenaline) >= UAI_GetStaticSkillInfo(4, $GC_UAI_STATIC_SKILL_Adrenaline) Then Return False
 	If UAI_GetDynamicSkillInfo(5, $GC_UAI_DYNAMIC_SKILL_Adrenaline) >= UAI_GetStaticSkillInfo(5, $GC_UAI_STATIC_SKILL_Adrenaline) Then Return False
 	If UAI_GetDynamicSkillInfo(6, $GC_UAI_DYNAMIC_SKILL_Adrenaline) >= UAI_GetStaticSkillInfo(6, $GC_UAI_STATIC_SKILL_Adrenaline) Then Return False
-	If Anti_Attack() Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_BrawlingJab1($a_f_AggroRange)
-	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+	$l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+
+	$l_i_TargetID = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2336 - $GC_I_SKILL_ID_BRAWLING_JAB2
 Func CanUse_BrawlingJab2()
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	If Anti_Attack() Then Return False
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
+	If UAI_GetDynamicSkillInfo(3, $GC_UAI_DYNAMIC_SKILL_IsRecharged) Then Return False
+	If UAI_GetDynamicSkillInfo(4, $GC_UAI_DYNAMIC_SKILL_Adrenaline) >= UAI_GetStaticSkillInfo(4, $GC_UAI_STATIC_SKILL_Adrenaline) Then Return False
+	If UAI_GetDynamicSkillInfo(5, $GC_UAI_DYNAMIC_SKILL_Adrenaline) >= UAI_GetStaticSkillInfo(5, $GC_UAI_STATIC_SKILL_Adrenaline) Then Return False
+	If UAI_GetDynamicSkillInfo(6, $GC_UAI_DYNAMIC_SKILL_Adrenaline) >= UAI_GetStaticSkillInfo(6, $GC_UAI_STATIC_SKILL_Adrenaline) Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_BrawlingJab2($a_f_AggroRange)
-	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
 	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
-	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	$l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+
+	$l_i_TargetID = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2337 - $GC_I_SKILL_ID_BRAWLING_STRAIGHT_RIGHT
 Func CanUse_BrawlingStraightRight()
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	If Anti_Attack() Then Return False
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	Return True
 EndFunc
 
@@ -3311,42 +3327,57 @@ Func BestTarget_BrawlingStraightRight($a_f_AggroRange)
 	; Melee Attack. If this attack hits, it deals 25 damage and interrupts an action.
 	; Concise description
 	; Melee Attack. Deals 25 damage; interrupts an action.
-	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
 	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
-	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	$l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+
+	$l_i_TargetID = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 
 ; Skill ID: 2338 - $GC_I_SKILL_ID_BRAWLING_HOOK1
 Func CanUse_BrawlingHook1()
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	If Anti_Attack() Then Return False
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_BrawlingHook1($a_f_AggroRange)
-	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
 	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
-	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	$l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+
+	$l_i_TargetID = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2339 - $GC_I_SKILL_ID_BRAWLING_HOOK2
 Func CanUse_BrawlingHook2()
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	If Anti_Attack() Then Return False
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_BrawlingHook2($a_f_AggroRange)
-	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
 	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
-	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	$l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+
+	$l_i_TargetID = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2340 - $GC_I_SKILL_ID_BRAWLING_UPPERCUT
 Func CanUse_BrawlingUppercut()
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	If Anti_Attack() Then Return False
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	Return True
 EndFunc
 
@@ -3355,15 +3386,20 @@ Func BestTarget_BrawlingUppercut($a_f_AggroRange)
 	; Melee Attack. You deliver an uppercut to your foe, dealing 80 damage. This attack cannot be blocked.
 	; Concise description
 	; Melee Attack. Deals 80 damage. Unblockable.
-	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
 	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
-	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	$l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+
+	$l_i_TargetID = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2341 - $GC_I_SKILL_ID_BRAWLING_COMBO_PUNCH
 Func CanUse_BrawlingComboPunch()
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	If Anti_Attack() Then Return False
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	Return True
 EndFunc
 
@@ -3372,22 +3408,32 @@ Func BestTarget_BrawlingComboPunch($a_f_AggroRange)
 	; Melee Attack. You attack twice, dealing 50 damage each time.
 	; Concise description
 	; Melee Attack. Attack twice for 50 damage each time.
-	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
 	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
-	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	$l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+
+	$l_i_TargetID = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2342 - $GC_I_SKILL_ID_BRAWLING_HEADBUTT_BRAWLING_SKILL
 Func CanUse_BrawlingHeadbuttBrawlingSkill()
-	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	If Anti_Attack() Then Return False
+	If UAI_PlayerHasEffect($GC_I_SKILL_ID_BRAWLING_BLOCK) Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_BrawlingHeadbuttBrawlingSkill($a_f_AggroRange)
-	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	Local $l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
 	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
-	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	$l_i_TargetID = UAI_GetBestSingleTarget(-2, $GC_I_RANGE_ADJACENT, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+
+	$l_i_TargetID = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsBoss")
+	If $l_i_TargetID <> 0 Then Return $l_i_TargetID
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 2361 - $GC_I_SKILL_ID_CLUB_OF_A_THOUSAND_BEARS
