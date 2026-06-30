@@ -30,15 +30,41 @@ Func Ui_RewardQuest($a_i_QuestID)
     Core_Enqueue($g_p_Dialog, 8)
 EndFunc   ;==>Ui_RewardQuest
 
-;~ Description: Open targeted chest using dialog options. (0x1 = Use Key, 0x2 = Use Lockpick, 0x80 = Cancel)
-Func Ui_OpenChest($a_b_UseLockpick = True)
-    If $a_b_UseLockpick Then
-        DllStructSetData($g_d_OpenChest, 2, 0x2)
-    Else
-        DllStructSetData($g_d_OpenChest, 2, 0x1)
-    EndIf
-    Core_Enqueue($g_p_OpenChest, 8)
-EndFunc   ;==>Ui_OpenChest
+;~ Description: Sends interaction ID.
+Func Ui_Interact($a_i_InteractionID)
+    DllStructSetData($g_d_Interact, 2, $a_i_InteractionID)
+    Core_Enqueue($g_p_Interact, 8)
+EndFunc   ;==>Ui_Interact
+
+;~ Description: Open a chest in compass range.
+Func Ui_OpenChest($a_b_WithLockpick = True)
+	If $a_b_WithLockpick Then
+        DllStructSetData($g_d_Interact, 2, 2)
+	Else
+        DllStructSetData($g_d_Interact, 2, 1)
+	EndIf
+    Core_Enqueue($g_p_Interact, 8)
+EndFunc ;==>Ui_OpenChest
+
+;~ Description: Activate Reforged Mode, when targeting the Shrine in compass range.
+Func Ui_ActivateReforgedMode()
+    Ui_Interact(1)
+EndFunc ;==>Ui_ActivateReforgedMode
+
+;~ Description: Deactivate Reforged Mode, when targeting the Shrine in compass range.
+Func Ui_DeactivateReforgedMode()
+    Ui_Interact(2)
+EndFunc ;==>Ui_DeactivateReforgedMode
+
+;~ Description: Activate Dhuum's Covenant, when targeting the Shrine in compass range.
+Func Ui_ActivateDhuumsCovenant()
+    Ui_Interact(4)
+EndFunc ;==>Ui_ActivateDhuumsCovenant
+
+;~ Description: Deactivate Dhuum's Covenant, when targeting the Shrine in compass range.
+Func Ui_DeactivateDhuumsCovenant()
+    Ui_Interact(5)
+EndFunc ;==>Ui_DeactivateDhuumsCovenant
 
 ;~ Description: Command a hero via flag.
 Func Ui_CommandHero($a_i_HeroNumber, $a_f_X, $a_f_Y)

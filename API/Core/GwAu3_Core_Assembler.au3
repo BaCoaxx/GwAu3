@@ -2482,9 +2482,9 @@ Func Assembler_CreateUICommands()
 	_('add esp,4')
 	_('ljmp CommandReturn')
 
-	_('CommandOpenChest:')
+	_('CommandInteract:')
 	_('push dword[eax+4]')
-	_('call OpenChest')
+	_('call Interact')
 	_('add esp,4')
 	_('ljmp CommandReturn')
 
