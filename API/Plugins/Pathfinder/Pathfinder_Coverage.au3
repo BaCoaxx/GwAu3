@@ -1,5 +1,10 @@
 #include-once
 
+Global Const $GC_F_PATHFINDER_COVERAGE_MIN_PROBE_DISTANCE = 75.0
+Global Const $GC_I_PATHFINDER_COVERAGE_CANDIDATES_PER_PATH_POINT = 5
+Global Const $GC_F_PATHFINDER_COVERAGE_WORST_SCORE = -1e30
+Global Const $GC_F_PATHFINDER_COVERAGE_MAX_DISTANCE = 1e30
+
 Func _Pathfinder_GenerateCoverageWaypoints($aStartX, $aStartY, $aStartLayer, $aDestX, $aDestY, $aDestLayer, $aObstacles)
     Local $lMapID = Map_GetMapID()
     Local $lPath = Pathfinder_FindPath($lMapID, $aStartX, $aStartY, $aStartLayer, $aDestX, $aDestY, $aDestLayer, $aObstacles, $g_iPathfinder_SimplifyRange)
@@ -11,10 +16,11 @@ Func _Pathfinder_GenerateCoverageWaypoints($aStartX, $aStartY, $aStartLayer, $aD
         Return $lWaypoints
     EndIf
 
-    Local $lProbeDistance = Max($g_iPathfinder_CoverageMinSeparation * 2, 75)
+    Local $lProbeDistance = Max($g_iPathfinder_CoverageMinSeparation * 2, $GC_F_PATHFINDER_COVERAGE_MIN_PROBE_DISTANCE)
     Local $lCandidateCount = 0
-    Local $lCandidates[UBound($lPath) * 5][5] ; x, y, layer, tp_type, corner_flag
+    Local $lCandidates[UBound($lPath) * $GC_I_PATHFINDER_COVERAGE_CANDIDATES_PER_PATH_POINT][5] ; x, y, layer, tp_type, corner_flag
 
+    ; Start/end waypoints are intentionally excluded because destination is explicitly appended later.
     For $i = 1 To UBound($lPath) - 2
         $lCandidates[$lCandidateCount][0] = $lPath[$i][0]
         $lCandidates[$lCandidateCount][1] = $lPath[$i][1]
@@ -49,7 +55,7 @@ Func _Pathfinder_GenerateCoverageWaypoints($aStartX, $aStartY, $aStartLayer, $aD
 
     For $k = 0 To $lMaxSelectable - 1
         Local $lBestIndex = -1
-        Local $lBestScore = -1e30
+        Local $lBestScore = $GC_F_PATHFINDER_COVERAGE_WORST_SCORE
 
         For $i = 0 To $lCandidateCount - 1
             If $lCandidateUsed[$i] Then ContinueLoop
@@ -211,7 +217,7 @@ EndFunc
 Func _Pathfinder_CoverageDistanceToNearest($aX, $aY, $aWaypoints, $aFallbackX, $aFallbackY)
     Local $lNearest = _Pathfinder_Distance($aX, $aY, $aFallbackX, $aFallbackY)
     If IsArray($aWaypoints) And UBound($aWaypoints) > 0 Then
-        $lNearest = 1e30
+        $lNearest = $GC_F_PATHFINDER_COVERAGE_MAX_DISTANCE
         For $i = 0 To UBound($aWaypoints) - 1
             Local $lDist = _Pathfinder_Distance($aX, $aY, $aWaypoints[$i][0], $aWaypoints[$i][1])
             If $lDist < $lNearest Then $lNearest = $lDist

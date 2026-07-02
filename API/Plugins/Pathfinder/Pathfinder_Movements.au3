@@ -215,7 +215,8 @@ Func Pathfinder_MoveTo($aDestX, $aDestY, $aDestLayer = -1, $aObstacles = 0, $aAg
 
         If TimerDiff($g_hPathfinder_LastPathUpdateTime) > $lPathUpdateInterval Or $lNeedPathUpdate Then
             If $lCoverageMode Then
-                If TimerDiff($g_hPathfinder_LastPathUpdateTime) > $g_iPathfinder_CoverageReplanIntervalMs Then
+                Local $lShouldRegenerateCoveragePlan = (TimerDiff($g_hPathfinder_LastPathUpdateTime) > $lPathUpdateInterval)
+                If $lShouldRegenerateCoveragePlan Then
                     $lCoverageWaypoints = _Pathfinder_GenerateCoverageWaypoints($lMyX, $lMyY, $lLayer, $aDestX, $aDestY, $aDestLayer, $lCurrentObstacles)
                     If IsArray($lCoverageWaypoints) And UBound($lCoverageWaypoints) > 0 Then
                         $lCoverageWaypoints = _Pathfinder_EnforceWaypointConstraints($lCoverageWaypoints, $g_iPathfinder_CoverageMinSeparation, True, $aDestX, $aDestY, $aDestLayer)
@@ -388,7 +389,7 @@ EndFunc
 
 ; Set pathfinding mode: 0 = shortest (default), 1 = coverage
 Func Pathfinder_SetMode($aMode)
-    $g_iPathfinder_Mode = ($aMode <> 0)
+    $g_iPathfinder_Mode = Int($aMode)
 EndFunc
 
 ; Set minimum separation between generated coverage waypoints
