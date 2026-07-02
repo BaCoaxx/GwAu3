@@ -41,6 +41,9 @@ $obs = UAI_GetObstacles(85, 4000, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsNPC")
 
 ### `Pathfinder_MoveTo()`
 Moves to destination while avoiding obstacles, with combat and party management.
+Behavior mode is controlled with `Pathfinder_SetMode(0|1)`:
+- `0` = shortest-route behavior (default)
+- `1` = coverage-oriented waypoint traversal (still ends at destination)
 
 ```autoit
 Pathfinder_MoveTo($DestX, $DestY, $DestLayer = -1, $Obstacles = 0, $AggroRange = 1320, $FightRangeOut = 3500, $FinisherMode = 0, $CallFunc = "")
@@ -162,6 +165,14 @@ Pathfinder_SetPathUpdateInterval($interval)     ; Path recalculation interval (m
 Pathfinder_SetWaypointReachedDistance($distance)  ; Waypoint reached threshold
 Pathfinder_SetSimplifyRange($range)              ; Smart simplification distance
 Pathfinder_SetObstacleUpdateInterval($interval)  ; Dynamic obstacle refresh rate (ms)
+Pathfinder_SetMode($mode)                        ; 0=shortest, 1=coverage
+Pathfinder_SetCoverageMinSeparation($distance)   ; Min pairwise waypoint separation
+Pathfinder_SetCoverageMaxWaypoints($count)       ; Max coverage waypoint count
+Pathfinder_SetCoverageDistanceWeight($weight)    ; Coverage score: distance penalty
+Pathfinder_SetCoverageCornerBiasWeight($weight)  ; Coverage score: corner bonus
+Pathfinder_SetCoverageRevisitPenalty($penalty)   ; Coverage score: revisit penalty
+Pathfinder_SetCoverageAllowRevisitAfterExhaustion($allow) ; Allow revisit fallback
+Pathfinder_SetCoverageReplanInterval($interval)  ; Coverage replan interval (ms)
 Pathfinder_SetDebug($bEnabled)                   ; Enable/disable debug logging
 ```
 
@@ -191,6 +202,14 @@ The DLL returns many waypoints. `_Pathfinder_SmartSimplify()` reduces them while
   - Points where removal would cause path to cross an obstacle
 
 - **Non-critical points**: Kept only if distance from last kept point >= 1250
+
+### 2b. Coverage Waypoint Planning (optional mode)
+When `Pathfinder_SetMode(1)` is enabled:
+- A coverage waypoint list is generated from shortest-path samples and corner probes
+- Constraints are enforced before execution:
+  - no duplicate waypoints
+  - minimum pairwise separation (default `25`)
+- If coverage planning is infeasible, movement falls back to shortest mode
 
 ### 3. Movement Loop
 ```
@@ -242,6 +261,14 @@ When dead party members are detected and resurrection skills are available:
 | `$g_iPathfinder_ObstacleUpdateInterval` | 1000ms | Obstacle refresh rate (dynamic mode) |
 | `$g_iPathfinder_StuckCheckInterval` | 500ms | Stuck detection interval |
 | `$g_iPathfinder_StuckDistance` | 100 | Movement threshold for stuck detection |
+| `$g_iPathfinder_Mode` | 0 | Pathfinding mode (`0` shortest, `1` coverage) |
+| `$g_iPathfinder_CoverageMinSeparation` | 25 | Minimum pairwise distance between coverage waypoints |
+| `$g_iPathfinder_CoverageMaxWaypoints` | 32 | Maximum coverage waypoints including destination |
+| `$g_fPathfinder_CoverageDistanceWeight` | 0.15 | Destination-distance score penalty in coverage mode |
+| `$g_fPathfinder_CornerBiasWeight` | 150.0 | Corner-probe score bonus in coverage mode |
+| `$g_fPathfinder_RevisitPenalty` | 250.0 | Low-novelty score penalty in coverage mode |
+| `$g_bPathfinder_AllowRevisitAfterExhaustion` | False | Allow revisit candidates when novelty is exhausted |
+| `$g_iPathfinder_CoverageReplanIntervalMs` | 3000ms | Coverage planner re-run interval |
 
 ---
 
@@ -379,6 +406,7 @@ struct MapStats {
 |------|-------------|
 | `_Pathfinder.au3` | Main entry point (includes all modules) |
 | `Pathfinder_Core.au3` | DLL interface and wrapper functions |
+| `Pathfinder_Coverage.au3` | Coverage waypoint planning and constraint enforcement |
 | `Pathfinder_Movements.au3` | Movement logic, combat, party management, resurrection |
 | `GWPathfinder.dll` | Compiled pathfinding engine |
 | `maps.zip` | Map data archive (~400+ maps) — **must stay in the same folder as the DLL, do not extract** |
