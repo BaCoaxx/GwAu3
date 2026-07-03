@@ -53,8 +53,8 @@ Func UAI_CountAgents($a_i_AgentID = -2, $a_f_Range = 1320, $a_s_Filter = "")
     ; Get reference position
     Local $l_f_RefX, $l_f_RefY
     If $l_i_RefID = UAI_GetPlayerInfo($GC_UAI_AGENT_ID) Then
-        $l_f_RefX = UAI_GetPlayerX()
-        $l_f_RefY = UAI_GetPlayerY()
+        $l_f_RefX = UAI_GetPlayerInfo($GC_UAI_AGENT_X)
+        $l_f_RefY = UAI_GetPlayerInfo($GC_UAI_AGENT_Y)
     Else
         $l_f_RefX = UAI_GetAgentInfoByID($l_i_RefID, $GC_UAI_AGENT_X)
         $l_f_RefY = UAI_GetAgentInfoByID($l_i_RefID, $GC_UAI_AGENT_Y)
@@ -90,8 +90,8 @@ Func UAI_IsAgentInRange($a_i_AgentID = -2, $a_f_Range = 1320, $a_s_Filter = "")
 
     Local $l_f_RefX, $l_f_RefY
     If $l_i_RefID = UAI_GetPlayerInfo($GC_UAI_AGENT_ID) Then
-        $l_f_RefX = UAI_GetPlayerX()
-        $l_f_RefY = UAI_GetPlayerY()
+        $l_f_RefX = UAI_GetPlayerInfo($GC_UAI_AGENT_X)
+        $l_f_RefY = UAI_GetPlayerInfo($GC_UAI_AGENT_Y)
     Else
         $l_f_RefX = UAI_GetAgentInfoByID($l_i_RefID, $GC_UAI_AGENT_X)
         $l_f_RefY = UAI_GetAgentInfoByID($l_i_RefID, $GC_UAI_AGENT_Y)
@@ -442,43 +442,68 @@ EndFunc
 #EndRegion
 
 #Region Ward
-; Internal: from a set of points, find the one whose disk of radius $a_f_Range covers
-; the most points (itself included). Returns [X, Y, Count].
-; Symmetric pairwise pass: each in-range pair increments both points' coverage -> O(M^2/2).
-Func _UAI_BestCoveragePosition(ByRef $a_af_X, ByRef $a_af_Y, $a_i_Count, $a_f_Range)
+Func _UAI_CountAlliesInRange(ByRef $a_af_X, ByRef $a_af_Y, $a_i_Count, $a_f_CX, $a_f_CY, $a_f_RangeSq)
+	Local $l_i_InRange = 0
+	For $i = 1 To $a_i_Count
+		Local $l_f_DX = $a_af_X[$i] - $a_f_CX
+		Local $l_f_DY = $a_af_Y[$i] - $a_f_CY
+		If ($l_f_DX * $l_f_DX + $l_f_DY * $l_f_DY) <= $a_f_RangeSq Then $l_i_InRange += 1
+	Next
+	Return $l_i_InRange
+EndFunc   ;==>_UAI_CountAlliesInRange
+
+; From the ally set, find the position whose range-disk covers the most allies.
+; Candidate points = every ally position PLUS every pairwise midpoint.
+; Coverage ties resolve toward the anchor (FromX/FromY), so among equally good spots the nearest one wins.
+Func _UAI_BestCoveragePosition(ByRef $a_af_X, ByRef $a_af_Y, $a_i_Count, $a_f_Range, $a_f_FromX, $a_f_FromY)
 	Local $l_av_Result[3] = [0, 0, 0]
 	If $a_i_Count = 0 Then Return $l_av_Result
 
-	Local $l_ai_Cover[$a_i_Count + 1]
-	For $i = 1 To $a_i_Count
-		$l_ai_Cover[$i] = 1 ; counts itself
-	Next
-
 	Local $l_f_RangeSq = $a_f_Range * $a_f_Range
+
+	Local $l_i_MaxCand = $a_i_Count + ($a_i_Count * ($a_i_Count - 1)) / 2
+	Local $l_af_CandX[$l_i_MaxCand + 1], $l_af_CandY[$l_i_MaxCand + 1]
+	Local $l_i_Cand = 0
+	For $c = 1 To $a_i_Count
+		$l_i_Cand += 1
+		$l_af_CandX[$l_i_Cand] = $a_af_X[$c]
+		$l_af_CandY[$l_i_Cand] = $a_af_Y[$c]
+	Next
 	For $a = 1 To $a_i_Count - 1
-		Local $l_f_X = $a_af_X[$a]
-		Local $l_f_Y = $a_af_Y[$a]
 		For $b = $a + 1 To $a_i_Count
-			Local $l_f_DX = $a_af_X[$b] - $l_f_X
-			Local $l_f_DY = $a_af_Y[$b] - $l_f_Y
-			If ($l_f_DX * $l_f_DX + $l_f_DY * $l_f_DY) > $l_f_RangeSq Then ContinueLoop
-			$l_ai_Cover[$a] += 1
-			$l_ai_Cover[$b] += 1
+			$l_i_Cand += 1
+			$l_af_CandX[$l_i_Cand] = ($a_af_X[$a] + $a_af_X[$b]) * 0.5
+			$l_af_CandY[$l_i_Cand] = ($a_af_Y[$a] + $a_af_Y[$b]) * 0.5
 		Next
 	Next
 
-	Local $l_i_BestIdx = 1
-	For $i = 2 To $a_i_Count
-		If $l_ai_Cover[$i] > $l_ai_Cover[$l_i_BestIdx] Then $l_i_BestIdx = $i
+	Local $l_f_BestX = 0, $l_f_BestY = 0
+	Local $l_i_BestCover = 0, $l_f_BestDistSq = 0
+	For $k = 1 To $l_i_Cand
+		Local $l_f_CX = $l_af_CandX[$k], $l_f_CY = $l_af_CandY[$k]
+		Local $l_i_Cover = _UAI_CountAlliesInRange($a_af_X, $a_af_Y, $a_i_Count, $l_f_CX, $l_f_CY, $l_f_RangeSq)
+		If $l_i_Cover < 1 Then ContinueLoop
+
+		Local $l_f_DDX = $l_f_CX - $a_f_FromX, $l_f_DDY = $l_f_CY - $a_f_FromY
+		Local $l_f_DistSq = $l_f_DDX * $l_f_DDX + $l_f_DDY * $l_f_DDY
+
+		If $l_i_Cover > $l_i_BestCover Or ($l_i_Cover = $l_i_BestCover And $l_f_DistSq < $l_f_BestDistSq) Then
+			$l_i_BestCover = $l_i_Cover
+			$l_f_BestDistSq = $l_f_DistSq
+			$l_f_BestX = $l_f_CX
+			$l_f_BestY = $l_f_CY
+		EndIf
 	Next
 
-	$l_av_Result[0] = $a_af_X[$l_i_BestIdx]
-	$l_av_Result[1] = $a_af_Y[$l_i_BestIdx]
-	$l_av_Result[2] = $l_ai_Cover[$l_i_BestIdx]
+	If $l_i_BestCover < 1 Then Return $l_av_Result
+	$l_av_Result[0] = $l_f_BestX
+	$l_av_Result[1] = $l_f_BestY
+	$l_av_Result[2] = $l_i_BestCover
 	Return $l_av_Result
-EndFunc
+EndFunc   ;==>_UAI_BestCoveragePosition
 
-; Find the best position to cast a Ward to cover the most living allies. Returns [X, Y, Count].
+; Gather living allies from the agent cache and resolve the best ward position.
+; Returns [X, Y, Count]; Count 0 means no allies found.
 Func UAI_GetBestWardPosition($a_f_WardRange = $GC_I_RANGE_AREA)
 	Local $l_af_X[$g_i_AgentCacheCount + 1]
 	Local $l_af_Y[$g_i_AgentCacheCount + 1]
@@ -487,52 +512,20 @@ Func UAI_GetBestWardPosition($a_f_WardRange = $GC_I_RANGE_AREA)
 	For $i = 1 To $g_i_AgentCacheCount
 		Local $l_i_AgentID = UAI_GetAgentInfo($i, $GC_UAI_AGENT_ID)
 		If Not UAI_Filter_IsLivingAlly($l_i_AgentID) Then ContinueLoop
+		If Not UAI_Filter_ExcludeMe($l_i_AgentID) Then ContinueLoop
 		$l_i_Count += 1
 		$l_af_X[$l_i_Count] = UAI_GetAgentInfo($i, $GC_UAI_AGENT_X)
 		$l_af_Y[$l_i_Count] = UAI_GetAgentInfo($i, $GC_UAI_AGENT_Y)
 	Next
 
-	Return _UAI_BestCoveragePosition($l_af_X, $l_af_Y, $l_i_Count, $a_f_WardRange)
-EndFunc
+	Local $l_f_MeX = UAI_GetPlayerInfo($GC_UAI_AGENT_X)
+	Local $l_f_MeY = UAI_GetPlayerInfo($GC_UAI_AGENT_Y)
 
-; Move to best ward position and return True when ready to cast
-Func UAI_MoveToWardPosition($a_f_WardRange = $GC_I_RANGE_AREA)
-	Local $l_av_BestPos = UAI_GetBestWardPosition($a_f_WardRange)
+	Return _UAI_BestCoveragePosition($l_af_X, $l_af_Y, $l_i_Count, $a_f_WardRange, $l_f_MeX, $l_f_MeY)
+EndFunc   ;==>UAI_GetBestWardPosition
 
-	If $l_av_BestPos[2] = 0 Then Return False
-
-	Local $l_f_TargetX = $l_av_BestPos[0]
-	Local $l_f_TargetY = $l_av_BestPos[1]
-
-	Local $l_i_Timeout = 0
-	Local Const $l_f_ArrivalDist = 80
-	Local Const $l_i_MaxTimeout = 5000
-
-	Do
-		Map_Move($l_f_TargetX, $l_f_TargetY, 0)
-		Sleep(32)
-		$l_i_Timeout += 32
-
-		Local $l_f_CurX = Agent_GetAgentInfo(-2, "X")
-		Local $l_f_CurY = Agent_GetAgentInfo(-2, "Y")
-
-		Local $l_f_DiffX = $l_f_TargetX - $l_f_CurX
-		Local $l_f_DiffY = $l_f_TargetY - $l_f_CurY
-		Local $l_f_DistToTarget = Sqrt($l_f_DiffX * $l_f_DiffX + $l_f_DiffY * $l_f_DiffY)
-
-		If $l_f_DistToTarget < $l_f_ArrivalDist Then Return True
-
-	Until $l_i_Timeout >= $l_i_MaxTimeout
-
-	Return True
-EndFunc
-
-; Count allies that would be covered by a ward at player's current position
-Func UAI_CountAlliesInWardRange($a_f_WardRange = $GC_I_RANGE_AREA)
-	Return UAI_CountAgents(-2, $a_f_WardRange, "UAI_Filter_IsLivingAlly")
-EndFunc
-
-; Find the best position to cast an offensive Ward to affect the most living enemies. Returns [X, Y, Count].
+; Gather living enemies from the agent cache and resolve the best ward position.
+; Returns [X, Y, Count]; Count 0 means no enemies found.
 Func UAI_GetBestOffensiveWardPosition($a_f_WardRange = $GC_I_RANGE_AREA)
 	Local $l_af_X[$g_i_AgentCacheCount + 1]
 	Local $l_af_Y[$g_i_AgentCacheCount + 1]
@@ -546,11 +539,15 @@ Func UAI_GetBestOffensiveWardPosition($a_f_WardRange = $GC_I_RANGE_AREA)
 		$l_af_Y[$l_i_Count] = UAI_GetAgentInfo($i, $GC_UAI_AGENT_Y)
 	Next
 
-	Return _UAI_BestCoveragePosition($l_af_X, $l_af_Y, $l_i_Count, $a_f_WardRange)
-EndFunc
+	Local $l_f_MeX = UAI_GetPlayerInfo($GC_UAI_AGENT_X)
+	Local $l_f_MeY = UAI_GetPlayerInfo($GC_UAI_AGENT_Y)
 
-; Get best position to hit the most physical enemies (melee/ranged, not casters). Returns [X, Y, Count].
-Func UAI_GetBestPhysicalEnemyPosition($a_f_ClusterRange = $GC_I_RANGE_NEARBY)
+	Return _UAI_BestCoveragePosition($l_af_X, $l_af_Y, $l_i_Count, $a_f_WardRange, $l_f_MeX, $l_f_MeY)
+EndFunc   ;==>UAI_GetBestOffensiveWardPosition
+
+; Gather living enemies from the agent cache and resolve the best ward position.
+; Returns [X, Y, Count]; Count 0 means no enemies found.
+Func UAI_GetBestMartialEnemyPosition($a_f_WardRange = $GC_I_RANGE_AREA)
 	Local $l_af_X[$g_i_AgentCacheCount + 1]
 	Local $l_af_Y[$g_i_AgentCacheCount + 1]
 	Local $l_i_Count = 0
@@ -564,39 +561,35 @@ Func UAI_GetBestPhysicalEnemyPosition($a_f_ClusterRange = $GC_I_RANGE_NEARBY)
 		$l_af_Y[$l_i_Count] = UAI_GetAgentInfo($i, $GC_UAI_AGENT_Y)
 	Next
 
-	Return _UAI_BestCoveragePosition($l_af_X, $l_af_Y, $l_i_Count, $a_f_ClusterRange)
-EndFunc
+	Local $l_f_MeX = UAI_GetPlayerInfo($GC_UAI_AGENT_X)
+	Local $l_f_MeY = UAI_GetPlayerInfo($GC_UAI_AGENT_Y)
 
-; Move to best offensive ward position and return True when ready to cast
-Func UAI_MoveToOffensiveWardPosition($a_f_WardRange = $GC_I_RANGE_AREA)
-	Local $l_av_BestPos = UAI_GetBestOffensiveWardPosition($a_f_WardRange)
+	Return _UAI_BestCoveragePosition($l_af_X, $l_af_Y, $l_i_Count, $a_f_WardRange, $l_f_MeX, $l_f_MeY)
+EndFunc   ;==>UAI_GetBestOffensiveWardPosition
 
+; Move to the best ward position. Returns True only when actually in range to cast,
+; False if there is no position or the move times out short of it.
+Func UAI_MoveToWardPosition($a_f_WardRange = $GC_I_RANGE_AREA)
+	Local $l_av_BestPos = UAI_GetBestWardPosition($a_f_WardRange)
 	If $l_av_BestPos[2] = 0 Then Return False
 
 	Local $l_f_TargetX = $l_av_BestPos[0]
 	Local $l_f_TargetY = $l_av_BestPos[1]
 
-	Local $l_i_Timeout = 0
-	Local Const $l_f_ArrivalDist = 80
-	Local Const $l_i_MaxTimeout = 5000
+	Local Const $l_f_ArrivalDistSq = 25 * 25
+	Local Const $l_i_MaxTimeoutMs = 5000
+	Local $l_h_Timeout = TimerInit()
 
+	Map_Move($l_f_TargetX, $l_f_TargetY, 0) ; issue once; loop only watches for arrival
 	Do
-		Map_Move($l_f_TargetX, $l_f_TargetY, 0)
 		Sleep(32)
-		$l_i_Timeout += 32
+		Local $l_f_DX = $l_f_TargetX - Agent_GetAgentInfo(-2, "X")
+		Local $l_f_DY = $l_f_TargetY - Agent_GetAgentInfo(-2, "Y")
+		If ($l_f_DX * $l_f_DX + $l_f_DY * $l_f_DY) < $l_f_ArrivalDistSq Then Return True
+	Until TimerDiff($l_h_Timeout) >= $l_i_MaxTimeoutMs
 
-		Local $l_f_CurX = Agent_GetAgentInfo(-2, "X")
-		Local $l_f_CurY = Agent_GetAgentInfo(-2, "Y")
-
-		Local $l_f_DiffX = $l_f_TargetX - $l_f_CurX
-		Local $l_f_DiffY = $l_f_TargetY - $l_f_CurY
-		Local $l_f_DistToTarget = Sqrt($l_f_DiffX * $l_f_DiffX + $l_f_DiffY * $l_f_DiffY)
-
-		If $l_f_DistToTarget < $l_f_ArrivalDist Then Return True
-	Until $l_i_Timeout >= $l_i_MaxTimeout
-
-	Return True
-EndFunc
+	Return False
+EndFunc   ;==>UAI_MoveToWardPosition
 #EndRegion
 
 #Region Helper

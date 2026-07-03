@@ -1,7 +1,7 @@
 #include-once
 
 #Region Set and Mods
-Func UAI_DeterminateWeaponSets()
+Func UAI_DetermineWeaponSets()
 	_D(" ========== STARTING WEAPON SET ANALYSIS ==========")
 	_D(" Reading weapon sets directly from memory (no switching required)")
 

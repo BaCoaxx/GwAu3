@@ -85,6 +85,10 @@ Func UAI_Filter_ExcludeMe($a_i_AgentID)
 	Return True
 EndFunc
 
+Func UAI_Filter_IsExploitableCorpse($a_i_AgentID)
+	Return UAI_GetAgentInfoByID($a_i_AgentID, $GC_UAI_AGENT_IsExploitableCorpse) ;Exploitable Corpse
+EndFunc
+
 Func UAI_Filter_IsDiseased($a_i_AgentID)
 	Return UAI_AgentHasVisibleEffect($a_i_AgentID, $GC_I_EFFECT_TYPE_STATUS, $GC_I_EFFECT_ID_DISEASED) ;Disease
 EndFunc

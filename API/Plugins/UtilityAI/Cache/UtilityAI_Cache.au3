@@ -1,4 +1,5 @@
 #include-once
+Global Enum $GC_UAI_CACHE_MODE_ALL = 0, $GC_UAI_CACHE_MODE_PLAYER
 
 ; Script Start - Add your code below here
 Func Cache_SkillBar()
@@ -11,7 +12,7 @@ Func Cache_SkillBar()
 		$g_as_CanUseCache[$i] = UAI_GetCanUseFunc($i)
 	Next
 
-	If $g_b_CacheWeaponSet Then UAI_DeterminateWeaponSets()
+	If $g_b_CacheWeaponSet Then UAI_DetermineWeaponSets()
 
 	Return True
 EndFunc   ;==>Cache_SkillBar
@@ -40,10 +41,16 @@ Func Cache_EndFormChangeBuild($a_i_SkillSlot)
 	EndSwitch
 EndFunc
 
-Func UAI_UpdateCache($a_f_AggroRange)
-	UAI_UpdateAgentCache($a_f_AggroRange + 500)
-	UAI_CacheAgentEffects()
-	UAI_CacheAgentBonds()
+Func UAI_UpdateAgentCache($a_f_AggroRange)
+	UAI_CacheAgentInfo($a_f_AggroRange + 500)
+	UAI_CacheAgentEffectsAndBonds()
 	UAI_CacheAgentVisibleEffects()
-	UAI_UpdateDynamicSkillbarCache()
+	UAI_CacheDynamicSkillbarInfo()
+EndFunc
+
+Func UAI_UpdatePlayerCache()
+	UAI_CachePlayerInfo()
+	UAI_CachePlayerEffectsAndBonds()
+	UAI_CachePlayerVisibleEffects()
+	UAI_CacheDynamicSkillbarInfo()
 EndFunc

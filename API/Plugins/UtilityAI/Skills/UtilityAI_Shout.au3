@@ -894,21 +894,22 @@ Func BestTarget_YouMoveLikeADwarf($a_f_AggroRange)
 	; Shout. Target foe is knocked down and takes 44...80 damage. That foe is also Crippled for 8...15 seconds.
 	; Concise description
 	; Shout. Deals 44...80 damage, causes knock-down, and inflicts Crippled condition (8...15 seconds).
+	Local $l_f_Range = ($a_f_AggroRange > $GC_I_RANGE_SPELLCASTING ? $GC_I_RANGE_SPELLCASTING : $a_f_AggroRange)
 
 	; Priority 1: Monks (interrupt healers)
-	Local $l_i_Target = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsMonk")
+	Local $l_i_Target = UAI_GetBestSingleTarget(-2, $l_f_Range, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsMonk")
 	If $l_i_Target <> 0 Then Return $l_i_Target
 
 	; Priority 2: Casters (interrupt spellcasters)
-	$l_i_Target = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCaster")
+	$l_i_Target = UAI_GetBestSingleTarget(-2, $l_f_Range, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCaster")
 	If $l_i_Target <> 0 Then Return $l_i_Target
 
 	; Priority 3: Melee (War, Sin, Derv)
-	$l_i_Target = UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsMelee")
+	$l_i_Target = UAI_GetBestSingleTarget(-2, $l_f_Range, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsMelee")
 	If $l_i_Target <> 0 Then Return $l_i_Target
 
 	; Fallback: Any enemy
-	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetBestSingleTarget(-2, $l_f_Range, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 Func CanUse_YouAreAllWeaklings()
@@ -921,13 +922,12 @@ Func BestTarget_YouAreAllWeaklings($a_f_AggroRange)
 	; Shout. Target foe and foes adjacent to target are Weakened for 8...12 seconds.
 	; Concise description
 	; Shout. Inflicts Weakness condition (8...12 seconds). Also affects adjacent foes.
-	Local $l_i_Range = $a_f_AggroRange
-	If $l_i_Range > $GC_I_RANGE_SPELLCASTING Then $l_i_Range = $GC_I_RANGE_SPELLCASTING
+	Local $l_f_Range = ($a_f_AggroRange > $GC_I_RANGE_SPELLCASTING ? $GC_I_RANGE_SPELLCASTING : $a_f_AggroRange)
 
-	$l_i_Target = UAI_GetBestAOETarget(-2, $l_i_Range, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsNotCaster")
+	$l_i_Target = UAI_GetBestAOETarget(-2, $l_f_Range, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsNotCaster")
 	If $l_i_Target <> 0 Then Return SetExtended($GC_I_UAI_OVERRIDE_FORCE_TARGET, $l_i_Target)
 
-	Return SetExtended($GC_I_UAI_OVERRIDE_FORCE_TARGET, UAI_GetBestAOETarget(-2, $l_i_Range, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy"))
+	Return SetExtended($GC_I_UAI_OVERRIDE_FORCE_TARGET, UAI_GetBestAOETarget(-2, $l_f_Range, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy"))
 EndFunc
 
 Func CanUse_UrsanRoar()

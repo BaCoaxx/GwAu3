@@ -386,7 +386,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	Log_Debug("TradePartnerReturn: " & Memory_GetValue('TradePartnerReturn'), "Initialize", $g_h_EditText)
 	If IsDeclared("g_b_Scanner") Then Extend_Scanner()
 
-	Memory_SetValue('QueueSize', '0x00000040')
+	Memory_SetValue('QueueSize', '0x00000100')
 
     ; Modify memory
     Assembler_ModifyMemory()

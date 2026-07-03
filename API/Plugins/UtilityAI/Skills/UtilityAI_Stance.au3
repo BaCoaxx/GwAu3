@@ -1211,7 +1211,7 @@ EndFunc
 ; Skill ID: 2146 - $GC_I_SKILL_ID_PIOUS_FURY
 Func CanUse_PiousFury()
 	If Anti_Stance() Then Return False
-	If Not UAI_GetFeederEnchOnTop() Then Return False
+If Not UAI_GetFeederEnchOnTop() Then Return False
 	Return True
 EndFunc
 

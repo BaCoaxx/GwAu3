@@ -17,9 +17,7 @@ Func UAI_CanAutoAttack()
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPITEFUL_SPIRIT) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPITEFUL_SPIRIT, $GC_UAI_EFFECT_Scale)
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPOIL_VICTOR) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPOIL_VICTOR, $GC_UAI_EFFECT_Scale)
 
-	If $l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + 50) Then Return False
-
-	Return True
+	Return Not $l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP * 0.15))
 EndFunc
 
 ; Check if I have resource to use the skill
@@ -152,7 +150,7 @@ Func UAI_CanUse($a_i_SkillSlot)
 	If $l_i_EnergyCost < 1 And Not $l_b_WotEP Then $l_i_EnergyCost = 1
 	If $l_i_EnergyCost < 0 Then $l_i_EnergyCost = 0
 
-	If $l_i_CurrentEnergy < $l_i_EnergyCost Then Return False
+	If $l_i_CurrentEnergy < Ceiling($l_i_EnergyCost) Then Return False
 
 	Return True
 EndFunc
@@ -177,7 +175,7 @@ Func UAI_CanDrop($a_i_SkillSlot)
 			If UAI_CountAgents(-2, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsNotCaster") >= 2 Then Return True
 
 			; Otherwise, check if physical attackers in larger range - move to them
-			Local $l_av_BestPos = UAI_GetBestPhysicalEnemyPosition($GC_I_RANGE_NEARBY)
+			Local $l_av_BestPos = UAI_GetBestMartialEnemyPosition($GC_I_RANGE_NEARBY)
 			If $l_av_BestPos[2] <= 1 Then Return False ; No physical enemies
 
 			; Move to physical enemy cluster

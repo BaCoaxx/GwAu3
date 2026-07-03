@@ -19,9 +19,7 @@ Func Anti_Attack()
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPITEFUL_SPIRIT) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPITEFUL_SPIRIT, $GC_UAI_EFFECT_Scale)
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPOIL_VICTOR) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPOIL_VICTOR, $GC_UAI_EFFECT_Scale)
 
-	If $l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + 50) Then Return True
-
-	Return True
+	Return $l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP * 0.15))
 EndFunc
 
 ; Skill ID: 320 - $GC_I_SKILL_ID_HAMSTRING
@@ -2063,7 +2061,7 @@ EndFunc
 ; Skill ID: 1485 - $GC_I_SKILL_ID_EREMITES_ATTACK
 Func CanUse_EremitesAttack()
 	If Anti_Attack() Then Return False
-	If Not UAI_GetFeederEnchOnTop() Then Return False
+If Not UAI_GetFeederEnchOnTop() Then Return False
 	If UAI_CountAgents(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") <= 1 Then Return False
 	Return True
 EndFunc
@@ -2118,7 +2116,7 @@ EndFunc
 ; Skill ID: 1489 - $GC_I_SKILL_ID_IRRESISTIBLE_SWEEP
 Func CanUse_IrresistibleSweep()
 	If Anti_Attack() Then Return False
-	If Not UAI_GetFeederEnchOnTop() Then Return False
+If Not UAI_GetFeederEnchOnTop() Then Return False
 	Return True
 EndFunc
 
@@ -2133,7 +2131,7 @@ EndFunc
 ; Skill ID: 1490 - $GC_I_SKILL_ID_PIOUS_ASSAULT
 Func CanUse_PiousAssault()
 	If Anti_Attack() Then Return False
-	If Not UAI_GetFeederEnchOnTop() Then Return False
+If Not UAI_GetFeederEnchOnTop() Then Return False
 	Return True
 EndFunc
 
@@ -2176,7 +2174,7 @@ EndFunc
 ; Skill ID: 1537 - $GC_I_SKILL_ID_WEARYING_STRIKE
 Func CanUse_WearyingStrike()
 	If Anti_Attack() Then Return False
-	If Not UAI_GetFeederEnchOnTop() Then Return False
+If Not UAI_GetFeederEnchOnTop() Then Return False
 	Return True
 EndFunc
 
@@ -2657,7 +2655,7 @@ EndFunc
 ; Skill ID: 1753 - $GC_I_SKILL_ID_RENDING_SWEEP
 Func CanUse_RendingSweep()
 	If Anti_Attack() Then Return False
-	If Not UAI_GetFeederEnchOnTop() Then Return False
+If Not UAI_GetFeederEnchOnTop() Then Return False
 	Return True
 EndFunc
 

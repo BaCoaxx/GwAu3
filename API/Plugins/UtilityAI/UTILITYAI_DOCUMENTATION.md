@@ -92,9 +92,9 @@ $g_i_PressureMode = 1  ; Target high HP enemies to spread damage
 | What                | When to call                           | Automatic?                             |
 | ------------------- | -------------------------------------- | -------------------------------------- |
 | `Cache_SkillBar()`  | Once on arriving in an explorable area | No — call it yourself                  |
-| `UAI_UpdateCache()` | Each combat iteration                  | Yes — called internally by `UAI_Fight` |
+| `UAI_UpdateAgentCache()` | Each combat iteration                  | Yes — called internally by `UAI_Fight` |
 
-**You never need to call `UAI_UpdateCache()` or `UAI_UpdateAgentCache()` manually** when using `UAI_Fight` — it handles its own cache refresh every iteration. Only `Cache_SkillBar()` needs to be called explicitly, once per explorable zone.
+**You never need to call `UAI_UpdateAgentCache()`, `UAI_UpdatePlayerCache()`, `UAI_CacheAgentInfo()` or `UAI_UpdatePlayerInfo()` manually** when using `UAI_Fight` — it handles its own cache refresh every iteration. Only `Cache_SkillBar()` needs to be called explicitly, once per explorable zone.
 
 Any code outside of `UAI_Fight` (movement, loot, custom logic) that needs agent data should use `Agent_GetAgentInfo()` directly — not the UAI cache, which is only guaranteed fresh inside the fight loop.
 
@@ -230,7 +230,7 @@ API/Plugins/UtilityAI/
 │
 ├── Cache/                      # UAI Cache System
 │   ├── _Cache.au3              # Entry point for cache modules
-│   ├── UtilityAI_Cache.au3     # Cache coordination: Cache_SkillBar(), UAI_UpdateCache()
+│   ├── UtilityAI_Cache.au3     # Cache coordination: Cache_SkillBar(), UAI_UpdateAgentCache(), etc.
 │   ├── UtilityAI_AgentCache.au3       # Agent data cache
 │   ├── UtilityAI_StaticSkillCache.au3 # Static skill data cache
 │   ├── UtilityAI_DynamicSkillCache.au3# Dynamic skill data cache
@@ -380,12 +380,12 @@ Func UAI_UseSkills($a_f_X, $a_f_Y, $a_f_AggroRange = 1320, $a_f_MaxDistanceToXY 
 │    - If SkillID = 0, continue       │
 └─────────────────────────────────────┘
             ↓
-┌─────────────────────────────────────┐
-│ 2. Update UAI Caches (once per slot)│
-│    - UAI_UpdateCache($a_f_AggroRange)│
-│    - Check enemies exist            │
-│    - Check weapon set switching     │
-└─────────────────────────────────────┘
+┌───────────────────────────────────────────┐
+│ 2. Update UAI Caches (once per slot)      │
+│    - UAI_UpdateAgentCache($a_f_AggroRange)│
+│    - Check enemies exist                  │
+│    - Check weapon set switching           │
+└───────────────────────────────────────────┘
             ↓
 ┌─────────────────────────────────────┐
 │ 3. Safety checks                    │
@@ -421,22 +421,22 @@ Func UAI_UseSkills($a_f_X, $a_f_Y, $a_f_AggroRange = 1320, $a_f_MaxDistanceToXY 
 │    - Drop held items if in combat   │
 └─────────────────────────────────────┘
             ↓
-┌─────────────────────────────────────┐
-│ 8. Cast skill                       │
-│    ├─ UAI_CanUse($i)          │
-│    │   └─ Check recharge,           │
-│    │      adrenaline, resources     │
-│    │                                │
-│    ├─ $g_i_BestTarget = Call(BestTarget_XXX)
-│    │   └─ Get optimal target        │
-│    │                                │
-│    ├─ $g_b_CanUseSkill = Call(CanUse_XXX)
-│    │   └─ Check skill conditions    │
-│    │                                │
-│    └─ UAI_UseSkillEx($i, $g_i_BestTarget)
-│        └─ Cast the skill            │
-│        └─ Apply form change if any  │
-└─────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│ 8. Cast skill                                │
+│    ├─ UAI_CanUse($i)                         │
+│    │   └─ Check recharge,                    │
+│    │      adrenaline, resources              │
+│    │                                         │
+│    ├─ $g_i_BestTarget = Call(BestTarget_XXX) │
+│    │   └─ Get optimal target                 │
+│    │                                         │
+│    ├─ $g_b_CanUseSkill = Call(CanUse_XXX)    │
+│    │   └─ Check skill conditions             │
+│    │                                         │
+│    └─ UAI_UseSkillEx($i, $g_i_BestTarget)    │
+│        └─ Cast the skill                     │
+│        └─ Apply form change if any           │
+└──────────────────────────────────────────────┘
             ↓
 ┌─────────────────────────────────────┐
 │ 9. Distance check                   │
@@ -483,7 +483,7 @@ Caches all agent (player, allies, enemies, NPCs) data in a single batch read.
 #### Update Function
 
 ```autoit
-Func UAI_UpdateAgentCache()
+Func UAI_CacheAgentInfo()
 ```
 
 Call this at the beginning of each combat loop iteration to refresh all agent data.
@@ -612,7 +612,7 @@ Caches **dynamic** skill data that changes during gameplay (recharge status, adr
 #### Update Function
 
 ```autoit
-Func UAI_UpdateDynamicSkillbarCache()
+Func UAI_CacheDynamicSkillbarInfo()
 ```
 
 Call this each combat loop iteration.
@@ -760,17 +760,17 @@ Local $l_f_Duration = UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SHADOW_FORM, $GC_UA
 Local $l_i_EffectCount = UAI_GetPlayerEffectCount()
 ```
 
-### 4.5 UAI_UpdateCache() - Unified Cache Update
+### 4.5 UAI_UpdateAgentCache() - Unified Cache Update
 
-The `UAI_UpdateCache()` function is a **convenience wrapper** that updates all dynamic caches in one call:
+The `UAI_UpdateAgentCache()` function is a **convenience wrapper** that updates all dynamic caches in one call:
 
 ```autoit
-Func UAI_UpdateCache($a_f_AggroRange)
-    UAI_UpdateAgentCache($a_f_AggroRange + 100)  ; Agent data (with margin)
+Func UAI_UpdateAgentCache($a_f_AggroRange)
+    UAI_CacheAgentInfo($a_f_AggroRange + 100)  ; Agent data (with margin)
     UAI_CacheAgentEffects()                       ; Effects cache
     UAI_CacheAgentBonds()                         ; Bonds cache
     UAI_CacheAgentVisibleEffects()                ; Visible effects cache
-    UAI_UpdateDynamicSkillbarCache()              ; Skill recharge/adrenaline
+    UAI_CacheDynamicSkillbarInfo()              ; Skill recharge/adrenaline
 EndFunc
 ```
 
@@ -779,7 +779,7 @@ EndFunc
 ```autoit
 Func UAI_UseSkills($a_f_x, $a_f_y, $a_f_AggroRange, $a_f_MaxDistanceToXY)
     For $i = 1 To 8
-        UAI_UpdateCache($a_f_AggroRange)  ; Update all caches
+        UAI_UpdateAgentCache($a_f_AggroRange)  ; Update all caches
         If UAI_CountAgents(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy") = 0 Then ExitLoop
         ; ... process skills ...
     Next
@@ -790,11 +790,11 @@ EndFunc
 
 ```autoit
 ; At the start of each combat loop iteration (recommended):
-UAI_UpdateCache($a_f_AggroRange)  ; Updates all dynamic caches at once
+UAI_UpdateAgentCache($a_f_AggroRange)  ; Updates all dynamic caches at once
 
 ; Or manually update individual caches:
-UAI_UpdateAgentCache()           ; Update all agent data
-UAI_UpdateDynamicSkillbarCache() ; Update dynamic skill data
+UAI_CacheAgentInfo()           ; Update all agent data
+UAI_CacheDynamicSkillbarInfo() ; Update dynamic skill data
 UAI_CacheAgentEffects()          ; Update effects
 UAI_CacheAgentBonds()            ; Update bonds
 UAI_CacheAgentVisibleEffects()   ; Update visible effects
@@ -1734,9 +1734,9 @@ The **UtilityAI** system is a flexible and powerful framework for automating Gui
 
 1. **Modular architecture**: Each skill has its own targeting and condition functions
 2. **UAI Cache System**: Centralized caching for optimal performance
-   - `UAI_UpdateAgentCache()` - Agent data
+   - `UAI_CacheAgentInfo()` - Agent data
    - `Cache_SkillBar()` - Static skill data + dispatch caches + weapon sets (once per explorable area)
-   - `UAI_UpdateDynamicSkillbarCache()` - Dynamic skill data
+   - `UAI_CacheDynamicSkillbarInfo()` - Dynamic skill data
    - `UAI_UpdateEffectsCache()` - Effects, Bonds, Visible Effects
 3. **Resource management**: Sophisticated system that accounts for all modifiers
 4. **Extensibility**: Easy to add/modify behaviors for each skill
@@ -1746,9 +1746,9 @@ The **UtilityAI** system is a flexible and powerful framework for automating Gui
 
 | Cache           | Update Function                    | Access Functions                                              |
 | --------------- | ---------------------------------- | ------------------------------------------------------------- |
-| Agent           | `UAI_UpdateAgentCache()`           | `UAI_GetPlayerInfo()`, `UAI_GetAgentInfoByID()`               |
+| Agent           | `UAI_CacheAgentInfo()`           | `UAI_GetPlayerInfo()`, `UAI_GetAgentInfoByID()`               |
 | Static Skill    | `Cache_SkillBar()`                 | `UAI_GetStaticSkillInfo()`                                    |
-| Dynamic Skill   | `UAI_UpdateDynamicSkillbarCache()` | `UAI_GetDynamicSkillInfo()`                                   |
+| Dynamic Skill   | `UAI_CacheDynamicSkillbarInfo()` | `UAI_GetDynamicSkillInfo()`                                   |
 | Effects         | `UAI_UpdateEffectsCache()`         | `UAI_PlayerHasEffect()`, `UAI_AgentHasEffect()`               |
 | Bonds           | (via Effects)                      | `UAI_PlayerUpkeepsBond()`, `UAI_AgentUpkeepsBond()`           |
 | Visible Effects | (via Effects)                      | `UAI_PlayerHasVisibleEffect()`, `UAI_AgentHasVisibleEffect()` |

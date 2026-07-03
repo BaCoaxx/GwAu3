@@ -1029,7 +1029,11 @@ Func BestTarget_TryptophanSignet($a_f_AggroRange)
 	; Signet. For 14...20 seconds, target foe and all adjacent foes move and attack 23...40% slower.
 	; Concise description
 	; Signet. (14...20 seconds.) Target and adjacent foes move and attack 23...40% slower.
-	Return 0
+	Local $l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|-UAI_Filter_IsCaster")
+	If $l_i_Target <> 0 Then Return $l_i_Target
+		
+	$l_i_Target = UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
+	If $l_i_Target <> 0 Then Return $l_i_Target
 EndFunc
 
 Func CanUse_UnnaturalSignet()

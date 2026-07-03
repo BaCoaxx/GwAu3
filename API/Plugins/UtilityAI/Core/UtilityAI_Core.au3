@@ -47,12 +47,12 @@ Func UAI_Fight($a_f_x, $a_f_y, $a_f_AggroRange = 1320, $a_f_MaxDistanceToXY = 35
 	Local $l_b_HasPriority = IsArray($l_v_PriorityTargets) Or $l_v_PriorityTargets <> 0
 
 	If $l_b_HasPriority Then
-		UAI_UpdateCache($a_f_AggroRange)
+		UAI_UpdateAgentCache($a_f_AggroRange)
 		$g_i_ForceTarget = UAI_FindAgentByPlayerNumber($l_v_PriorityTargets, -2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 		If $g_i_ForceTarget = 0 And $a_b_KillOnly Then Return True
 	EndIf
 
-	If $g_b_CacheWeaponSet Then UAI_DeterminateWeaponSets()
+	If $g_b_CacheWeaponSet Then UAI_DetermineWeaponSets()
 
 	Do
 		If Agent_GetDistanceToXY($a_f_x, $a_f_y) > $a_f_AggroRange Then ExitLoop
@@ -72,68 +72,55 @@ EndFunc   ;==>UAI_Fight
 Func UAI_UseSkills($a_f_x, $a_f_y, $a_f_AggroRange = 1320, $a_f_MaxDistanceToXY = 3500)
 	For $skillSlot = 1 To 8
 		If UAI_GetStaticSkillInfo($skillSlot, $GC_UAI_STATIC_SKILL_SkillID) = 0 Then ContinueLoop
-
-;~ 	UPDATE CACHE FIRST
-		UAI_UpdateCache($a_f_AggroRange)
-		
-		If Not UAI_IsEnemyInPartyAggroRange($a_f_AggroRange) Then ExitLoop
-		If $g_b_CacheWeaponSet Then UAI_ShouldSwitchWeaponSet()
-
-;~ 	CHECK PARTY
-		If UAI_GetPlayerInfo($GC_UAI_AGENT_IsDead) Or Party_IsWiped() = 1 Or Map_GetInstanceInfo("Type") <> $GC_I_MAP_TYPE_EXPLORABLE Or UAI_GetPlayerInfo($GC_UAI_AGENT_IsKnockedDown) Then Return
-
 		If $g_b_SkillChanged = True And Cache_EndFormChangeBuild($skillSlot) Then $g_b_SkillChanged = False
 
-;~ 	MOVE TOWARD HERO AGGRO TARGET
-		; If no enemy is in the player's range but a hero has aggro on one, move toward it.
-		; Only chase while the player is still within aggro range of the fight origin.
-		If Not UAI_IsAgentInRange(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsNotAvoided") _
-			And Agent_GetDistanceToXY($a_f_x, $a_f_y) <= $a_f_AggroRange Then
+;~ 	UPDATE CACHE FIRST
+		UAI_UpdateAgentCache($a_f_AggroRange)
+		
+		If Not UAI_IsEnemyInPartyAggroRange($a_f_AggroRange) Then ExitLoop
+		If UAI_GetPlayerInfo($GC_UAI_AGENT_IsDead) Or UAI_GetPlayerInfo($GC_UAI_AGENT_IsKnockedDown) Or Map_GetInstanceInfo("Type") <> $GC_I_MAP_TYPE_EXPLORABLE Then ExitLoop	
 
+;~ DISTANCE CHECKS
+		If $a_f_MaxDistanceToXY <> 0 And Agent_GetDistanceToXY($a_f_x, $a_f_y) > $a_f_MaxDistanceToXY Then ExitLoop
+
+		; If no enemy is in the player's range but a hero has aggro on one, move toward it. Only chase while the player is still within aggro range of the fight origin.
+		If Not UAI_IsAgentInRange(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsNotAvoided") _
+				And Agent_GetDistanceToXY($a_f_x, $a_f_y) <= $a_f_AggroRange Then
 			Local $l_i_PartyRangeEnemy = UAI_GetNearestEnemyInPartyRange($a_f_AggroRange)
 			If $l_i_PartyRangeEnemy <> 0 Then
 				Local $l_f_EnemyX = UAI_GetAgentInfoByID($l_i_PartyRangeEnemy, $GC_UAI_AGENT_X)
 				Local $l_f_EnemyY = UAI_GetAgentInfoByID($l_i_PartyRangeEnemy, $GC_UAI_AGENT_Y)
 				Map_Move($l_f_EnemyX, $l_f_EnemyY, 0)
 				Sleep(500)
-				ExitLoop
 			EndIf
+			ExitLoop ; Next call handles the remainder
 		EndIf
+
+;~ WEAPON CHECK
+		If $g_b_CacheWeaponSet Then UAI_ShouldSwitchWeaponSet()
 
 ;~ 	AUTO ATTACK
 		If UAI_CanAutoAttack() Then
-			Local $l_i_AttackTarget = 0
-
-			If $g_i_ForceTarget <> 0 Then
-				$l_i_AttackTarget = $g_i_ForceTarget
-			ElseIf $g_i_AttackTarget <> 0 And Not UAI_GetAgentInfoByID($g_i_AttackTarget, $GC_UAI_AGENT_IsDead) Then
-				$l_i_AttackTarget = $g_i_AttackTarget
-			Else
-				$l_i_AttackTarget = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsNotAvoided")
-			EndIf
-
-			If $l_i_AttackTarget <> 0 Then Agent_Attack($l_i_AttackTarget, False)
-			$g_i_AttackTarget = $l_i_AttackTarget
-
-			If $g_i_LastCalledTarget = 0 And $g_i_TargetMode = $GC_UAI_TARGET_MODE_CALL Then
-				Agent_CallTarget($l_i_AttackTarget)
-				$g_i_LastCalledTarget = $l_i_AttackTarget
-			EndIf
+			UAI_AutoAttack($a_f_AggroRange)
 		Else
 			If UAI_GetPlayerInfo($GC_UAI_AGENT_IsAttacking) Then Core_ControlAction($GC_I_CONTROL_ACTION_CANCEL_ACTION)
 		EndIf
 
 ;~ 	PRIORITY SKILLS
-		UAI_PrioritySkills($a_f_AggroRange)
+		If UAI_PrioritySkills($a_f_AggroRange) Then
+            Local $l_i_UsedSlot = @extended
+            If $l_i_UsedSlot = $skillSlot Then
+                Sleep(128)
+                ContinueLoop
+            EndIf
+            UAI_UpdateAgentCache($a_f_AggroRange)
+        EndIf
 
 ;~ 	BUNDLE TO DROP
 		UAI_DropBundle($a_f_AggroRange)
 
 ;~ 	NORMAL SKILLS
 		UAI_TryUseSkill($skillSlot, $a_f_AggroRange)
-		
-;~ 	MOVE IF TOO FAR
-		If $a_f_MaxDistanceToXY <> 0 And Agent_GetDistanceToXY($a_f_x, $a_f_y) > $a_f_MaxDistanceToXY Then ExitLoop
 
 		Sleep(128)
 	Next
@@ -144,10 +131,8 @@ EndFunc   ;==>UAI_UseSkills
 ; Stops after the first priority skill that was successfully used
 Func UAI_PrioritySkills($a_f_AggroRange = 1320)
 	For $i = 1 To $g_ai_PrioritySlots[0]
-		If UAI_TryUseSkill($g_ai_PrioritySlots[$i], $a_f_AggroRange) Then
-			UAI_UpdateCache($a_f_AggroRange)
-			Return True
-		EndIf
+		Local $l_i_SkillSlot = $g_ai_PrioritySlots[$i]
+		If UAI_TryUseSkill($l_i_SkillSlot, $a_f_AggroRange) Then Return SetExtended($l_i_SkillSlot, True)
 	Next
 	Return False
 EndFunc
@@ -176,63 +161,98 @@ EndFunc
 
 ; Use skill function
 Func UAI_UseSkillEx($a_i_SkillSlot, $a_i_AgentID = -2, $a_f_AggroRange = 1320)
-	Local $l_i_MyID = Agent_GetMyID()
-	If $a_i_AgentID <> $l_i_MyID Then Agent_ChangeTarget($a_i_AgentID)
-	If $g_b_CacheWeaponSet Then UAI_GetBestWeaponSetBySkillSlot($a_i_SkillSlot)
+    Local $l_i_MyID = Agent_GetMyID()
+    If $a_i_AgentID <> $l_i_MyID Then Agent_ChangeTarget($a_i_AgentID)
 
-	If $g_i_TargetMode = $GC_UAI_TARGET_MODE_CALL Then
-		Local $l_i_Target = $a_i_AgentID
-		If $g_i_ForceTarget <> 0 Then $l_i_Target = $g_i_ForceTarget
-		If $l_i_Target <> 0 And $l_i_Target <> $l_i_MyID And $l_i_Target <> $g_i_LastCalledTarget Then
-			Agent_CallTarget($l_i_Target)
-			$g_i_LastCalledTarget = $l_i_Target
-		EndIf
-	EndIf
+    If $g_b_CacheWeaponSet Then UAI_GetBestWeaponSetBySkillSlot($a_i_SkillSlot)
 
-	Local $l_i_SkillID = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_SkillID)
-	Local $l_i_SkillType = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_SkillType)
-	Local $l_i_Special = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Special)
-	Local $l_i_ActivationTime = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Activation)
-	Local $l_b_InstantCast = ((($l_i_SkillType = $GC_I_SKILL_TYPE_SPELL And _
-		(UAI_PlayerHasEffect($GC_I_SKILL_ID_GLYPH_OF_SACRIFICE) Or UAI_PlayerHasEffect($GC_I_SKILL_ID_GLYPH_OF_ESSENCE))) _
-		Or ($l_i_SkillType <> $GC_I_SKILL_TYPE_ATTACK And $l_i_ActivationTime = 0)) ? True : False)
+    If $g_i_TargetMode = $GC_UAI_TARGET_MODE_CALL Then
+        Local $l_i_Target = $a_i_AgentID
+        If $g_i_ForceTarget <> 0 Then $l_i_Target = $g_i_ForceTarget
+        If $l_i_Target <> 0 And $l_i_Target <> $l_i_MyID And $l_i_Target <> $g_i_LastCalledTarget Then
+            Agent_CallTarget($l_i_Target)
+            $g_i_LastCalledTarget = $l_i_Target
+        EndIf
+    EndIf
 
-	If $l_b_InstantCast Then
-		Skill_UseSkill($a_i_SkillSlot, $a_i_AgentID)
-	Else
-		Local $l_b_UsedSkill = False
-		Local $l_h_CastStart = TimerInit()
-		Do
-			If Not $l_b_UsedSkill Then
-				Skill_UseSkill($a_i_SkillSlot, $a_i_AgentID)
-				$l_b_UsedSkill = True
-			EndIf
-			Local $l_b_IsCasting = (Memory_Read($g_p_StaticSkillbarPtr + 0xB0) <> 0 And Agent_GetAgentInfo($l_i_MyID, "Skill") = $l_i_SkillID)
+    Local $l_i_SkillID = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_SkillID)
+    Local $l_i_SkillType = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_SkillType)
+    Local $l_i_ActivationTime = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Activation)
+    Local $l_i_Special = UAI_GetStaticSkillInfo($a_i_SkillSlot, $GC_UAI_STATIC_SKILL_Special)
+	Local $l_b_IsRes = (BitAND($l_i_Special, $GC_I_SKILL_SPECIAL_FLAG_RESURRECTION) <> 0)
+    Local $l_b_IsSpell = ($l_i_SkillType = $GC_I_SKILL_TYPE_SPELL Or $l_i_SkillType = $GC_I_SKILL_TYPE_HEX Or $l_i_SkillType = $GC_I_SKILL_TYPE_ENCHANTMENT _
+            Or $l_i_SkillType = $GC_I_SKILL_TYPE_WARD Or $l_i_SkillType = $GC_I_SKILL_TYPE_WELL Or $l_i_SkillType = $GC_I_SKILL_TYPE_WEAPON_SPELL _
+            Or $l_i_SkillType = $GC_I_SKILL_TYPE_ITEM_SPELL)
+    Local $l_b_InstantCast = ($l_b_IsSpell And (UAI_PlayerHasEffect($GC_I_SKILL_ID_GLYPH_OF_SACRIFICE) Or UAI_PlayerHasEffect($GC_I_SKILL_ID_GLYPH_OF_ESSENCE))) _
+            Or ($l_i_SkillType <> $GC_I_SKILL_TYPE_ATTACK And $l_i_ActivationTime = 0)
+    Local $l_b_TrackInstantCast = ($l_b_InstantCast And $l_i_SkillType <> $GC_I_SKILL_TYPE_SHOUT And $l_i_SkillType <> $GC_I_SKILL_TYPE_STANCE)
+
+	Local $l_f_IdleTimeout = 5000
+    Local $l_h_Idle = TimerInit()
+    While Not UAI_GetIsIdle($l_i_MyID)
+        If Not UAI_TargetIsValid($a_i_AgentID, $l_b_IsRes) Then Return False
+        UAI_UpdatePlayerCache()
+        If Not UAI_CanUse($a_i_SkillSlot) Then Return False
+        If TimerDiff($l_h_Idle) > $l_f_IdleTimeout Then Return False
+        Sleep(32)
+    WEnd
+
+    If $l_b_InstantCast Then
+        Skill_UseSkill($a_i_SkillSlot, $a_i_AgentID)
+        If $l_b_TrackInstantCast Then
+            Local $l_f_CastStartTimeout = 1000
+        	Local $l_h_CastStart = TimerInit()
+            While Not UAI_GetIsCastingSkill($l_i_MyID, 0)
+				If Not UAI_TargetIsValid($a_i_AgentID, $l_b_IsRes) Then Return False
+            	UAI_UpdatePlayerCache()
+				If Not UAI_CanUse($a_i_SkillSlot) Then Return False
+                If TimerDiff($l_h_CastStart) > $l_f_CastStartTimeout Then ExitLoop
+            WEnd
+        EndIf
+    Else
+        Skill_UseSkill($a_i_SkillSlot, $a_i_AgentID)
+        Local $l_f_CastStartTimeout = 5000
+        Local $l_h_CastStart = TimerInit()
+        While Not UAI_GetIsCastingSkill($l_i_MyID, $l_i_SkillID)
+            If Not UAI_TargetIsValid($a_i_AgentID, $l_b_IsRes) Then ExitLoop
+            UAI_UpdatePlayerCache()
+            If Not UAI_CanUse($a_i_SkillSlot) Then Return False
+			If TimerDiff($l_h_CastStart) > $l_f_CastStartTimeout Then ExitLoop
 			Sleep(32)
-		Until $l_b_IsCasting Or TimerDiff($l_h_CastStart) > 1000
-	EndIf
+		WEnd
+    EndIf
 
-	Local $l_f_AggroRangeSq = $a_f_AggroRange * $a_f_AggroRange
-	Local $l_h_CastEnd = TimerInit()
-	Do
-		Local $l_b_TargetIsDead = Agent_GetAgentInfo($a_i_AgentID, "IsDead")
-		Local $l_b_CancelCast = (($l_b_TargetIsDead And $l_i_Special <> $GC_I_SKILL_SPECIAL_FLAG_RESURRECTION) _
-			Or (Not $l_b_TargetIsDead And $l_i_Special = $GC_I_SKILL_SPECIAL_FLAG_RESURRECTION))
+    If Not $l_b_InstantCast Then
+        Local $l_f_AggroRangeSq = $a_f_AggroRange * $a_f_AggroRange
+        Local $l_f_DecreasedAttackSpeedCap = 4.05
+        Local $l_f_CastEndTimeout = ($l_i_SkillType = $GC_I_SKILL_TYPE_ATTACK ? ($l_f_DecreasedAttackSpeedCap * 1000) * 1.05 : ($l_i_ActivationTime * 1000) * 2.55)
+        Local $l_h_CastEnd = TimerInit()
 
-		If $l_b_CancelCast Then
-			Core_ControlAction($GC_I_CONTROL_ACTION_CANCEL_ACTION)
-			ExitLoop
-		EndIf
+        While UAI_GetIsCastingSkill($l_i_MyID, $l_i_SkillID) And Not Agent_GetAgentInfo($l_i_MyID, "IsKnockedDown")
+            If Not UAI_TargetIsValid($a_i_AgentID, $l_b_IsRes) Then
+                Core_ControlAction($GC_I_CONTROL_ACTION_CANCEL_ACTION)
+                ExitLoop
+            EndIf
+            If Agent_GetDistanceSq($a_i_AgentID) > $l_f_AggroRangeSq Then ExitLoop
+			If TimerDiff($l_h_CastEnd) > $l_f_CastEndTimeout Then ExitLoop
+            Sleep(32)
+        WEnd
+    EndIf
 
-		Local $l_f_DistanceSq = Agent_GetDistanceSq($a_i_AgentID)
-		If $l_f_DistanceSq > $l_f_AggroRangeSq Then ExitLoop
-
-		Sleep(128)
-	Until Not UAI_GetIsCasting($l_i_MyID) Or Agent_GetAgentInfo($l_i_MyID, "IsKnockedDown") Or TimerDiff($l_h_CastEnd) > 5000
+    Return True
 EndFunc   ;==>UAI_UseSkillEx
 
-Func UAI_GetIsCasting($a_i_AgentID = -2)
-    Return (Memory_Read($g_p_StaticSkillbarPtr + 0xB0) <> 0 And Agent_GetAgentInfo($a_i_AgentID, "Skill") <> 0)
+Func UAI_TargetIsValid($a_i_AgentID, $a_b_IsRes)
+    Local $l_b_Dead = Agent_GetAgentInfo($a_i_AgentID, "IsDead")
+    Return ($a_b_IsRes ? $l_b_Dead : Not $l_b_Dead)
+EndFunc
+
+Func UAI_GetIsIdle($a_i_AgentID)
+    Return (Memory_Read($g_p_StaticSkillbarPtr + 0xB0) = 0 And Agent_GetAgentInfo($a_i_AgentID, "Skill") = 0)
+EndFunc
+
+Func UAI_GetIsCastingSkill($a_i_AgentID, $a_i_SkillID)
+    Return (Memory_Read($g_p_StaticSkillbarPtr + 0xB0) <> 0 And Agent_GetAgentInfo($a_i_AgentID, "Skill") = $a_i_SkillID)
 EndFunc
 
 ; Drop bundle if player has Item Spell effect and can cast (skill is recharged)
@@ -263,7 +283,7 @@ Func UAI_DropBundle($a_f_AggroRange = 1320)
 			If $g_b_CanUseSkill = True And Agent_GetDistance($g_i_BestTarget) < $a_f_AggroRange Then
 				UAI_UseSkillEx($l_i_Slot, $g_i_BestTarget)
 				If Cache_FormChangeBuild($l_i_Slot) Then $g_b_SkillChanged = True
-				UAI_UpdateCache($a_f_AggroRange)
+				UAI_UpdateAgentCache($a_f_AggroRange)
 			EndIf
 		EndIf
 
@@ -274,3 +294,23 @@ Func UAI_DropBundle($a_f_AggroRange = 1320)
 		EndIf
 	Next
 EndFunc   ;==>UAI_DropBundle
+
+Func UAI_AutoAttack($a_f_AggroRange)
+	Local $l_i_AttackTarget = 0
+
+	If $g_i_ForceTarget <> 0 Then
+		$l_i_AttackTarget = $g_i_ForceTarget
+	ElseIf $g_i_AttackTarget <> 0 And Not UAI_GetAgentInfoByID($g_i_AttackTarget, $GC_UAI_AGENT_IsDead) Then
+		$l_i_AttackTarget = $g_i_AttackTarget
+	Else
+		$l_i_AttackTarget = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsNotAvoided")
+	EndIf
+
+	If $l_i_AttackTarget <> 0 Then Agent_Attack($l_i_AttackTarget, False)
+	$g_i_AttackTarget = $l_i_AttackTarget
+
+	If $g_i_LastCalledTarget = 0 And $g_i_TargetMode = $GC_UAI_TARGET_MODE_CALL Then
+		Agent_CallTarget($l_i_AttackTarget)
+		$g_i_LastCalledTarget = $l_i_AttackTarget
+	EndIf
+EndFunc

@@ -565,7 +565,7 @@ Global Const $GC_S_RUNE_MONK_MAJOR_MINOR_SMITING_PRAYERS		= "020EE821"	; Major S
 Global Const $GC_S_RUNE_MONK_MAJOR_PROTECTION_PRAYERSC 			= "020FE821"	; Major ProtectionPrayers Rune
 Global Const $GC_S_RUNE_MONK_MAJOR_DIVINE_FAVOR 				= "0210E821"	; Major DivineFavor Rune
 Global Const $GC_S_RUNE_MONK_SUPERIOR_HEALING_PRAYERS 			= "030DE821"	; Superior HealingPrayers Rune
-Global Const $GC_S_RUNE_MONK_SUPERIOR_MINOR_SMITING_PRAYERS 	= "030EE821"	; Superior SmitingPrayers Rune
+Global Const $GC_S_RUNE_MONK_SUPERIOR_SMITING_PRAYERS 	        = "030EE821"	; Superior SmitingPrayers Rune
 Global Const $GC_S_RUNE_MONK_SUPERIOR_PROTECTION_PRAYERS 		= "030FE821"	; Superior ProtectionPrayers Rune
 Global Const $GC_S_RUNE_MONK_SUPERIOR_DIVINE_FAVOR 				= "0310E821"	; Superior DivineFavor Rune
 
