@@ -16,14 +16,6 @@ Global $g_iPathfinder_StuckCheckInterval = 500      ; Interval to check if stuck
 Global $g_iPathfinder_StuckDistance = 100           ; If moved less than this, consider stuck
 Global $g_iPathfinder_UnstuckDirectionIndex = 0     ; Current direction index for unstuck (0-7, cycles through 16 directions)
 Global $g_sPathfinder_SwitchTeleportFunc = ""        ; Callback for switch-activated teleporters: MyFunc($x, $y)
-Global $g_iPathfinder_Mode = 0                       ; 0 = shortest path, 1 = coverage mode
-Global $g_iPathfinder_CoverageMinSeparation = 25     ; Minimum pairwise waypoint separation
-Global $g_iPathfinder_CoverageMaxWaypoints = 32      ; Maximum coverage waypoints including destination
-Global $g_fPathfinder_CoverageDistanceWeight = 0.15  ; Destination distance score penalty weight
-Global $g_fPathfinder_CornerBiasWeight = 150.0       ; Score bonus for corner probe candidates
-Global $g_fPathfinder_RevisitPenalty = 250.0         ; Score penalty for low-novelty candidates
-Global $g_bPathfinder_AllowRevisitAfterExhaustion = False ; Allow dense fallback candidates if needed
-Global $g_iPathfinder_CoverageReplanIntervalMs = 3000 ; Replan interval in coverage mode
 
 ; Move to a destination using pathfinding with obstacle avoidance
 ; $aDestX, $aDestY = Destination coordinates
@@ -91,33 +83,13 @@ Func Pathfinder_MoveTo($aDestX, $aDestY, $aDestLayer = -1, $aObstacles = 0, $aAg
         $lCurrentObstacles = $aObstacles
     EndIf
 
-    Local $lCoverageMode = ($g_iPathfinder_Mode = 1)
-    Local $lCoverageWaypointIndex = 0
-    Local $lCoverageWaypoints[0][4]
-    Local $lCurrentTargetX = $aDestX
-    Local $lCurrentTargetY = $aDestY
-    Local $lCurrentTargetLayer = $aDestLayer
-
-    If $lCoverageMode Then
-        $lCoverageWaypoints = _Pathfinder_GenerateCoverageWaypoints($lMyX, $lMyY, $lLayer, $aDestX, $aDestY, $aDestLayer, $lCurrentObstacles)
-        If IsArray($lCoverageWaypoints) And UBound($lCoverageWaypoints) > 0 Then
-            $lCoverageWaypoints = _Pathfinder_EnforceWaypointConstraints($lCoverageWaypoints, $g_iPathfinder_CoverageMinSeparation, True, $aDestX, $aDestY, $aDestLayer)
-            If IsArray($lCoverageWaypoints) And UBound($lCoverageWaypoints) > 0 Then
-                $lCurrentTargetX = $lCoverageWaypoints[$lCoverageWaypointIndex][0]
-                $lCurrentTargetY = $lCoverageWaypoints[$lCoverageWaypointIndex][1]
-                $lCurrentTargetLayer = $lCoverageWaypoints[$lCoverageWaypointIndex][2]
-                _Pathfinder_Log("Coverage mode active with " & UBound($lCoverageWaypoints) & " waypoint(s)")
-            EndIf
-        EndIf
-    EndIf
-
-    Local $lPath = _Pathfinder_GetPath($lMyX, $lMyY, $lLayer, $lCurrentTargetX, $lCurrentTargetY, $lCurrentTargetLayer, $lCurrentObstacles)
+    Local $lPath = _Pathfinder_GetPath($lMyX, $lMyY, $lLayer, $aDestX, $aDestY, $aDestLayer, $lCurrentObstacles)
     If Not IsArray($lPath) Or UBound($lPath) = 0 Then
         ; Path calculation failed - use empty path and rely on direct movement
         Local $lEmptyPath[0][4]
         $lPath = $lEmptyPath
 		If Map_GetMapID() = $lMyOldMap Then
-			Map_MoveLayer($lCurrentTargetX, $lCurrentTargetY, $lLayer)
+			Map_MoveLayer($aDestX, $aDestY, $lLayer)
 		Else
 			Agent_CancelAction()
 		EndIf
@@ -191,52 +163,9 @@ Func Pathfinder_MoveTo($aDestX, $aDestY, $aDestLayer = -1, $aObstacles = 0, $aAg
             $lLastStuckCheckTime = TimerInit()
         EndIf
 
-        If $lCoverageMode And IsArray($lCoverageWaypoints) And $lCoverageWaypointIndex < UBound($lCoverageWaypoints) Then
-            If _Pathfinder_Distance($lMyX, $lMyY, $lCoverageWaypoints[$lCoverageWaypointIndex][0], $lCoverageWaypoints[$lCoverageWaypointIndex][1]) < $g_iPathfinder_WaypointReachedDistance Then
-                $lCoverageWaypointIndex += 1
-                If $lCoverageWaypointIndex < UBound($lCoverageWaypoints) Then
-                    _Pathfinder_Log("Coverage waypoint " & $lCoverageWaypointIndex & "/" & UBound($lCoverageWaypoints) & " reached")
-                    $lCurrentTargetX = $lCoverageWaypoints[$lCoverageWaypointIndex][0]
-                    $lCurrentTargetY = $lCoverageWaypoints[$lCoverageWaypointIndex][1]
-                    $lCurrentTargetLayer = $lCoverageWaypoints[$lCoverageWaypointIndex][2]
-                Else
-                    _Pathfinder_Log("Coverage waypoints exhausted, final destination target active")
-                    $lCurrentTargetX = $aDestX
-                    $lCurrentTargetY = $aDestY
-                    $lCurrentTargetLayer = $aDestLayer
-                EndIf
-                $lNeedPathUpdate = True
-            EndIf
-        EndIf
-
-        ; Recalculate path at interval (always from current position)
-        Local $lPathUpdateInterval = $g_iPathfinder_PathUpdateInterval
-        If $lCoverageMode Then $lPathUpdateInterval = $g_iPathfinder_CoverageReplanIntervalMs
-
-        If TimerDiff($g_hPathfinder_LastPathUpdateTime) > $lPathUpdateInterval Or $lNeedPathUpdate Then
-            If $lCoverageMode Then
-                Local $lShouldRegenerateCoveragePlan = (TimerDiff($g_hPathfinder_LastPathUpdateTime) > $lPathUpdateInterval)
-                If $lShouldRegenerateCoveragePlan Then
-                    $lCoverageWaypoints = _Pathfinder_GenerateCoverageWaypoints($lMyX, $lMyY, $lLayer, $aDestX, $aDestY, $aDestLayer, $lCurrentObstacles)
-                    If IsArray($lCoverageWaypoints) And UBound($lCoverageWaypoints) > 0 Then
-                        $lCoverageWaypoints = _Pathfinder_EnforceWaypointConstraints($lCoverageWaypoints, $g_iPathfinder_CoverageMinSeparation, True, $aDestX, $aDestY, $aDestLayer)
-                        $lCoverageWaypointIndex = 0
-                        If IsArray($lCoverageWaypoints) And UBound($lCoverageWaypoints) > 0 Then
-                            $lCurrentTargetX = $lCoverageWaypoints[$lCoverageWaypointIndex][0]
-                            $lCurrentTargetY = $lCoverageWaypoints[$lCoverageWaypointIndex][1]
-                            $lCurrentTargetLayer = $lCoverageWaypoints[$lCoverageWaypointIndex][2]
-                        Else
-                            $lCoverageMode = False
-                            _Pathfinder_Log("Coverage planner fallback to shortest mode: constrained list empty")
-                        EndIf
-                    Else
-                        $lCoverageMode = False
-                        _Pathfinder_Log("Coverage planner fallback to shortest mode: planner returned no waypoints")
-                    EndIf
-                EndIf
-            EndIf
-
-            $lPath = _Pathfinder_GetPath($lMyX, $lMyY, $lLayer, $lCurrentTargetX, $lCurrentTargetY, $lCurrentTargetLayer, $lCurrentObstacles)
+        ; Recalculate path at every interval (always from current position)
+        If TimerDiff($g_hPathfinder_LastPathUpdateTime) > $g_iPathfinder_PathUpdateInterval Or $lNeedPathUpdate Then
+            $lPath = _Pathfinder_GetPath($lMyX, $lMyY, $lLayer, $aDestX, $aDestY, $aDestLayer, $lCurrentObstacles)
             If IsArray($lPath) And UBound($lPath) > 0 Then
                 $g_aPathfinder_CurrentPath = $lPath
                 $g_iPathfinder_CurrentPathIndex = 0
@@ -253,7 +182,7 @@ Func Pathfinder_MoveTo($aDestX, $aDestY, $aDestLayer = -1, $aObstacles = 0, $aAg
         ; Move to current waypoint
         If $g_iPathfinder_CurrentPathIndex >= UBound($g_aPathfinder_CurrentPath) Then
             If Map_GetMapID() = $lMyOldMap Then
-				Map_MoveLayer($lCurrentTargetX, $lCurrentTargetY, $lCurrentTargetLayer)
+				Map_MoveLayer($aDestX, $aDestY, $lLayer)
 			Else
 				Agent_CancelAction()
 			EndIf
@@ -276,9 +205,9 @@ Func Pathfinder_MoveTo($aDestX, $aDestY, $aDestLayer = -1, $aObstacles = 0, $aAg
                     $lWaypointY = $g_aPathfinder_CurrentPath[$g_iPathfinder_CurrentPathIndex][1]
                     $lLayer = $g_aPathfinder_CurrentPath[$g_iPathfinder_CurrentPathIndex][2]
                 Else
-                    $lWaypointX = $lCurrentTargetX
-                    $lWaypointY = $lCurrentTargetY
-                    $lLayer = $lCurrentTargetLayer
+                    $lWaypointX = $aDestX
+                    $lWaypointY = $aDestY
+                    $lLayer = 0
                 EndIf
             EndIf
 
@@ -385,46 +314,6 @@ EndFunc
 ; Set obstacle update interval for dynamic mode (in ms)
 Func Pathfinder_SetObstacleUpdateInterval($aInterval)
     $g_iPathfinder_ObstacleUpdateInterval = $aInterval
-EndFunc
-
-; Set pathfinding mode: 0 = shortest (default), 1 = coverage
-Func Pathfinder_SetMode($aMode)
-    $g_iPathfinder_Mode = Int($aMode)
-EndFunc
-
-; Set minimum separation between generated coverage waypoints
-Func Pathfinder_SetCoverageMinSeparation($aDistance)
-    $g_iPathfinder_CoverageMinSeparation = Max(0, Int($aDistance))
-EndFunc
-
-; Set maximum number of coverage waypoints (including destination)
-Func Pathfinder_SetCoverageMaxWaypoints($aCount)
-    $g_iPathfinder_CoverageMaxWaypoints = Max(1, Int($aCount))
-EndFunc
-
-; Set score penalty for far-from-destination candidates in coverage mode
-Func Pathfinder_SetCoverageDistanceWeight($aWeight)
-    $g_fPathfinder_CoverageDistanceWeight = $aWeight
-EndFunc
-
-; Set score bonus for corner-probe candidates in coverage mode
-Func Pathfinder_SetCoverageCornerBiasWeight($aWeight)
-    $g_fPathfinder_CornerBiasWeight = $aWeight
-EndFunc
-
-; Set score penalty for low-novelty/revisit candidates in coverage mode
-Func Pathfinder_SetCoverageRevisitPenalty($aPenalty)
-    $g_fPathfinder_RevisitPenalty = $aPenalty
-EndFunc
-
-; Allow/disallow revisits once high-novelty candidates are exhausted
-Func Pathfinder_SetCoverageAllowRevisitAfterExhaustion($aAllow)
-    $g_bPathfinder_AllowRevisitAfterExhaustion = ($aAllow <> 0)
-EndFunc
-
-; Set replan interval for coverage mode (ms)
-Func Pathfinder_SetCoverageReplanInterval($aInterval)
-    $g_iPathfinder_CoverageReplanIntervalMs = Max(250, Int($aInterval))
 EndFunc
 
 ; Set callback function for switch-activated teleporters
