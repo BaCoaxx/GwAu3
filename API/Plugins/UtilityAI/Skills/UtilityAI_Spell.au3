@@ -25,7 +25,7 @@ Func Anti_Spell()
 		$l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPOIL_VICTOR, $GC_UAI_EFFECT_Scale)
 	EndIf
 	
-	Return $l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP * 0.15))
+	Return ($l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP * 0.15)))
 EndFunc
 
 ; Skill ID: 5 - $GC_I_SKILL_ID_POWER_BLOCK
@@ -2194,7 +2194,7 @@ Func BestTarget_EntanglingAsp($a_f_AggroRange)
 	; Spell. Entangling Asp must follow a lead attack. Target foe is knocked down and becomes Poisoned for 5...17...20 seconds.
 	; Concise description
 	; Spell. Causes knock-down. Inflicts Poisoned condition (5...17...20 seconds). Must follow a lead attack.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsLead")
 EndFunc
 
 ; Skill ID: 791 - $GC_I_SKILL_ID_FLESH_OF_MY_FLESH

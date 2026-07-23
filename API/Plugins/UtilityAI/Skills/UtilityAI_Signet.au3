@@ -444,7 +444,7 @@ Func BestTarget_SignetOfClumsiness($a_f_AggroRange)
 	; Signet. If target foe is attacking, that foe and all adjacent foes are interrupted and take 15...51...60 damage. Any foes using attack skills are knocked down.
 	; Concise description
 	; Signet. Interrupts an attack for target foe and all adjacent foes. Interruption effect: deals 15...51...60 damage; knocks down foes using attack skills.
-	Return UAI_GetBestAOETarget(-2, 1320, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsAttacking")
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsAttacking")
 EndFunc
 
 Func CanUse_SignetOfClumsinessPvp()
@@ -506,7 +506,7 @@ Func BestTarget_SignetOfDeadlyCorruption($a_f_AggroRange)
 	; Signet. Target foe takes 5...29...35 damage for each condition on that foe (maximum 130 damage).
 	; Concise description
 	; Signet. Deals 5...29...35 damage (maximum 130) for each condition on target foe.
-	Return 0
+	Return UAI_GetBestTargetByConditionCount(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsDual")
 EndFunc
 
 Func CanUse_SignetOfDeadlyCorruptionPvp()
@@ -515,7 +515,7 @@ Func CanUse_SignetOfDeadlyCorruptionPvp()
 EndFunc
 
 Func BestTarget_SignetOfDeadlyCorruptionPvp($a_f_AggroRange)
-	Return 0
+	Return UAI_GetBestTargetByConditionCount(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsDual")
 EndFunc
 
 Func CanUse_SignetOfDevotion()
@@ -976,7 +976,7 @@ Func BestTarget_SignetOfToxicShock($a_f_AggroRange)
 	; Signet. If target foe is suffering from Poison, that foe takes 10...82...100 damage.
 	; Concise description
 	; Signet. Deals 10...82...100 damage. No effect unless target foe is Poisoned
-	Return 0
+	Return UAI_GetBestSingleTarget(-2, $a_f_AggroRange, $GC_UAI_AGENT_HP, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsPoisoned")
 EndFunc
 
 Func CanUse_SignetOfTwilight()
