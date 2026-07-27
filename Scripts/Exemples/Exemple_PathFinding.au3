@@ -207,7 +207,7 @@ Func CalculatePath()
 
     ; Calculate path
     Local $l_i_Timer = TimerInit()
-    $g_af2_CurrentPath = Pathfinder_FindPathGW($l_i_MapID, $l_f_StartX, $l_f_StartY, $g_f_DestX, $g_f_DestY, 1250)
+    $g_af2_CurrentPath = Pathfinder_FindPath($l_i_MapID, $l_f_StartX, $l_f_StartY, 0, $g_f_DestX, $g_f_DestY)
     Local $l_f_Time = TimerDiff($l_i_Timer)
 
     If Not IsArray($g_af2_CurrentPath) Then
