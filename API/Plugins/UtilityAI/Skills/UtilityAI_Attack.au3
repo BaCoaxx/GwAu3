@@ -19,7 +19,7 @@ Func Anti_Attack()
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPITEFUL_SPIRIT) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPITEFUL_SPIRIT, $GC_UAI_EFFECT_Scale)
 	If UAI_PlayerHasEffect($GC_I_SKILL_ID_SPOIL_VICTOR) Then $l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPOIL_VICTOR, $GC_UAI_EFFECT_Scale)
 
-	Return $l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP * 0.15))
+	Return ($l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP * 0.15)))
 EndFunc
 
 ; Skill ID: 320 - $GC_I_SKILL_ID_HAMSTRING
@@ -346,7 +346,7 @@ Func BestTarget_BellySmash($a_f_AggroRange)
 	; Hammer Attack. If this attack strikes a foe who is knocked down, the resulting dust cloud will blind adjacent foes for 3...6...7 seconds.
 	; Concise description
 	; Hammer Attack. Inflicts Blindness condition to adjacent foes (3...6...7 seconds) if target foe is knocked down.
-	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnockedDown")
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnocked")
 	If $l_i_Target <> 0 Then Return $l_i_Target
 	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
@@ -376,7 +376,7 @@ Func BestTarget_CrushingBlow($a_f_AggroRange)
 	; Hammer Attack. If this attack hits, you strike for +1...16...20 damage. If you hit a knocked-down foe you inflict a Deep Wound, lowering your target's maximum Health by 20% for 5...17...20 seconds.
 	; Concise description
 	; Hammer Attack. Deals +1...16...20 damage. Inflicts Deep Wound condition if target foe is knocked-down (5...17...20 seconds).
-	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnockedDown")
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnocked")
 	If $l_i_Target <> 0 Then Return $l_i_Target
 	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
@@ -1027,9 +1027,7 @@ Func BestTarget_FallingSpider($a_f_AggroRange)
 	; Off-Hand Attack. Must strike a knocked-down foe. If it hits, Falling Spider strikes for +15...31...35 damage and target foe is Poisoned for 5...17...20 seconds.
 	; Concise description
 	; Off-Hand Attack. Deals +15...31...35 damage. Inflicts Poisoned condition (5...17...20 seconds). No effect unless target foe is knocked-down.
-	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnockedDown")
-	If $l_i_Target <> 0 Then Return $l_i_Target
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnocked")
 EndFunc
 
 ; Skill ID: 779 - $GC_I_SKILL_ID_BLACK_LOTUS_STRIKE
@@ -1099,6 +1097,8 @@ EndFunc
 ; Skill ID: 783 - $GC_I_SKILL_ID_UNSUSPECTING_STRIKE
 Func CanUse_UnsuspectingStrike()
 	If Anti_Attack() Then Return False
+	Local $l_i_CurrentTarget = Agent_GetCurrentTarget()
+	If $l_i_CurrentTarget <> 0 Then Return Not UAI_Filter_IsLastStrikeLeadOrOffHand($l_i_CurrentTarget)
 	Return True
 EndFunc
 
@@ -1121,7 +1121,7 @@ Func BestTarget_LaceratingChop($a_f_AggroRange)
 	; Axe Attack. If Lacerating Chop hits, you deal +5...17...20 damage. If it strikes a knocked down foe your target suffers from Bleeding for 5...17...20 seconds.
 	; Concise description
 	; Axe Attack. Deals +5...17...20 damage. Inflicts Bleeding condition (5...17...20 seconds) if target foe is knocked-down.
-	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnockedDown")
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnocked")
 	If $l_i_Target <> 0 Then Return $l_i_Target
 	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
@@ -1346,6 +1346,8 @@ EndFunc
 ; Skill ID: 948 - $GC_I_SKILL_ID_DESPERATE_STRIKE
 Func CanUse_DesperateStrike()
 	If Anti_Attack() Then Return False
+	Local $l_i_CurrentTarget = Agent_GetCurrentTarget()
+	If $l_i_CurrentTarget <> 0 Then Return Not UAI_Filter_IsLastStrikeLeadOrOffHand($l_i_CurrentTarget)
 	Return True
 EndFunc
 
@@ -1368,7 +1370,7 @@ Func BestTarget_ExhaustingAssault($a_f_AggroRange)
 	; Dual Attack. Must follow a lead attack. Target foe's action is interrupted. If that action was casting a spell, target foe suffers 10 Overcast.
 	; Concise description
 	; Dual Attack. Interrupts an action. Inflicts 10 Overcast if the interrupted action was a spell. Must follow a lead attack.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsLead")
 EndFunc
 
 ; Skill ID: 976 - $GC_I_SKILL_ID_REPEATING_STRIKE
@@ -1382,7 +1384,7 @@ Func BestTarget_RepeatingStrike($a_f_AggroRange)
 	; Off-Hand Attack. Must follow an off-hand attack. If it hits, this attack strikes for +10...26...30 damage. If it misses, it takes an additional 15 seconds to recharge.
 	; Concise description
 	; Off-Hand Attack. Deals +10...26...30 damage. This skill has +15 second recharge time if it misses. Must follow an off-hand attack.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsOffHand")
 EndFunc
 
 ; Skill ID: 986 - $GC_I_SKILL_ID_NINE_TAIL_STRIKE
@@ -1396,7 +1398,7 @@ Func BestTarget_NineTailStrike($a_f_AggroRange)
 	; Dual Attack. Must follow an off-hand attack. Nine Tail Strike cannot be blocked and strikes for +15...35...40 damage if it hits.
 	; Concise description
 	; Dual Attack. Deals +15...35...40 damage. Unblockable. Must follow an off-hand attack.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsOffHand")
 EndFunc
 
 ; Skill ID: 988 - $GC_I_SKILL_ID_TEMPLE_STRIKE
@@ -1410,12 +1412,13 @@ Func BestTarget_TempleStrike($a_f_AggroRange)
 	; Elite Off-Hand Attack. Must follow a lead attack. If this attack hits, target foe is Dazed and Blinded for 1...8...10 seconds, and if target foe is casting a spell, that foe is interrupted.
 	; Concise description
 	; Elite Off-Hand Attack. Interrupts a spell. Inflicts Dazed and Blindness conditions (1...8...10 seconds). Must follow a lead attack.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsLead")
 EndFunc
 
 ; Skill ID: 989 - $GC_I_SKILL_ID_GOLDEN_PHOENIX_STRIKE
 Func CanUse_GoldenPhoenixStrike()
 	If Anti_Attack() Then Return False
+	If Not UAI_GetPlayerInfo($GC_UAI_AGENT_IsEnchanted) Then Return False
 	Return True
 EndFunc
 
@@ -1496,7 +1499,7 @@ Func BestTarget_CriticalStrike($a_f_AggroRange)
 	; Concise description
 	; Dual Attack. Deals +10...26...30 damage. Automatic critical hit. You gain 1...3...3 Energy. Must follow an off-hand attack.
 	; Target nearest enemy
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsOffHand")
 EndFunc
 
 ; Skill ID: 1020 - $GC_I_SKILL_ID_BLADES_OF_STEEL
@@ -1511,7 +1514,7 @@ Func BestTarget_BladesOfSteel($a_f_AggroRange)
 	; Concise description
 	; Dual Attack. Deals +5...14...16 damage (maximum 60) for each recharging dagger attack. Must follow an off-hand attack.
 	; Target nearest enemy
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsOffHand")
 EndFunc
 
 ; Skill ID: 1021 - $GC_I_SKILL_ID_JUNGLE_STRIKE
@@ -1526,7 +1529,7 @@ Func BestTarget_JungleStrike($a_f_AggroRange)
 	; Concise description
 	; Off-Hand Attack. Deals +10...22...25 damage. Deals +1...25...31 damage to target and adjacent foes if target foe is Crippled. Must follow a lead attack.
 	; Target nearest enemy
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsLead")
 EndFunc
 
 ; Skill ID: 1022 - $GC_I_SKILL_ID_WILD_STRIKE
@@ -1546,6 +1549,8 @@ EndFunc
 ; Skill ID: 1023 - $GC_I_SKILL_ID_LEAPING_MANTIS_STING
 Func CanUse_LeapingMantisSting()
 	If Anti_Attack() Then Return False
+	Local $l_i_CurrentTarget = Agent_GetCurrentTarget()
+	If $l_i_CurrentTarget <> 0 Then Return Not UAI_Filter_IsLastStrikeLeadOrOffHand($l_i_CurrentTarget)
 	Return True
 EndFunc
 
@@ -1579,6 +1584,8 @@ EndFunc
 ; Skill ID: 1025 - $GC_I_SKILL_ID_DISRUPTING_STAB
 Func CanUse_DisruptingStab()
 	If Anti_Attack() Then Return False
+	Local $l_i_CurrentTarget = Agent_GetCurrentTarget()
+	If $l_i_CurrentTarget <> 0 Then Return Not UAI_Filter_IsLastStrikeLeadOrOffHand($l_i_CurrentTarget)
 	Return True
 EndFunc
 
@@ -1593,6 +1600,8 @@ EndFunc
 ; Skill ID: 1026 - $GC_I_SKILL_ID_GOLDEN_LOTUS_STRIKE
 Func CanUse_GoldenLotusStrike()
 	If Anti_Attack() Then Return False
+	Local $l_i_CurrentTarget = Agent_GetCurrentTarget()
+	If $l_i_CurrentTarget <> 0 Then Return Not UAI_Filter_IsLastStrikeLeadOrOffHand($l_i_CurrentTarget)
 	Return True
 EndFunc
 
@@ -1601,7 +1610,7 @@ Func BestTarget_GoldenLotusStrike($a_f_AggroRange)
 	; Lead Attack. If it hits, this attack strikes for +5...17...20 damage. If you are under the effects of an Enchantment, you gain 5...7...8 Energy.
 	; Concise description
 	; Lead Attack. Deals +5...17...20 damage. You gain 5...7...8 Energy if you are enchanted.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsLead")
 EndFunc
 
 ; Skill ID: 1133 - $GC_I_SKILL_ID_DRUNKEN_BLOW
@@ -2061,7 +2070,7 @@ EndFunc
 ; Skill ID: 1485 - $GC_I_SKILL_ID_EREMITES_ATTACK
 Func CanUse_EremitesAttack()
 	If Anti_Attack() Then Return False
-If Not UAI_GetFeederEnchOnTop() Then Return False
+	If Not UAI_GetFeederEnchOnTop() Then Return False
 	If UAI_CountAgents(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") <= 1 Then Return False
 	Return True
 EndFunc
@@ -2419,12 +2428,13 @@ Func BestTarget_ShatteringAssault($a_f_AggroRange)
 	; Elite Dual Attack. Must follow an off-hand attack. If it hits, you deal 5...41...50 damage and target foe loses one enchantment. This attack cannot be blocked.
 	; Concise description
 	; Elite Dual Attack. Deals 5...41...50 damage. Removes one enchantment. Unblockable. Must follow an off-hand attack.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsOffHand")
 EndFunc
 
 ; Skill ID: 1635 - $GC_I_SKILL_ID_GOLDEN_SKULL_STRIKE
 Func CanUse_GoldenSkullStrike()
 	If Anti_Attack() Then Return False
+	If Not UAI_GetPlayerInfo($GC_UAI_AGENT_IsEnchanted) Then Return False
 	Return True
 EndFunc
 
@@ -2447,14 +2457,14 @@ Func BestTarget_BlackSpiderStrike($a_f_AggroRange)
 	; Off-Hand Attack. Must strike a hexed foe. If it hits, this attack strikes for +5...17...20 damage and target foe is Poisoned for 5...17...20 seconds.
 	; Concise description
 	; Off-Hand Attack. Deals +5...17...20 damage. Inflicts Poisoned condition (5...17...20 seconds). Must strike a hexed foe.
-	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsHexed")
-	If $l_i_Target <> 0 Then Return $l_i_Target
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsHexed")
 EndFunc
 
 ; Skill ID: 1637 - $GC_I_SKILL_ID_GOLDEN_FOX_STRIKE
 Func CanUse_GoldenFoxStrike()
 	If Anti_Attack() Then Return False
+	Local $l_i_CurrentTarget = Agent_GetCurrentTarget()
+	If $l_i_CurrentTarget <> 0 Then Return Not UAI_Filter_IsLastStrikeLeadOrOffHand($l_i_CurrentTarget)
 	Return True
 EndFunc
 
@@ -2555,7 +2565,7 @@ Func BestTarget_SteelfangSlash($a_f_AggroRange)
 	; Sword Attack. If this attack hits, you deal +1...25...31 damage. If you hit a foe that is knocked down, you gain 1...4...5 adrenaline.
 	; Concise description
 	; Sword Attack. Deals +1...25...31 damage. You gain 1...4...5 adrenaline if target foe is knocked down.
-	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnockedDown")
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnocked")
 	If $l_i_Target <> 0 Then Return $l_i_Target
 	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc
@@ -2775,7 +2785,7 @@ Func BestTarget_VampiricAssault($a_f_AggroRange)
 	; Dual Attack. Must follow an off-hand attack. If this attack hits, you steal 10...34...40 Health.
 	; Concise description
 	; Dual Attack. Steals 10...34...40 Health if this attack hits. Must follow an off-hand attack.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsOffHand")
 EndFunc
 
 ; Skill ID: 1987 - $GC_I_SKILL_ID_LOTUS_STRIKE
@@ -2803,7 +2813,7 @@ Func BestTarget_GoldenFangStrike($a_f_AggroRange)
 	; Off-Hand Attack. Must follow a lead attack. If you are under the effects of an enchantment and this attack hits, target foe suffers from a Deep Wound for 5...17...20 seconds.
 	; Concise description
 	; Off-Hand Attack. Inflicts Deep Wound condition (5...17...20 seconds) if you are enchanted. Must follow a lead attack.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsLead")
 EndFunc
 
 ; Skill ID: 1990 - $GC_I_SKILL_ID_FALLING_LOTUS_STRIKE
@@ -2817,7 +2827,7 @@ Func BestTarget_FallingLotusStrike($a_f_AggroRange)
 	; Off-Hand Attack. Must strike a knocked-down foe. If it hits, you strike for +15...31...35 damage and gain 1...10...12 Energy.
 	; Concise description
 	; Off-Hand Attack. Deals +15...31...35 damage; you gain 1...10...12 Energy. No effect unless target foe is knocked-down.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $GC_I_RANGE_NEARBY, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnocked")
 EndFunc
 
 ; Skill ID: 2008 - $GC_I_SKILL_ID_PULVERIZING_SMASH
@@ -3003,6 +3013,8 @@ EndFunc
 ; Skill ID: 2116 - $GC_I_SKILL_ID_SNEAK_ATTACK
 Func CanUse_SneakAttack()
 	If Anti_Attack() Then Return False
+	Local $l_i_CurrentTarget = Agent_GetCurrentTarget()
+	If $l_i_CurrentTarget <> 0 Then Return Not UAI_Filter_IsLastStrikeLeadOrOffHand($l_i_CurrentTarget)
 	Return True
 EndFunc
 
@@ -3053,7 +3065,7 @@ Func BestTarget_TramplingOx($a_f_AggroRange)
 	; Dual Attack. Must follow an off-hand attack. If it hits, you deal +5...17...20 damage. If you a  hit a Crippled foe, that foe is knocked down.
 	; Concise description
 	; Dual Attack. Deals +5...17...20 damage; causes knock-down if target foe is Crippled. Must follow an off-hand attack.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsCrippled")
 EndFunc
 
 ; Skill ID: 2143 - $GC_I_SKILL_ID_DISRUPTING_SHOT
@@ -3657,7 +3669,7 @@ EndFunc
 
 Func BestTarget_DeathBlossomPvP($a_f_AggroRange)
 	; Target nearest enemy
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsOffHand")
 EndFunc
 
 ; Skill ID: 3074 - $GC_I_SKILL_ID_BONE_SPIKE
@@ -3927,7 +3939,7 @@ EndFunc
 
 Func BestTarget_FoxFangsPvP($a_f_AggroRange)
 	; Target nearest enemy
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsLead")
 EndFunc
 
 ; Skill ID: 3252 - $GC_I_SKILL_ID_WILD_STRIKE_PvP
@@ -3938,7 +3950,7 @@ EndFunc
 
 Func BestTarget_WildStrikePvP($a_f_AggroRange)
 	; Target nearest enemy
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsLead")
 EndFunc
 
 ; Skill ID: 3263 - $GC_I_SKILL_ID_BANISHING_STRIKE_PvP
@@ -4012,7 +4024,7 @@ Func BestTarget_Bludgeon($a_f_AggroRange)
 	; Attack. You strike for +50 damage. If target foe is knocked down, you strike for an additional +50 damage and target foe suffers a Deep Wound for 10 seconds.
 	; Concise description
 	; Attack. Strikes for +50 damage. Strikes for an additional +50 damage and applies a Deep Wound (10 seconds) if target is knocked down.
-	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnockedDown")
+	Local $l_i_Target = UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsKnocked")
 	If $l_i_Target <> 0 Then Return $l_i_Target
 	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
 EndFunc

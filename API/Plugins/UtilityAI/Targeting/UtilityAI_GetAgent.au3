@@ -611,6 +611,61 @@ Func UAI_PlayerHasOtherMesmerHex($a_i_ExcludeSkillID)
 	Return False
 EndFunc
 
+Func UAI_GetBestTargetByConditionCount($a_i_AgentID = -2, $a_f_Range = 1320, $a_s_CustomFilter = "")
+	Local $l_i_BestAgent = 0
+	Local $l_f_BestScore = ($g_i_FightMode = $g_i_FinisherMode) ? 0x7FFFFFFF : 0
+
+	Local $l_ai_Conditions[] = [ _
+			$GC_I_EFFECT_ID_BLEEDING, $GC_I_EFFECT_ID_BLINDED, $GC_I_EFFECT_ID_BURNING, _
+			$GC_I_EFFECT_ID_DISEASED, $GC_I_EFFECT_ID_POISONED, $GC_I_EFFECT_ID_DAZED, _
+			$GC_I_EFFECT_ID_WEAKNESS _ ; Same value as Cracked Armor
+	]
+
+	If $g_i_AgentCacheCount = 0 Then Return 0
+
+	For $i = 1 To $g_i_AgentCacheCount
+		Local $l_i_AgentID = UAI_GetAgentInfo($i, $GC_UAI_AGENT_ID)
+
+		Local $l_f_Distance = UAI_GetAgentInfo($i, $GC_UAI_AGENT_Distance)
+		If $l_f_Distance > $a_f_Range Then ContinueLoop
+
+		If Not UAI_GetAgentInfo($i, $GC_UAI_AGENT_IsConditioned) Then ContinueLoop
+
+		If $a_s_CustomFilter <> "" And Not _ApplyFilters($l_i_AgentID, $a_s_CustomFilter) Then ContinueLoop
+
+		Local $l_f_HP = UAI_GetAgentInfo($i, $GC_UAI_AGENT_HP)
+
+		Local $l_i_Count = 0
+		For $condition In $l_ai_Conditions
+			If UAI_AgentHasVisibleEffect($l_i_AgentID, $GC_I_EFFECT_TYPE_STATUS, $condition) Then $l_i_Count += 1
+		Next
+
+		If $l_i_Count = 0 Then ContinueLoop
+
+		Local $l_f_Score
+
+		If $g_i_FightMode = $g_i_FinisherMode Then
+			; Prefer low HP with many conditions
+			$l_f_Score = $l_f_HP / $l_i_Count
+
+			If $l_f_Score < $l_f_BestScore Then
+				$l_f_BestScore = $l_f_Score
+				$l_i_BestAgent = $l_i_AgentID
+			EndIf
+		Else
+			; Prefer high HP with many conditions
+			$l_f_Score = $l_f_HP * $l_i_Count
+
+			If $l_f_Score > $l_f_BestScore Then
+				$l_f_BestScore = $l_f_Score
+				$l_i_BestAgent = $l_i_AgentID
+			EndIf
+		EndIf
+	Next
+
+	Return $l_i_BestAgent
+EndFunc
+
 ; Internal: find the corpse (dead enemy within $a_f_Range) surrounded by the most agents
 ; matching $a_s_MemberFilter within RANGE_AREA. Moves toward it if it isn't already nearest.
 ; Returns player ID when positioned to cast, else 0.

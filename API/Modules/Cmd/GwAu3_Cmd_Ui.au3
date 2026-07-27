@@ -66,6 +66,12 @@ Func Ui_DeactivateDhuumsCovenant()
     Ui_Interact(5)
 EndFunc ;==>Ui_DeactivateDhuumsCovenant
 
+;~ Description: Open the Xunlai Chest from any range.
+Func Ui_Xunlai()
+    DllStructSetData($g_d_Xunlai, 2, $GC_I_UIMSG_OPEN_XUNLAI)
+    Core_Enqueue($g_p_Xunlai, 8)
+EndFunc   ;==>Ui_Xunlai
+
 ;~ Description: Command a hero via flag.
 Func Ui_CommandHero($a_i_HeroNumber, $a_f_X, $a_f_Y)
     DllStructSetData($g_d_FlagHero, 2, Party_GetMyPartyHeroInfo($a_i_HeroNumber, "AgentID"))
@@ -78,8 +84,8 @@ EndFunc   ;==>Ui_CommandHero
 ;~ Description: Clear the position flag of a hero.
 Func Ui_CancelHero($a_i_HeroNumber)
     DllStructSetData($g_d_FlagHero, 2, Party_GetMyPartyHeroInfo($a_i_HeroNumber, "AgentID"))
-    DllStructSetData($g_d_FlagHero, 3, 0x7F800000)
-    DllStructSetData($g_d_FlagHero, 4, 0x7F800000)
+    DllStructSetData($g_d_FlagHero, 3, $GC_I_UIMSG_HERO_FLAG)
+    DllStructSetData($g_d_FlagHero, 4, $GC_I_UIMSG_HERO_FLAG)
     DllStructSetData($g_d_FlagHero, 5, 0) ; zPos
     Core_Enqueue($g_p_FlagHero, 20)
 EndFunc   ;==>Ui_CancelHero
@@ -94,8 +100,8 @@ EndFunc   ;==>Ui_CommandAll
 
 ;~ Description: Clear the position flag of all heroes.
 Func Ui_CancelAll()
-    DllStructSetData($g_d_FlagAll, 2, 0x7F800000)
-    DllStructSetData($g_d_FlagAll, 3, 0x7F800000)
+    DllStructSetData($g_d_FlagAll, 2, $GC_I_UIMSG_HERO_FLAG)
+    DllStructSetData($g_d_FlagAll, 3, $GC_I_UIMSG_HERO_FLAG)
     DllStructSetData($g_d_FlagAll, 4, 0) ; zPos
     Core_Enqueue($g_p_FlagAll, 16)
 EndFunc   ;==>Ui_CancelAll

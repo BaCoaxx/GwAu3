@@ -25,7 +25,7 @@ Func Anti_Spell()
 		$l_i_IncomingDamage += UAI_GetPlayerEffectInfo($GC_I_SKILL_ID_SPOIL_VICTOR, $GC_UAI_EFFECT_Scale)
 	EndIf
 	
-	Return $l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP * 0.15))
+	Return ($l_i_IncomingDamage > (UAI_GetPlayerInfo($GC_UAI_AGENT_CurrentHP) + UAI_GetPlayerInfo($GC_UAI_AGENT_MaxHP * 0.15)))
 EndFunc
 
 ; Skill ID: 5 - $GC_I_SKILL_ID_POWER_BLOCK
@@ -1324,17 +1324,15 @@ EndFunc
 ; Skill ID: 247 - $GC_I_SKILL_ID_SYMBOL_OF_WRATH
 Func CanUse_SymbolOfWrath()
 	If Anti_Spell() Then Return False
-	; Only use if there are adjacent enemies
-	If UAI_CountAgents(-2, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy") < 1 Then Return False
 	Return True
 EndFunc
 
 Func BestTarget_SymbolOfWrath($a_f_AggroRange)
 	; Description
-	; Spell. For 5 seconds, foes adjacent to the location in which the spell was cast take 8...27...32 holy damage each second.
+  ; Spell. Create a Symbol of Wrath at target foe's location. For 5 seconds, adjacent foes are struck for 10...34...40 holy damage each second.
 	; Concise description
-	; Spell. Deals 8...27...32 holy damage each second (5 seconds). Hits foes adjacent to your initial location.
-	Return UAI_GetPlayerInfo($GC_UAI_AGENT_ID)
+	; Spell. Deals 10...34...40 holy damage each second (5 seconds). Hits foes adjacent to target foe's initial location.
+	Return UAI_GetBestAOETarget(-2, $a_f_AggroRange, $GC_I_RANGE_ADJACENT, "UAI_Filter_IsLivingEnemy")
 EndFunc
 
 ; Skill ID: 252 - $GC_I_SKILL_ID_BANISH
@@ -2194,7 +2192,7 @@ Func BestTarget_EntanglingAsp($a_f_AggroRange)
 	; Spell. Entangling Asp must follow a lead attack. Target foe is knocked down and becomes Poisoned for 5...17...20 seconds.
 	; Concise description
 	; Spell. Causes knock-down. Inflicts Poisoned condition (5...17...20 seconds). Must follow a lead attack.
-	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy")
+	Return UAI_GetNearestAgent(-2, $a_f_AggroRange, "UAI_Filter_IsLivingEnemy|UAI_Filter_IsLastStrikeIsLead")
 EndFunc
 
 ; Skill ID: 791 - $GC_I_SKILL_ID_FLESH_OF_MY_FLESH

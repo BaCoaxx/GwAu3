@@ -61,6 +61,7 @@ Global Const $GC_I_SKILL_TYPE_ECHO_REFRAIN = 28
 Global Const $GC_I_SKILL_TYPE_DISGUISE = 29
 
 ; Ranges
+Global Const $GC_I_RANGE_INTERACT = 143
 Global Const $GC_I_RANGE_ADJACENT = 156
 Global Const $GC_I_RANGE_NEARBY = 240
 Global Const $GC_I_RANGE_AREA = 312
@@ -72,6 +73,7 @@ Global Const $GC_I_RANGE_LONGBOW = 1320 ; Typical long bow pulling range on flat
 Global Const $GC_I_RANGE_BOWPULL = 1500 ; Custom pull range to flag heroes and start pulling mobs
 Global Const $GC_I_RANGE_SPIRIT = 2500
 Global Const $GC_I_RANGE_ROOM = 3000
+Global Const $GC_I_RANGE_NATURE_RITUAL = 3500
 Global Const $GC_I_RANGE_MAP = 4000
 Global Const $GC_I_RANGE_COMPASS = 5000
 
