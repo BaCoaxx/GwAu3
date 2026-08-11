@@ -23,6 +23,10 @@ Global Enum $g_i_FinisherMode, $g_i_PressureMode
 ; Override flag for forced target on supportive skills (i.e. "You Are All Weaklings!")
 Global Const $GC_I_UAI_OVERRIDE_FORCE_TARGET = 0xF1A6 ; FLAG
 
+; Type switch for ward skills
+Global Enum $GC_I_UAI_WARDTYPE_DEFENSIVE = 0, _
+	$GC_I_UAI_WARDTYPE_OFFENSIVE
+
 ; Weapon Set Data Indices
 Global Const $GC_UAI_WEAPONSET_WeaponType = 0
 Global Const $GC_UAI_WEAPONSET_WeaponId = 1

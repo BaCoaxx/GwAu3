@@ -184,6 +184,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	;Skill
     $g_p_SkillBase = Memory_Read(Scanner_GetScanResult('SkillBase', $g_ap_ScanResults, 'Ptr'))
     $g_p_SkillTimer = Memory_Read(Scanner_GetScanResult('SkillTimer', $g_ap_ScanResults, 'Ptr'))
+	$g_i_GWExeStart = Memory_Read($g_p_SkillTimer, 'dword')
 	Memory_SetValue('SkillBase', Ptr($g_p_SkillBase))
     Memory_SetValue('SkillTimer', Ptr($g_p_SkillTimer))
     Memory_SetValue('UseSkill', Ptr(Scanner_GetScanResult('UseSkill', $g_ap_ScanResults, 'Func')))
@@ -625,4 +626,23 @@ EndFunc
 Func Core_GetStatusError()
 	$l_i_StatusCode = Core_GetStatusCode()
 	Return $l_i_StatusCode <> 0 And $l_i_StatusCode <> 1
+EndFunc
+
+Func Core_ResetRuntime()
+	Global $g_amx_AssertionCache[0][3]
+	Global $g_ai2_Sections[5][2]
+	Global $g_amx2_Labels[1][2]
+
+	$g_i_LastSkillUsed = 0
+	$g_i_LastSkillTarget = 0
+	$g_i_LastStatus = 0
+	$g_i_LastAttributeModified = -1
+	$g_i_LastAttributeValue = -1
+	$g_i_LastTransactionType = -1
+	$g_i_LastItemID = 0
+	$g_i_LastQuantity = 0
+	$g_i_LastPrice = 0
+	$g_i_LastTargetID = 0
+	$g_f_LastMoveX = 0
+	$g_f_LastMoveY = 0
 EndFunc

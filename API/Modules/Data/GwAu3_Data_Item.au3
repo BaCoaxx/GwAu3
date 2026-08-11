@@ -240,10 +240,10 @@ Func Item_GetBagItemArray($a_v_BagNumber)
     Local $l_p_BagPtr = Item_GetBagPtr($a_v_BagNumber)
     If $l_p_BagPtr = 0 Then Return SetError(1, 0, $l_ap_ItemArray)
 
-    Local $l_p_ItemArrayPtr = Item_GetBagInfo($a_v_BagNumber, "ItemArray")
+    Local $l_p_ItemArrayPtr = Item_GetBagInfo($l_p_BagPtr, "ItemArray")
     If $l_p_ItemArrayPtr = 0 Then Return SetError(2, 0, $l_ap_ItemArray)
 
-    Local $l_i_Slots = Item_GetBagInfo($a_v_BagNumber, "Slots")
+    Local $l_i_Slots = Item_GetBagInfo($l_p_BagPtr, "Slots")
     If $l_i_Slots = 0 Then Return SetError(3, 0, $l_ap_ItemArray)
 
     ReDim $l_ap_ItemArray[$l_i_Slots + 1]

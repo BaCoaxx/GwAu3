@@ -748,7 +748,7 @@ Func Scanner_ScanAllPatterns()
     $g_p_ASMMemory = $g_p_GwAu3Scan
     Assembler_CompleteASMCode()
 
-    If $l_b_AllocScan Or $GC_B_DEV_MODE Then
+    If $l_b_AllocScan Or $g_b_DevMode Then
         Memory_WriteBinary($g_s_ASMCode, $g_p_ASMMemory + $g_i_ASMCodeOffset)
 
         Local $l_h_Thread = DllCall($g_h_Kernel32, "int", "CreateRemoteThread", _

@@ -206,7 +206,7 @@ Func UAI_UseSkillEx($a_i_SkillSlot, $a_i_AgentID = -2, $a_f_AggroRange = 1320)
 				If Not UAI_TargetIsValid($a_i_AgentID, $l_b_IsRes) Then Return False
             	UAI_UpdatePlayerCache()
 				If Not UAI_CanUse($a_i_SkillSlot) Then Return False
-                If TimerDiff($l_h_CastStart) > $l_f_CastStartTimeout Then ExitLoop
+                If TimerDiff($l_h_CastStart) > $l_f_CastStartTimeout Then Return False
             WEnd
         EndIf
     Else
@@ -214,10 +214,10 @@ Func UAI_UseSkillEx($a_i_SkillSlot, $a_i_AgentID = -2, $a_f_AggroRange = 1320)
         Local $l_f_CastStartTimeout = 5000
         Local $l_h_CastStart = TimerInit()
         While Not UAI_GetIsCastingSkill($l_i_MyID, $l_i_SkillID)
-            If Not UAI_TargetIsValid($a_i_AgentID, $l_b_IsRes) Then ExitLoop
+            If Not UAI_TargetIsValid($a_i_AgentID, $l_b_IsRes) Then Return False
             UAI_UpdatePlayerCache()
             If Not UAI_CanUse($a_i_SkillSlot) Then Return False
-			If TimerDiff($l_h_CastStart) > $l_f_CastStartTimeout Then ExitLoop
+			If TimerDiff($l_h_CastStart) > $l_f_CastStartTimeout Then Return False
 			Sleep(32)
 		WEnd
     EndIf

@@ -3,8 +3,10 @@
 #include "../../Utilities/ImGui/ImGui.au3"
 #include "../../Utilities/ImGui/ImGui_Utils.au3"
 
+$g_b_DevMode = True
+
 Global Const $doLoadLoggedChars = True
-$GC_B_DEV_MODE = True
+
 Opt("GUIOnEventMode", False)
 Opt("GUICloseOnESC", False)
 Opt("ExpandVarStrings", 1)

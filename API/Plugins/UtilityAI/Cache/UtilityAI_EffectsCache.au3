@@ -47,6 +47,9 @@ Global $g_i_PlayerEffectsCount = 0
 Global $g_i_PlayerBondsCount = 0
 Global $g_i_PlayerVisEffectsCount = 0
 
+; ========== Dervish-specific flash-enchantment timestamp ==========
+Global $g_i_LastFeederEnchTimestamp = 0
+
 ; ========== Shared struct templates ==========
 Func UAI_GetEffectStruct()
 	Static $s_d_EffectStruct = Memory_CreateArrayStructure( _
@@ -544,8 +547,6 @@ Func UAI_GetPlayerVisibleEffectCount()
 EndFunc
 
 Func UAI_GetFeederEnchOnTop()
-	Static $s_i_LastFeederEnchTimestamp = 0
-
     Local $l_i_EffectCount = $g_i_PlayerEffectsCount
     If $l_i_EffectCount = 0 Then Return False
 
@@ -577,9 +578,9 @@ Func UAI_GetFeederEnchOnTop()
 
     If $l_i_SkillID = 0 Then Return False
     If _ArrayBinarySearch($l_ai_FeederEnchantments, $l_i_SkillID) < 0 Then Return False
-    If $s_i_LastFeederEnchTimestamp = $l_i_Timestamp Then Return False
+    If $g_i_LastFeederEnchTimestamp = $l_i_Timestamp Then Return False
 
-	$s_i_LastFeederEnchTimestamp = $l_i_Timestamp
+	$g_i_LastFeederEnchTimestamp = $l_i_Timestamp
     Return True
 EndFunc
 

@@ -1894,7 +1894,7 @@ Func Assembler_ModifyMemory()
 	$g_p_ASMMemory = $g_p_GwAu3Cmd
 	Assembler_CompleteASMCode()
 
-	If $l_b_AllocCmd Or $GC_B_DEV_MODE Then
+	If $l_b_AllocCmd Or $g_b_DevMode Then
 		Memory_WriteBinary($g_s_ASMCode, $g_p_ASMMemory + $g_i_ASMCodeOffset)
 		Memory_Write(Memory_GetValue('QueuePtr'), Memory_GetValue('QueueBase'))
 		If IsDeclared("g_b_Write") Then Extend_Write()
