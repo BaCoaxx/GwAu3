@@ -255,6 +255,42 @@ Func Item_IdentifyItem($a_v_Item, $a_s_KitType = "Superior")
     Return True
 EndFunc ;==>Item_IdentifyItem
 
+;~ Description: Returns True if the game allows a mass identification.
+Func Item_CanIdentifyAll($a_i_Timeout = 1000)
+    If $g_i_InvCanIdentifyAllResult <= 0 Then Return SetError(1, 0, False)
+    If DllStructGetData($g_d_InvCanIdentifyAll, 1) <= 0 Then Return SetError(1, 0, False)
+
+    Local Const $LC_I_IDENTIFYALL_PENDING = 0xFFFFFFFF
+    Memory_Write($g_i_InvCanIdentifyAllResult, $LC_I_IDENTIFYALL_PENDING)
+    Core_Enqueue($g_p_InvCanIdentifyAll, 4)
+
+    Local $l_i_Deadlock = TimerInit()
+    While Memory_Read($g_i_InvCanIdentifyAllResult) = $LC_I_IDENTIFYALL_PENDING
+        If TimerDiff($l_i_Deadlock) > $a_i_Timeout Then Return SetError(2, 0, False)
+        Sleep(8)
+    WEnd
+
+    Return Memory_Read($g_i_InvCanIdentifyAllResult) <> 0
+EndFunc ;==>Item_CanIdentifyAll
+
+;~ Description: Identifies every unidentified item in the bags.
+Func Item_IdentifyAll($a_i_Timeout = 1000)
+    If Not Item_CanIdentifyAll($a_i_Timeout) Then Return SetError(@error, 0, False)
+    If DllStructGetData($g_d_InvIdentifyAll, 1) <= 0 Then Return SetError(1, 0, False)
+
+    Local Const $LC_I_IDENTIFYALL_PENDING = 0xFFFFFFFF
+    Memory_Write($g_i_InvIdentifyAllResult, $LC_I_IDENTIFYALL_PENDING)
+    Core_Enqueue($g_p_InvIdentifyAll, 4)
+
+    Local $l_i_Deadlock = TimerInit()
+    While Memory_Read($g_i_InvIdentifyAllResult) = $LC_I_IDENTIFYALL_PENDING
+        If TimerDiff($l_i_Deadlock) > $a_i_Timeout Then Return SetError(2, 0, False)
+        Sleep(8)
+    WEnd
+
+    Return True
+EndFunc ;==>Item_IdentifyAll
+
 ;~ Description: Equips an item.
 Func Item_EquipItem($a_v_Item)
     Return Core_SendPacket(0x8, $GC_I_HEADER_ITEM_EQUIP, Item_ItemID($a_v_Item))

@@ -90,6 +90,14 @@ Global $g_d_TraderSell = DllStructCreate('ptr')
 Global $g_p_TraderSell = DllStructGetPtr($g_d_TraderSell)
 Global $g_d_Salvage = DllStructCreate('ptr;dword;dword;dword')
 Global $g_p_Salvage = DllStructGetPtr($g_d_Salvage)
+
+;Item
+Global $g_i_InvCanIdentifyAllResult ; Result slot for InvCanIdentifyAll
+Global $g_i_InvIdentifyAllResult    ; Result slot for InvIdentifyAll
+Global $g_d_InvCanIdentifyAll = DllStructCreate('ptr')
+Global $g_p_InvCanIdentifyAll = DllStructGetPtr($g_d_InvCanIdentifyAll)
+Global $g_d_InvIdentifyAll = DllStructCreate('ptr')
+Global $g_p_InvIdentifyAll = DllStructGetPtr($g_d_InvIdentifyAll)
 Global $g_i_LastTransactionType = -1
 Global $g_i_LastItemID = 0
 Global $g_i_LastQuantity = 0
