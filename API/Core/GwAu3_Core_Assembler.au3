@@ -1921,6 +1921,8 @@ Func Assembler_CreateData()
 	_('AgentCopyCount/4')
 	_('InvCanIdentifyAllResult/4')
 	_('InvIdentifyAllResult/4')
+	_('InvCanDepositAllMaterialsResult/4')
+	_('InvDepositAllMaterialsResult/4')
 	; EncString decoding buffers
 	_('DecodeReady/4')           ; Flag: 1 when decode is complete
 	_('DecodeInputPtr/256')      ; Input: encoded wchar string (max 128 wchars)
@@ -2398,6 +2400,16 @@ Func Assembler_CreateItemCommands()
 	_('CommandInvIdentifyAll:')
 	_('call InvIdentifyAll')
 	_('mov dword[InvIdentifyAllResult],eax')
+	_('ljmp CommandReturn')
+
+	_('CommandInvCanDepositAllMaterials:')
+	_('call InvCanDepositAllMaterials')
+	_('mov dword[InvCanDepositAllMaterialsResult],eax')
+	_('ljmp CommandReturn')
+
+	_('CommandInvDepositAllMaterials:')
+	_('call InvDepositAllMaterials')
+	_('mov dword[InvDepositAllMaterialsResult],eax')
 	_('ljmp CommandReturn')
 EndFunc
 

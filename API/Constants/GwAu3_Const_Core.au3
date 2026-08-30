@@ -98,6 +98,12 @@ Global $g_d_InvCanIdentifyAll = DllStructCreate('ptr')
 Global $g_p_InvCanIdentifyAll = DllStructGetPtr($g_d_InvCanIdentifyAll)
 Global $g_d_InvIdentifyAll = DllStructCreate('ptr')
 Global $g_p_InvIdentifyAll = DllStructGetPtr($g_d_InvIdentifyAll)
+Global $g_i_InvCanDepositAllMaterialsResult ; Result slot for InvCanDepositAllMaterials
+Global $g_i_InvDepositAllMaterialsResult    ; Result slot for InvDepositAllMaterials
+Global $g_d_InvCanDepositAllMaterials = DllStructCreate('ptr')
+Global $g_p_InvCanDepositAllMaterials = DllStructGetPtr($g_d_InvCanDepositAllMaterials)
+Global $g_d_InvDepositAllMaterials = DllStructCreate('ptr')
+Global $g_p_InvDepositAllMaterials = DllStructGetPtr($g_d_InvDepositAllMaterials)
 Global $g_i_LastTransactionType = -1
 Global $g_i_LastItemID = 0
 Global $g_i_LastQuantity = 0

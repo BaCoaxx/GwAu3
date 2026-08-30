@@ -291,6 +291,42 @@ Func Item_IdentifyAll($a_i_Timeout = 1000)
     Return True
 EndFunc ;==>Item_IdentifyAll
 
+;~ Description: Returns True if the game allows depositing all materials.
+Func Item_CanDepositAllMaterials($a_i_Timeout = 1000)
+    If $g_i_InvCanDepositAllMaterialsResult <= 0 Then Return SetError(1, 0, False)
+    If DllStructGetData($g_d_InvCanDepositAllMaterials, 1) <= 0 Then Return SetError(1, 0, False)
+
+    Local Const $LC_I_DEPOSITALL_PENDING = 0xFFFFFFFF
+    Memory_Write($g_i_InvCanDepositAllMaterialsResult, $LC_I_DEPOSITALL_PENDING)
+    Core_Enqueue($g_p_InvCanDepositAllMaterials, 4)
+
+    Local $l_i_Deadlock = TimerInit()
+    While Memory_Read($g_i_InvCanDepositAllMaterialsResult) = $LC_I_DEPOSITALL_PENDING
+        If TimerDiff($l_i_Deadlock) > $a_i_Timeout Then Return SetError(2, 0, False)
+        Sleep(8)
+    WEnd
+
+    Return Memory_Read($g_i_InvCanDepositAllMaterialsResult) <> 0
+EndFunc ;==>Item_CanDepositAllMaterials
+
+;~ Description: Deposits every material from the bags into material storage.
+Func Item_DepositAllMaterials($a_i_Timeout = 1000)
+    If Not Item_CanDepositAllMaterials($a_i_Timeout) Then Return SetError(@error, 0, False)
+    If DllStructGetData($g_d_InvDepositAllMaterials, 1) <= 0 Then Return SetError(1, 0, False)
+
+    Local Const $LC_I_DEPOSITALL_PENDING = 0xFFFFFFFF
+    Memory_Write($g_i_InvDepositAllMaterialsResult, $LC_I_DEPOSITALL_PENDING)
+    Core_Enqueue($g_p_InvDepositAllMaterials, 4)
+
+    Local $l_i_Deadlock = TimerInit()
+    While Memory_Read($g_i_InvDepositAllMaterialsResult) = $LC_I_DEPOSITALL_PENDING
+        If TimerDiff($l_i_Deadlock) > $a_i_Timeout Then Return SetError(2, 0, False)
+        Sleep(8)
+    WEnd
+
+    Return True
+EndFunc ;==>Item_DepositAllMaterials
+
 ;~ Description: Equips an item.
 Func Item_EquipItem($a_v_Item)
     Return Core_SendPacket(0x8, $GC_I_HEADER_ITEM_EQUIP, Item_ItemID($a_v_Item))
