@@ -533,6 +533,20 @@ Func Item_GetItemPtr($a_v_ItemID)
     Return $l_ap_ItemStructAddress[1]
 EndFunc   ;==>GetItemPtr
 
+;~ Description: Returns the inventory ID owning an item.
+Func Item_GetItemInventoryID($a_v_Item)
+    Local $l_p_ItemPtr = Item_GetItemPtr($a_v_Item)
+    If $l_p_ItemPtr = 0 Then Return 0
+
+    Local $l_p_BagPtr = Memory_Read($l_p_ItemPtr + 0xC, "ptr")
+    If $l_p_BagPtr = 0 Then $l_p_BagPtr = Memory_Read($l_p_ItemPtr + 0x8, "ptr")
+    If $l_p_BagPtr = 0 Then Return 0
+
+    Local $l_p_InventoryPtr = Memory_Read($l_p_BagPtr + 0x14, "ptr")
+    If $l_p_InventoryPtr = 0 Then Return 0
+    Return Memory_Read($l_p_InventoryPtr, "dword")
+EndFunc   ;==>Item_GetItemInventoryID
+
 Func Item_GetItemInfoByItemID($a_v_ItemID, $a_s_Info = "")
     Local $l_p_ItemPtr = Item_GetItemPtr($a_v_ItemID)
     If $l_p_ItemPtr = 0 Or $a_s_Info = "" Then Return 0

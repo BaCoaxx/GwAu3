@@ -186,6 +186,8 @@ Global $g_p_ActiveQuest = DllStructGetPtr($g_d_ActiveQuest)
 ;UIMsg
 Global $g_d_MoveMap = DllStructCreate('ptr;dword;dword;dword;dword;dword')
 Global $g_p_MoveMap = DllStructGetPtr($g_d_MoveMap)
+Global $g_d_ApplyUpgrade = DllStructCreate('ptr;dword;dword;dword;dword;dword')
+Global $g_p_ApplyUpgrade = DllStructGetPtr($g_d_ApplyUpgrade)
 Global $g_d_EquipItem = DllStructCreate('ptr;dword;dword;dword')
 Global $g_p_EquipItem = DllStructGetPtr($g_d_EquipItem)
 

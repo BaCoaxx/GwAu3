@@ -56,6 +56,13 @@ Global Const $GC_I_RARITY_GOLD = 2624
 Global Const $GC_I_RARITY_GREEN = 2627
 #EndRegion Rarity
 
+#Region ItemUpgradeSlot
+Global Enum _
+	$GC_I_UPGRADE_SLOT_PREFIX, _
+	$GC_I_UPGRADE_SLOT_SUFFIX, _
+	$GC_I_UPGRADE_SLOT_INSCRIPTION
+#EndRegion ItemUpgradeSlot
+
 #Region ItemType
 Global Const $GC_I_TYPE_SALVAGE = 0
 Global Const $GC_I_TYPE_LEADHAND = 1

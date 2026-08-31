@@ -179,6 +179,34 @@ Func Item_SalvageItem($a_v_Item, $a_s_KitType = "Standard", $a_s_SalvageType = "
     Return True
 EndFunc ;==>Item_SalvageItem
 
+;~ Description: Applies an upgrade component to an item.
+;~ Upgrade slots are prefix/insignia (0), suffix/rune (1), and inscription (2).
+;~ Set $a_b_Confirm to False to leave the confirmation window to the player.
+Func Item_ApplyUpgrade($a_v_TargetItem, $a_v_UpgradeItem, $a_i_UpgradeSlot, $a_b_Confirm = True, $a_i_ExtraWait = 248)
+    Local $l_i_TargetItemID = Item_ItemID($a_v_TargetItem)
+    Local $l_i_UpgradeItemID = Item_ItemID($a_v_UpgradeItem)
+    If $l_i_TargetItemID = 0 Or Item_GetItemPtr($l_i_TargetItemID) = 0 Then Return SetError(1, 0, False)
+    If $l_i_UpgradeItemID = 0 Or Item_GetItemPtr($l_i_UpgradeItemID) = 0 Then Return SetError(2, 0, False)
+    If $a_i_UpgradeSlot < $GC_I_UPGRADE_SLOT_PREFIX Or _
+            $a_i_UpgradeSlot > $GC_I_UPGRADE_SLOT_INSCRIPTION Then Return SetError(3, 0, False)
+
+    ; Open the upgrade session
+    DllStructSetData($g_d_ApplyUpgrade, 2, $GC_I_UIMSG_ITEM_APPLY_UPGRADE)
+    DllStructSetData($g_d_ApplyUpgrade, 3, 0)
+    DllStructSetData($g_d_ApplyUpgrade, 4, $a_i_UpgradeSlot)
+    DllStructSetData($g_d_ApplyUpgrade, 5, $l_i_TargetItemID)
+    DllStructSetData($g_d_ApplyUpgrade, 6, $l_i_UpgradeItemID)
+    Core_Enqueue($g_p_ApplyUpgrade, 24)
+
+    If Not $a_b_Confirm Then Return True
+
+    ; Wait for the two server replies the client answers on its own
+    Other_PingSleep($a_i_ExtraWait)
+    Other_PingSleep($a_i_ExtraWait)
+    Core_SendPacket(0x4, $GC_I_HEADER_UPGRADE_SESSION_END)
+    Return True
+EndFunc ;==>Item_ApplyUpgrade
+
 ;~ Description: Identifies an item.
 Func Item_IdentifyItem($a_v_Item, $a_s_KitType = "Superior")
     Local $l_i_ItemID = Item_ItemID($a_v_Item)
