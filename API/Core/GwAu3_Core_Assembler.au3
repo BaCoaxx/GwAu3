@@ -1866,6 +1866,7 @@ Func Assembler_ModifyMemory()
 	Assembler_CreateCraftItemCommand()
 	Assembler_CreateCollectorExchangeCommand()
 	Assembler_CreateSalvageCommand()
+	Assembler_CreateItemCommands()
 	Assembler_CreateAgentCommands()
 	Assembler_CreateMapCommands()
 	Assembler_CreateTradeCommands()
@@ -1918,6 +1919,10 @@ Func Assembler_CreateData()
 	_('MapIsLoaded/4')
 	_('TradePartner/4')
 	_('AgentCopyCount/4')
+	_('InvCanIdentifyAllResult/4')
+	_('InvIdentifyAllResult/4')
+	_('InvCanDepositAllMaterialsResult/4')
+	_('InvDepositAllMaterialsResult/4')
 	; EncString decoding buffers
 	_('DecodeReady/4')           ; Flag: 1 when decode is complete
 	_('DecodeInputPtr/256')      ; Input: encoded wchar string (max 128 wchars)
@@ -2384,6 +2389,28 @@ Func Assembler_CreateSalvageCommand()
     _('call Salvage')
     _('add esp,C')
     _('ljmp CommandReturn')
+EndFunc
+
+Func Assembler_CreateItemCommands()
+	_('CommandInvCanIdentifyAll:')
+	_('call InvCanIdentifyAll')
+	_('mov dword[InvCanIdentifyAllResult],eax')
+	_('ljmp CommandReturn')
+
+	_('CommandInvIdentifyAll:')
+	_('call InvIdentifyAll')
+	_('mov dword[InvIdentifyAllResult],eax')
+	_('ljmp CommandReturn')
+
+	_('CommandInvCanDepositAllMaterials:')
+	_('call InvCanDepositAllMaterials')
+	_('mov dword[InvCanDepositAllMaterialsResult],eax')
+	_('ljmp CommandReturn')
+
+	_('CommandInvDepositAllMaterials:')
+	_('call InvDepositAllMaterials')
+	_('mov dword[InvDepositAllMaterialsResult],eax')
+	_('ljmp CommandReturn')
 EndFunc
 
 Func Assembler_CreateAgentCommands()

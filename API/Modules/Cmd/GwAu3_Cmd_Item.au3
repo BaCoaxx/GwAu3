@@ -179,6 +179,34 @@ Func Item_SalvageItem($a_v_Item, $a_s_KitType = "Standard", $a_s_SalvageType = "
     Return True
 EndFunc ;==>Item_SalvageItem
 
+;~ Description: Applies an upgrade component to an item.
+;~ Upgrade slots are prefix/insignia (0), suffix/rune (1), and inscription (2).
+;~ Set $a_b_Confirm to False to leave the confirmation window to the player.
+Func Item_ApplyUpgrade($a_v_TargetItem, $a_v_UpgradeItem, $a_i_UpgradeSlot, $a_b_Confirm = True, $a_i_ExtraWait = 248)
+    Local $l_i_TargetItemID = Item_ItemID($a_v_TargetItem)
+    Local $l_i_UpgradeItemID = Item_ItemID($a_v_UpgradeItem)
+    If $l_i_TargetItemID = 0 Or Item_GetItemPtr($l_i_TargetItemID) = 0 Then Return SetError(1, 0, False)
+    If $l_i_UpgradeItemID = 0 Or Item_GetItemPtr($l_i_UpgradeItemID) = 0 Then Return SetError(2, 0, False)
+    If $a_i_UpgradeSlot < $GC_I_UPGRADE_SLOT_PREFIX Or _
+            $a_i_UpgradeSlot > $GC_I_UPGRADE_SLOT_INSCRIPTION Then Return SetError(3, 0, False)
+
+    ; Open the upgrade session
+    DllStructSetData($g_d_ApplyUpgrade, 2, $GC_I_UIMSG_ITEM_APPLY_UPGRADE)
+    DllStructSetData($g_d_ApplyUpgrade, 3, 0)
+    DllStructSetData($g_d_ApplyUpgrade, 4, $a_i_UpgradeSlot)
+    DllStructSetData($g_d_ApplyUpgrade, 5, $l_i_TargetItemID)
+    DllStructSetData($g_d_ApplyUpgrade, 6, $l_i_UpgradeItemID)
+    Core_Enqueue($g_p_ApplyUpgrade, 24)
+
+    If Not $a_b_Confirm Then Return True
+
+    ; Wait for the two server replies the client answers on its own
+    Other_PingSleep($a_i_ExtraWait)
+    Other_PingSleep($a_i_ExtraWait)
+    Core_SendPacket(0x4, $GC_I_HEADER_UPGRADE_SESSION_END)
+    Return True
+EndFunc ;==>Item_ApplyUpgrade
+
 ;~ Description: Identifies an item.
 Func Item_IdentifyItem($a_v_Item, $a_s_KitType = "Superior")
     Local $l_i_ItemID = Item_ItemID($a_v_Item)
@@ -255,10 +283,106 @@ Func Item_IdentifyItem($a_v_Item, $a_s_KitType = "Superior")
     Return True
 EndFunc ;==>Item_IdentifyItem
 
+;~ Description: Returns True if the game allows a mass identification.
+Func Item_CanIdentifyAll($a_i_Timeout = 1000)
+    If $g_i_InvCanIdentifyAllResult <= 0 Then Return SetError(1, 0, False)
+    If DllStructGetData($g_d_InvCanIdentifyAll, 1) <= 0 Then Return SetError(1, 0, False)
+
+    Local Const $LC_I_IDENTIFYALL_PENDING = 0xFFFFFFFF
+    Memory_Write($g_i_InvCanIdentifyAllResult, $LC_I_IDENTIFYALL_PENDING)
+    Core_Enqueue($g_p_InvCanIdentifyAll, 4)
+
+    Local $l_i_Deadlock = TimerInit()
+    While Memory_Read($g_i_InvCanIdentifyAllResult) = $LC_I_IDENTIFYALL_PENDING
+        If TimerDiff($l_i_Deadlock) > $a_i_Timeout Then Return SetError(2, 0, False)
+        Sleep(8)
+    WEnd
+
+    Return Memory_Read($g_i_InvCanIdentifyAllResult) <> 0
+EndFunc ;==>Item_CanIdentifyAll
+
+;~ Description: Identifies every unidentified item in the bags.
+Func Item_IdentifyAll($a_i_Timeout = 1000)
+    If Not Item_CanIdentifyAll($a_i_Timeout) Then Return SetError(@error, 0, False)
+    If DllStructGetData($g_d_InvIdentifyAll, 1) <= 0 Then Return SetError(1, 0, False)
+
+    Local Const $LC_I_IDENTIFYALL_PENDING = 0xFFFFFFFF
+    Memory_Write($g_i_InvIdentifyAllResult, $LC_I_IDENTIFYALL_PENDING)
+    Core_Enqueue($g_p_InvIdentifyAll, 4)
+
+    Local $l_i_Deadlock = TimerInit()
+    While Memory_Read($g_i_InvIdentifyAllResult) = $LC_I_IDENTIFYALL_PENDING
+        If TimerDiff($l_i_Deadlock) > $a_i_Timeout Then Return SetError(2, 0, False)
+        Sleep(8)
+    WEnd
+
+    Return True
+EndFunc ;==>Item_IdentifyAll
+
+;~ Description: Returns True if the game allows depositing all materials.
+Func Item_CanDepositAllMaterials($a_i_Timeout = 1000)
+    If $g_i_InvCanDepositAllMaterialsResult <= 0 Then Return SetError(1, 0, False)
+    If DllStructGetData($g_d_InvCanDepositAllMaterials, 1) <= 0 Then Return SetError(1, 0, False)
+
+    Local Const $LC_I_DEPOSITALL_PENDING = 0xFFFFFFFF
+    Memory_Write($g_i_InvCanDepositAllMaterialsResult, $LC_I_DEPOSITALL_PENDING)
+    Core_Enqueue($g_p_InvCanDepositAllMaterials, 4)
+
+    Local $l_i_Deadlock = TimerInit()
+    While Memory_Read($g_i_InvCanDepositAllMaterialsResult) = $LC_I_DEPOSITALL_PENDING
+        If TimerDiff($l_i_Deadlock) > $a_i_Timeout Then Return SetError(2, 0, False)
+        Sleep(8)
+    WEnd
+
+    Return Memory_Read($g_i_InvCanDepositAllMaterialsResult) <> 0
+EndFunc ;==>Item_CanDepositAllMaterials
+
+;~ Description: Deposits every material from the bags into material storage.
+Func Item_DepositAllMaterials($a_i_Timeout = 1000)
+    If Not Item_CanDepositAllMaterials($a_i_Timeout) Then Return SetError(@error, 0, False)
+    If DllStructGetData($g_d_InvDepositAllMaterials, 1) <= 0 Then Return SetError(1, 0, False)
+
+    Local Const $LC_I_DEPOSITALL_PENDING = 0xFFFFFFFF
+    Memory_Write($g_i_InvDepositAllMaterialsResult, $LC_I_DEPOSITALL_PENDING)
+    Core_Enqueue($g_p_InvDepositAllMaterials, 4)
+
+    Local $l_i_Deadlock = TimerInit()
+    While Memory_Read($g_i_InvDepositAllMaterialsResult) = $LC_I_DEPOSITALL_PENDING
+        If TimerDiff($l_i_Deadlock) > $a_i_Timeout Then Return SetError(2, 0, False)
+        Sleep(8)
+    WEnd
+
+    Return True
+EndFunc ;==>Item_DepositAllMaterials
+
 ;~ Description: Equips an item.
 Func Item_EquipItem($a_v_Item)
     Return Core_SendPacket(0x8, $GC_I_HEADER_ITEM_EQUIP, Item_ItemID($a_v_Item))
 EndFunc ;==>EquipItem
+
+;~ Description: Equips an item on one of the player's heroes.
+Func Item_EquipHero($a_i_HeroNumber, $a_v_Item)
+    Local $l_i_HeroAgentID = Party_GetMyPartyHeroInfo($a_i_HeroNumber, "AgentID")
+    Local $l_i_ItemID = Item_ItemID($a_v_Item)
+    If $l_i_HeroAgentID = 0 Or $l_i_ItemID = 0 Then Return SetError(1, 0, False)
+
+    Core_SendPacket(0xC, $GC_I_HEADER_ITEM_EQUIP_HERO, $l_i_HeroAgentID, $l_i_ItemID)
+    Return True
+EndFunc ;==>Item_EquipHero
+
+;~ Description: Unequips an item from one of the player's heroes into an inventory slot.
+Func Item_UnequipHero($a_i_HeroNumber, $a_i_EquipmentSlot, $a_i_BagNumber, $a_i_Slot)
+    Local $l_i_HeroAgentID = Party_GetMyPartyHeroInfo($a_i_HeroNumber, "AgentID")
+    Local $l_i_BagID = Item_GetBagInfo($a_i_BagNumber, "ID")
+    Local $l_i_BagSlots = Item_GetBagInfo($a_i_BagNumber, "Slots")
+    If $l_i_HeroAgentID = 0 Or $l_i_BagID = 0 Then Return SetError(1, 0, False)
+    If $a_i_EquipmentSlot < $GC_I_EQUIPMENT_SLOT_RIGHT_HAND Or $a_i_EquipmentSlot >= $GC_I_EQUIPMENT_SLOT_NONE Then Return SetError(2, 0, False)
+    If $a_i_Slot < 1 Or $a_i_Slot > $l_i_BagSlots Then Return SetError(3, 0, False)
+
+    Core_SendPacket(0x14, $GC_I_HEADER_ITEM_UNEQUIP_HERO, $l_i_HeroAgentID, _
+            $a_i_EquipmentSlot, $l_i_BagID, $a_i_Slot - 1)
+    Return True
+EndFunc ;==>Item_UnequipHero
 
 ;~ Description: Uses an item.
 Func Item_UseItem($a_v_Item)

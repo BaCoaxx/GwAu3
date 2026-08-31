@@ -90,6 +90,20 @@ Global $g_d_TraderSell = DllStructCreate('ptr')
 Global $g_p_TraderSell = DllStructGetPtr($g_d_TraderSell)
 Global $g_d_Salvage = DllStructCreate('ptr;dword;dword;dword')
 Global $g_p_Salvage = DllStructGetPtr($g_d_Salvage)
+
+;Item
+Global $g_i_InvCanIdentifyAllResult ; Result slot for InvCanIdentifyAll
+Global $g_i_InvIdentifyAllResult    ; Result slot for InvIdentifyAll
+Global $g_d_InvCanIdentifyAll = DllStructCreate('ptr')
+Global $g_p_InvCanIdentifyAll = DllStructGetPtr($g_d_InvCanIdentifyAll)
+Global $g_d_InvIdentifyAll = DllStructCreate('ptr')
+Global $g_p_InvIdentifyAll = DllStructGetPtr($g_d_InvIdentifyAll)
+Global $g_i_InvCanDepositAllMaterialsResult ; Result slot for InvCanDepositAllMaterials
+Global $g_i_InvDepositAllMaterialsResult    ; Result slot for InvDepositAllMaterials
+Global $g_d_InvCanDepositAllMaterials = DllStructCreate('ptr')
+Global $g_p_InvCanDepositAllMaterials = DllStructGetPtr($g_d_InvCanDepositAllMaterials)
+Global $g_d_InvDepositAllMaterials = DllStructCreate('ptr')
+Global $g_p_InvDepositAllMaterials = DllStructGetPtr($g_d_InvDepositAllMaterials)
 Global $g_i_LastTransactionType = -1
 Global $g_i_LastItemID = 0
 Global $g_i_LastQuantity = 0
@@ -172,6 +186,8 @@ Global $g_p_ActiveQuest = DllStructGetPtr($g_d_ActiveQuest)
 ;UIMsg
 Global $g_d_MoveMap = DllStructCreate('ptr;dword;dword;dword;dword;dword')
 Global $g_p_MoveMap = DllStructGetPtr($g_d_MoveMap)
+Global $g_d_ApplyUpgrade = DllStructCreate('ptr;dword;dword;dword;dword;dword')
+Global $g_p_ApplyUpgrade = DllStructGetPtr($g_d_ApplyUpgrade)
 Global $g_d_EquipItem = DllStructCreate('ptr;dword;dword;dword')
 Global $g_p_EquipItem = DllStructGetPtr($g_d_EquipItem)
 
