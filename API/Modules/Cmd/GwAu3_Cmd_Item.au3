@@ -332,6 +332,30 @@ Func Item_EquipItem($a_v_Item)
     Return Core_SendPacket(0x8, $GC_I_HEADER_ITEM_EQUIP, Item_ItemID($a_v_Item))
 EndFunc ;==>EquipItem
 
+;~ Description: Equips an item on one of the player's heroes.
+Func Item_EquipHero($a_i_HeroNumber, $a_v_Item)
+    Local $l_i_HeroAgentID = Party_GetMyPartyHeroInfo($a_i_HeroNumber, "AgentID")
+    Local $l_i_ItemID = Item_ItemID($a_v_Item)
+    If $l_i_HeroAgentID = 0 Or $l_i_ItemID = 0 Then Return SetError(1, 0, False)
+
+    Core_SendPacket(0xC, $GC_I_HEADER_ITEM_EQUIP_HERO, $l_i_HeroAgentID, $l_i_ItemID)
+    Return True
+EndFunc ;==>Item_EquipHero
+
+;~ Description: Unequips an item from one of the player's heroes into an inventory slot.
+Func Item_UnequipHero($a_i_HeroNumber, $a_i_EquipmentSlot, $a_i_BagNumber, $a_i_Slot)
+    Local $l_i_HeroAgentID = Party_GetMyPartyHeroInfo($a_i_HeroNumber, "AgentID")
+    Local $l_i_BagID = Item_GetBagInfo($a_i_BagNumber, "ID")
+    Local $l_i_BagSlots = Item_GetBagInfo($a_i_BagNumber, "Slots")
+    If $l_i_HeroAgentID = 0 Or $l_i_BagID = 0 Then Return SetError(1, 0, False)
+    If $a_i_EquipmentSlot < $GC_I_EQUIPMENT_SLOT_RIGHT_HAND Or $a_i_EquipmentSlot >= $GC_I_EQUIPMENT_SLOT_NONE Then Return SetError(2, 0, False)
+    If $a_i_Slot < 1 Or $a_i_Slot > $l_i_BagSlots Then Return SetError(3, 0, False)
+
+    Core_SendPacket(0x14, $GC_I_HEADER_ITEM_UNEQUIP_HERO, $l_i_HeroAgentID, _
+            $a_i_EquipmentSlot, $l_i_BagID, $a_i_Slot - 1)
+    Return True
+EndFunc ;==>Item_UnequipHero
+
 ;~ Description: Uses an item.
 Func Item_UseItem($a_v_Item)
     Return Core_SendPacket(0x8, $GC_I_HEADER_ITEM_USE, Item_ItemID($a_v_Item))
