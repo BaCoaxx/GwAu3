@@ -1869,6 +1869,7 @@ Func Assembler_ModifyMemory()
 	Assembler_CreateItemCommands()
 	Assembler_CreateAgentCommands()
 	Assembler_CreateMapCommands()
+	Assembler_CreatePropRayCommand()
 	Assembler_CreateTradeCommands()
 	Assembler_CreateUICommands()
 	Assembler_CreatePartyCommands()
@@ -1923,6 +1924,9 @@ Func Assembler_CreateData()
 	_('InvIdentifyAllResult/4')
 	_('InvCanDepositAllMaterialsResult/4')
 	_('InvDepositAllMaterialsResult/4')
+	_('PropRayResult/96')        ; GC_I_PROPRAY_MAX results of 12 bytes
+	_('PropRayReady/4')          ; 0 = pending, 1 = results ready, 2 = skipped, no props
+
 	; EncString decoding buffers
 	_('DecodeReady/4')           ; Flag: 1 when decode is complete
 	_('DecodeInputPtr/256')      ; Input: encoded wchar string (max 128 wchars)
@@ -2458,6 +2462,70 @@ Func Assembler_CreateMapCommands()
 	_('push eax')
 	_('call Move')
 	_('pop eax')
+	_('ljmp CommandReturn')
+EndFunc
+
+; Ray cast against the map props: count at slot+4, then rays of 28 bytes from slot+8.
+Func Assembler_CreatePropRayCommand()
+	_('CommandPropRay:')
+	_('jmp PropRayStart')
+
+	; The map can unload between enqueue and execution, and the native asserts on null props
+	_('PropRaySkip:')
+	_('mov dword[PropRayReady],2')
+	_('ljmp CommandReturn')
+
+	_('PropRayStart:')
+	_('mov esi,eax')
+	_('mov eax,dword[BasePointer]')
+	_('test eax,eax')
+	_('jz PropRaySkip')
+	_('mov eax,dword[eax]')
+	_('test eax,eax')
+	_('jz PropRaySkip')
+	_('mov eax,dword[eax+18]')
+	_('test eax,eax')
+	_('jz PropRaySkip')
+	_('mov eax,dword[eax+14] -> 8B 40 14')
+	_('test eax,eax')
+	_('jz PropRaySkip')
+	_('mov eax,dword[eax+7C] -> 8B 40 7C')
+	_('test eax,eax')
+	_('jz PropRaySkip')
+	_('mov ebx,dword[eax+19C]')
+	_('test ebx,ebx')
+	_('jz PropRaySkip')
+
+	; ebx holds the loop counter: the native preserves ebx, esi and edi, but not ecx or edx
+	_('mov ebx,dword[esi+4] -> 8B 5E 04')
+	_('test ebx,ebx')
+	_('jz PropRaySkip')
+	_('cmp ebx,8')
+	_('ja PropRaySkip')
+
+	_('push PropRayResult')
+	_('pop edi')
+	_('add esi,8')
+
+	_('PropRayLoop:')
+	_('lea eax,dword[edi+8] -> 8D 47 08')
+	_('push eax')
+	_('lea eax,dword[esi+18] -> 8D 46 18')
+	_('push eax')
+	_('lea eax,dword[esi+C] -> 8D 46 0C')
+	_('push eax')
+	_('push esi')
+	_('call QueryPropIntersect')
+	_('add esp,10')
+	_('mov dword[edi],eax')
+	_('mov eax,dword[esi+18] -> 8B 46 18')
+	_('mov dword[edi+4],eax -> 89 47 04')
+	_('add esi,1C')
+	_('add edi,C')
+	_('dec ebx -> 4B')
+	_('jnz PropRayLoop')
+
+	_('mov dword[PropRayReady],1')
 	_('ljmp CommandReturn')
 EndFunc
 
