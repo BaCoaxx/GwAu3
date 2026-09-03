@@ -90,6 +90,20 @@ Global $g_d_TraderSell = DllStructCreate('ptr')
 Global $g_p_TraderSell = DllStructGetPtr($g_d_TraderSell)
 Global $g_d_Salvage = DllStructCreate('ptr;dword;dword;dword')
 Global $g_p_Salvage = DllStructGetPtr($g_d_Salvage)
+
+;Item
+Global $g_i_InvCanIdentifyAllResult ; Result slot for InvCanIdentifyAll
+Global $g_i_InvIdentifyAllResult    ; Result slot for InvIdentifyAll
+Global $g_d_InvCanIdentifyAll = DllStructCreate('ptr')
+Global $g_p_InvCanIdentifyAll = DllStructGetPtr($g_d_InvCanIdentifyAll)
+Global $g_d_InvIdentifyAll = DllStructCreate('ptr')
+Global $g_p_InvIdentifyAll = DllStructGetPtr($g_d_InvIdentifyAll)
+Global $g_i_InvCanDepositAllMaterialsResult ; Result slot for InvCanDepositAllMaterials
+Global $g_i_InvDepositAllMaterialsResult    ; Result slot for InvDepositAllMaterials
+Global $g_d_InvCanDepositAllMaterials = DllStructCreate('ptr')
+Global $g_p_InvCanDepositAllMaterials = DllStructGetPtr($g_d_InvCanDepositAllMaterials)
+Global $g_d_InvDepositAllMaterials = DllStructCreate('ptr')
+Global $g_p_InvDepositAllMaterials = DllStructGetPtr($g_d_InvDepositAllMaterials)
 Global $g_i_LastTransactionType = -1
 Global $g_i_LastItemID = 0
 Global $g_i_LastQuantity = 0
@@ -172,6 +186,8 @@ Global $g_p_ActiveQuest = DllStructGetPtr($g_d_ActiveQuest)
 ;UIMsg
 Global $g_d_MoveMap = DllStructCreate('ptr;dword;dword;dword;dword;dword')
 Global $g_p_MoveMap = DllStructGetPtr($g_d_MoveMap)
+Global $g_d_ApplyUpgrade = DllStructCreate('ptr;dword;dword;dword;dword;dword')
+Global $g_p_ApplyUpgrade = DllStructGetPtr($g_d_ApplyUpgrade)
 Global $g_d_EquipItem = DllStructCreate('ptr;dword;dword;dword')
 Global $g_p_EquipItem = DllStructGetPtr($g_d_EquipItem)
 
@@ -190,6 +206,19 @@ Global $g_p_AcceptInvitation = DllStructGetPtr($g_d_AcceptInvitation)
 ;Bot related
 Global $g_bAutoStart = False  ; Flag for auto-start
 Global $g_s_MainCharName  = ""
+
+;Prop ray casting
+Global Const $GC_I_PROPRAY_MAX = 8            ; Rays carried by a single command
+Global Const $GC_I_PROPRAY_INPUT_SIZE = 28    ; Bytes per ray: origin[3] + dir[3] + dist
+Global Const $GC_I_PROPRAY_RESULT_SIZE = 12   ; Bytes per result: hit + distance + prop index
+Global Const $GC_I_PROPRAY_STATE_PENDING = 0  ; Command not processed yet
+Global Const $GC_I_PROPRAY_STATE_DONE = 1     ; Results available
+Global Const $GC_I_PROPRAY_STATE_SKIPPED = 2  ; No props loaded, native was never called
+Global Const $GC_F_PROPRAY_MIN_RANGE = 0.1    ; Below this the engine rejects the ray itself
+Global $g_p_PropRayResult       ; Pointer to the result block in GW memory
+Global $g_p_PropRayReady        ; Pointer to the completion flag in GW memory
+Global $g_d_PropRay = DllStructCreate('ptr;dword;float[56]')  ; Command struct: ptr + count + rays
+Global $g_p_PropRay = DllStructGetPtr($g_d_PropRay)
 
 ;EncString Decoding
 Global $g_p_DecodeInputPtr      ; Pointer to encoded string input buffer in GW memory

@@ -34,6 +34,20 @@ Global Enum _
 	$GC_I_INVENTORY_EQUIPPED_ITEMS
 #EndRegion Inventory
 
+#Region EquipmentSlot
+Global Enum _
+	$GC_I_EQUIPMENT_SLOT_RIGHT_HAND, _
+	$GC_I_EQUIPMENT_SLOT_LEFT_HAND, _
+	$GC_I_EQUIPMENT_SLOT_CHEST, _
+	$GC_I_EQUIPMENT_SLOT_LEGS, _
+	$GC_I_EQUIPMENT_SLOT_HEAD, _
+	$GC_I_EQUIPMENT_SLOT_FEET, _
+	$GC_I_EQUIPMENT_SLOT_HANDS, _
+	$GC_I_EQUIPMENT_SLOT_COSTUME_BODY, _
+	$GC_I_EQUIPMENT_SLOT_COSTUME_HEAD, _
+	$GC_I_EQUIPMENT_SLOT_NONE
+#EndRegion EquipmentSlot
+
 #Region Rarity
 Global Const $GC_I_RARITY_WHITE = 2621
 Global Const $GC_I_RARITY_BLUE = 2623
@@ -41,6 +55,13 @@ Global Const $GC_I_RARITY_PURPLE = 2626
 Global Const $GC_I_RARITY_GOLD = 2624
 Global Const $GC_I_RARITY_GREEN = 2627
 #EndRegion Rarity
+
+#Region ItemUpgradeSlot
+Global Enum _
+	$GC_I_UPGRADE_SLOT_PREFIX, _
+	$GC_I_UPGRADE_SLOT_SUFFIX, _
+	$GC_I_UPGRADE_SLOT_INSCRIPTION
+#EndRegion ItemUpgradeSlot
 
 #Region ItemType
 Global Const $GC_I_TYPE_SALVAGE = 0

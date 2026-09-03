@@ -240,10 +240,10 @@ Func Item_GetBagItemArray($a_v_BagNumber)
     Local $l_p_BagPtr = Item_GetBagPtr($a_v_BagNumber)
     If $l_p_BagPtr = 0 Then Return SetError(1, 0, $l_ap_ItemArray)
 
-    Local $l_p_ItemArrayPtr = Item_GetBagInfo($a_v_BagNumber, "ItemArray")
+    Local $l_p_ItemArrayPtr = Item_GetBagInfo($l_p_BagPtr, "ItemArray")
     If $l_p_ItemArrayPtr = 0 Then Return SetError(2, 0, $l_ap_ItemArray)
 
-    Local $l_i_Slots = Item_GetBagInfo($a_v_BagNumber, "Slots")
+    Local $l_i_Slots = Item_GetBagInfo($l_p_BagPtr, "Slots")
     If $l_i_Slots = 0 Then Return SetError(3, 0, $l_ap_ItemArray)
 
     ReDim $l_ap_ItemArray[$l_i_Slots + 1]
@@ -532,6 +532,20 @@ Func Item_GetItemPtr($a_v_ItemID)
     Local $l_ap_ItemStructAddress = Memory_ReadPtr($g_p_BasePointer, $l_ai_Offset, "ptr")
     Return $l_ap_ItemStructAddress[1]
 EndFunc   ;==>GetItemPtr
+
+;~ Description: Returns the inventory ID owning an item.
+Func Item_GetItemInventoryID($a_v_Item)
+    Local $l_p_ItemPtr = Item_GetItemPtr($a_v_Item)
+    If $l_p_ItemPtr = 0 Then Return 0
+
+    Local $l_p_BagPtr = Memory_Read($l_p_ItemPtr + 0xC, "ptr")
+    If $l_p_BagPtr = 0 Then $l_p_BagPtr = Memory_Read($l_p_ItemPtr + 0x8, "ptr")
+    If $l_p_BagPtr = 0 Then Return 0
+
+    Local $l_p_InventoryPtr = Memory_Read($l_p_BagPtr + 0x14, "ptr")
+    If $l_p_InventoryPtr = 0 Then Return 0
+    Return Memory_Read($l_p_InventoryPtr, "dword")
+EndFunc   ;==>Item_GetItemInventoryID
 
 Func Item_GetItemInfoByItemID($a_v_ItemID, $a_s_Info = "")
     Local $l_p_ItemPtr = Item_GetItemPtr($a_v_ItemID)

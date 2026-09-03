@@ -569,8 +569,13 @@ EndFunc   ;==>UAI_GetBestOffensiveWardPosition
 
 ; Move to the best ward position. Returns True only when actually in range to cast,
 ; False if there is no position or the move times out short of it.
-Func UAI_MoveToWardPosition($a_f_WardRange = $GC_I_RANGE_AREA)
-	Local $l_av_BestPos = UAI_GetBestWardPosition($a_f_WardRange)
+Func UAI_MoveToWardPosition($a_f_WardRange = $GC_I_RANGE_AREA, $a_i_WardType = $GC_I_UAI_WARDTYPE_DEFENSIVE)
+	Local $l_av_BestPos[3] = [0, 0, 0]
+	If $a_i_WardType = $GC_I_UAI_WARDTYPE_DEFENSIVE Then
+		$l_av_BestPos = UAI_GetBestWardPosition($a_f_WardRange)
+	ElseIf $a_i_WardType = $GC_I_UAI_WARDTYPE_OFFENSIVE Then 
+		$l_av_BestPos = UAI_GetBestOffensiveWardPosition($a_f_WardRange)
+	EndIf
 	If $l_av_BestPos[2] = 0 Then Return False
 
 	Local $l_f_TargetX = $l_av_BestPos[0]

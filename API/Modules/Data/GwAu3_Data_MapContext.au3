@@ -272,6 +272,99 @@ Func Map_GetPropModelFileId($a_p_PropPtr)
 	Return 0
 EndFunc   ;==>Map_GetPropModelFileId
 
+;~ Description: Casts up to $GC_I_PROPRAY_MAX segments against the map props in one command.
+;~ Rays is a 2D array [n][6] of X1, Y1, Z1, X2, Y2, Z2. Returns [n][4] of Hit, Distance in
+;~ game units, PropIndex and PropPtr, or 0 with @error 1 = arguments, 2 = no props, 3 = timeout.
+;~ Distance is negative, and a hit may be missed entirely, when a start point is inside a prop.
+Func Map_QueryPropIntersectionMulti($a_a_Rays, $a_i_Timeout = 250)
+	If Not IsArray($a_a_Rays) Or UBound($a_a_Rays, 0) <> 2 Then Return SetError(1, 0, 0)
+	If UBound($a_a_Rays, 2) < 6 Then Return SetError(1, 0, 0)
+
+	Local $l_i_Count = UBound($a_a_Rays, 1)
+	If $l_i_Count < 1 Or $l_i_Count > $GC_I_PROPRAY_MAX Then Return SetError(1, 0, 0)
+
+	; The native asserts on a null props context, and an assertion is fatal in retail
+	Local $l_p_PropsContext = Map_GetPropsContext()
+	If $l_p_PropsContext = 0 Then Return SetError(2, 0, 0)
+
+	; The direction must be a unit vector, the native asserts on it. The distance carries the
+	; range and is narrowed in place: read before being written, so it must never be zero.
+	For $i = 0 To $l_i_Count - 1
+		Local $l_f_DX = $a_a_Rays[$i][3] - $a_a_Rays[$i][0]
+		Local $l_f_DY = $a_a_Rays[$i][4] - $a_a_Rays[$i][1]
+		Local $l_f_DZ = $a_a_Rays[$i][5] - $a_a_Rays[$i][2]
+		Local $l_f_Length = Sqrt($l_f_DX * $l_f_DX + $l_f_DY * $l_f_DY + $l_f_DZ * $l_f_DZ)
+		If $l_f_Length < $GC_F_PROPRAY_MIN_RANGE Then Return SetError(1, 0, 0)
+
+		Local $l_i_Field = 1 + ($i * 7)
+		DllStructSetData($g_d_PropRay, 3, $a_a_Rays[$i][0], $l_i_Field)
+		DllStructSetData($g_d_PropRay, 3, $a_a_Rays[$i][1], $l_i_Field + 1)
+		DllStructSetData($g_d_PropRay, 3, $a_a_Rays[$i][2], $l_i_Field + 2)
+		DllStructSetData($g_d_PropRay, 3, $l_f_DX / $l_f_Length, $l_i_Field + 3)
+		DllStructSetData($g_d_PropRay, 3, $l_f_DY / $l_f_Length, $l_i_Field + 4)
+		DllStructSetData($g_d_PropRay, 3, $l_f_DZ / $l_f_Length, $l_i_Field + 5)
+		DllStructSetData($g_d_PropRay, 3, $l_f_Length, $l_i_Field + 6)
+	Next
+
+	DllStructSetData($g_d_PropRay, 2, $l_i_Count)
+	Memory_Write($g_p_PropRayReady, $GC_I_PROPRAY_STATE_PENDING, "dword")
+	Core_Enqueue($g_p_PropRay, 8 + ($l_i_Count * $GC_I_PROPRAY_INPUT_SIZE))
+
+	Local $l_i_Timer = TimerInit()
+	While TimerDiff($l_i_Timer) < $a_i_Timeout
+		Local $l_i_State = Memory_Read($g_p_PropRayReady, "dword")
+		If $l_i_State = $GC_I_PROPRAY_STATE_SKIPPED Then Return SetError(2, 0, 0)
+		If $l_i_State = $GC_I_PROPRAY_STATE_DONE Then
+			Local $l_p_PropArray = Memory_Read($l_p_PropsContext + 0x194, "ptr")
+			Local $l_a_Result[$l_i_Count][4]
+			For $i = 0 To $l_i_Count - 1
+				Local $l_p_Slot = $g_p_PropRayResult + ($i * $GC_I_PROPRAY_RESULT_SIZE)
+				Local $l_b_Hit = (Memory_Read($l_p_Slot, "dword") <> 0)
+				Local $l_i_Index = Memory_Read($l_p_Slot + 8, "dword")
+
+				$l_a_Result[$i][0] = $l_b_Hit
+				$l_a_Result[$i][1] = 0
+				$l_a_Result[$i][2] = -1
+				$l_a_Result[$i][3] = 0
+				If $l_b_Hit Then
+					; Already in game units: the direction sent to the native was normalised
+					$l_a_Result[$i][1] = Memory_Read($l_p_Slot + 4, "float")
+					$l_a_Result[$i][2] = $l_i_Index
+					; Same array and same indexing as Map_GetPropArray()
+					If $l_p_PropArray <> 0 Then
+						$l_a_Result[$i][3] = Memory_Read($l_p_PropArray + ($l_i_Index * 4), "ptr")
+					EndIf
+				EndIf
+			Next
+			Return $l_a_Result
+		EndIf
+		Sleep(4)
+	WEnd
+
+	Return SetError(3, 0, 0)
+EndFunc   ;==>Map_QueryPropIntersectionMulti
+
+;~ Description: Casts one segment against the map props.
+;~ Returns a 1D array [4] of Hit, Distance, PropIndex and PropPtr, or 0 with @error as above.
+Func Map_QueryPropIntersection($a_f_X1, $a_f_Y1, $a_f_Z1, $a_f_X2, $a_f_Y2, $a_f_Z2, $a_i_Timeout = 250)
+	Local $l_a_Rays[1][6] = [[$a_f_X1, $a_f_Y1, $a_f_Z1, $a_f_X2, $a_f_Y2, $a_f_Z2]]
+
+	Local $l_a_Result = Map_QueryPropIntersectionMulti($l_a_Rays, $a_i_Timeout)
+	If @error Then Return SetError(@error, 0, 0)
+
+	Local $l_a_Single[4] = [$l_a_Result[0][0], $l_a_Result[0][1], $l_a_Result[0][2], $l_a_Result[0][3]]
+	Return $l_a_Single
+EndFunc   ;==>Map_QueryPropIntersection
+
+;~ Description: Returns True when no prop stands between the two points.
+;~ A failed query returns False with @error set, so an unusable answer never reads as clear.
+Func Map_IsLineClear($a_f_X1, $a_f_Y1, $a_f_Z1, $a_f_X2, $a_f_Y2, $a_f_Z2, $a_i_Timeout = 250)
+	Local $l_a_Result = Map_QueryPropIntersection($a_f_X1, $a_f_Y1, $a_f_Z1, $a_f_X2, $a_f_Y2, $a_f_Z2, $a_i_Timeout)
+	If @error Then Return SetError(@error, 0, False)
+
+	Return Not $l_a_Result[0]
+EndFunc   ;==>Map_IsLineClear
+
 Func Map_GetNearestTravelPortal($a_f_X, $a_f_Y, $a_f_OffsetDistance = 50)
 	; Get all map props
 	Local $l_a_Props = Map_GetPropArray()

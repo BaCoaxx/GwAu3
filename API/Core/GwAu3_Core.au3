@@ -93,6 +93,13 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
  	Scanner_AddPattern('Salvage','33C58945FC8B45088945F08B450C8945F48B45108945F88D45EC506A10C745EC77', -0xA, 'Func')
 	;~ Scanner_AddPattern('Salvage','33C58945FC8B45088945F08B450C8945F48B45108945F88D45EC506A10C745EC76', -0xA, 'Func')
     Scanner_AddPattern('SalvageGlobal', '8B4A04538945F48B4208', 0x1, 'Ptr')
+    ; Item patterns
+    Scanner_AddPattern('InvCanIdentifyAll', '558BEC83EC??A1????????33C58945FC8D45??50E8????????8B45??83C40483F8FF????????000057', 0x1, 'Func')
+    Scanner_AddPattern('InvIdentifyAll', '558BEC83EC??A1????????33C58945FC8D45??50E8????????8B45??83C40483F8FF????????000053', 0x1, 'Func')
+    Scanner_AddPattern('InvCanDepositAllMaterials', '558BEC83EC??5733FF33C0538945FC568D4D??C745??000000005150', 0x1, 'Func')
+    Scanner_AddPattern('InvDepositAllMaterials', '558BEC83EC??A1????????33C58945FC53565733FF897D??EB068D9B', 0x1, 'Func')
+    ; Map patterns
+    Scanner_AddPattern('QueryPropIntersect', '558BEC83EC??535657E8????????8B40148B587C', 0x1, 'Func')
     ; Agent patterns
     Scanner_AddPattern('AgentBase', '8B0C9085C97419', -0x3, 'Ptr')
     Scanner_AddPattern('ChangeTarget', '3BDF0F95', -0x89, 'Func')
@@ -146,7 +153,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	$g_p_StatusCode = Memory_Read(Scanner_GetScanResult('StatusCode', $g_ap_ScanResults, 'Ptr'))
 	$g_p_Login = Memory_Read(Scanner_GetScanResult('Login', $g_ap_ScanResults, 'Ptr'))
 	$g_p_InGame = Memory_Read(Scanner_GetScanResult('InGame', $g_ap_ScanResults, 'Ptr'))
-    $g_p_PreGame = Memory_Read(Scanner_GetScanResult('PreGame', $g_ap_ScanResults, 'Ptr') + 0x35)
+    $g_p_PreGame = Memory_Read(Scanner_GetScanResult('PreGame', $g_ap_ScanResults, 'Ptr') + 0x33)
     $g_p_FrameArray = Memory_Read(Scanner_GetScanResult('FrameArray', $g_ap_ScanResults, 'Ptr') - 0x13)
 	$g_p_SceneContext = Memory_Read(Scanner_GetScanResult('SceneContext', $g_ap_ScanResults, 'Ptr') + 0x1B)
 	$g_p_TimeOnMap = $g_p_SceneContext + 0xC
@@ -184,6 +191,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	;Skill
     $g_p_SkillBase = Memory_Read(Scanner_GetScanResult('SkillBase', $g_ap_ScanResults, 'Ptr'))
     $g_p_SkillTimer = Memory_Read(Scanner_GetScanResult('SkillTimer', $g_ap_ScanResults, 'Ptr'))
+	$g_i_GWExeStart = Memory_Read($g_p_SkillTimer, 'dword')
 	Memory_SetValue('SkillBase', Ptr($g_p_SkillBase))
     Memory_SetValue('SkillTimer', Ptr($g_p_SkillTimer))
     Memory_SetValue('UseSkill', Ptr(Scanner_GetScanResult('UseSkill', $g_ap_ScanResults, 'Func')))
@@ -228,12 +236,22 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
     Memory_SetValue('Transaction', Ptr(Scanner_GetScanResult('Transaction', $g_ap_ScanResults, 'Func')))
     Memory_SetValue('RequestQuote', Ptr(Scanner_GetScanResult('RequestQuote', $g_ap_ScanResults, 'Func')))
     Memory_SetValue('Salvage', Ptr(Scanner_GetScanResult('Salvage', $g_ap_ScanResults, 'Func')))
+    Memory_SetValue('InvCanIdentifyAll', Ptr(Scanner_GetScanResult('InvCanIdentifyAll', $g_ap_ScanResults, 'Func')))
+    Memory_SetValue('InvIdentifyAll', Ptr(Scanner_GetScanResult('InvIdentifyAll', $g_ap_ScanResults, 'Func')))
+    Memory_SetValue('InvCanDepositAllMaterials', Ptr(Scanner_GetScanResult('InvCanDepositAllMaterials', $g_ap_ScanResults, 'Func')))
+    Memory_SetValue('InvDepositAllMaterials', Ptr(Scanner_GetScanResult('InvDepositAllMaterials', $g_ap_ScanResults, 'Func')))
+    Memory_SetValue('QueryPropIntersect', Ptr(Scanner_GetScanResult('QueryPropIntersect', $g_ap_ScanResults, 'Func')))
 	;Trader log
 	Log_Debug("BuyItemBase: " & Memory_GetValue('BuyItemBase'), "Initialize", $g_h_EditText)
 	Log_Debug("SalvageGlobal: " & Memory_GetValue('SalvageGlobal'), "Initialize", $g_h_EditText)
 	Log_Debug("Transaction: " & Memory_GetValue('Transaction'), "Initialize", $g_h_EditText)
 	Log_Debug("RequestQuote: " & Memory_GetValue('RequestQuote'), "Initialize", $g_h_EditText)
 	Log_Debug("Salvage: " & Memory_GetValue('Salvage'), "Initialize", $g_h_EditText)
+	Log_Debug("InvCanIdentifyAll: " & Memory_GetValue('InvCanIdentifyAll'), "Initialize", $g_h_EditText)
+	Log_Debug("InvIdentifyAll: " & Memory_GetValue('InvIdentifyAll'), "Initialize", $g_h_EditText)
+	Log_Debug("InvCanDepositAllMaterials: " & Memory_GetValue('InvCanDepositAllMaterials'), "Initialize", $g_h_EditText)
+	Log_Debug("InvDepositAllMaterials: " & Memory_GetValue('InvDepositAllMaterials'), "Initialize", $g_h_EditText)
+	Log_Debug("QueryPropIntersect: " & Memory_GetValue('QueryPropIntersect'), "Initialize", $g_h_EditText)
 
 	;Agent
 	$g_p_AgentBase = Memory_Read(Scanner_GetScanResult('AgentBase', $g_ap_ScanResults, 'Ptr'))
@@ -396,6 +414,10 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
     $g_i_TraderQuoteID = Memory_GetValue('TraderQuoteID')
     $g_i_TraderCostID = Memory_GetValue('TraderCostID')
     $g_f_TraderCostValue = Memory_GetValue('TraderCostValue')
+    $g_i_InvCanIdentifyAllResult = Memory_GetValue('InvCanIdentifyAllResult')
+    $g_i_InvIdentifyAllResult = Memory_GetValue('InvIdentifyAllResult')
+    $g_i_InvCanDepositAllMaterialsResult = Memory_GetValue('InvCanDepositAllMaterialsResult')
+    $g_i_InvDepositAllMaterialsResult = Memory_GetValue('InvDepositAllMaterialsResult')
 	$g_p_SavedIndex = Memory_GetValue('SavedIndex')
 	$g_i_QueueCounter = Memory_Read(Memory_GetValue('QueueCounter'))
     $g_i_QueueSize = Memory_GetValue('QueueSize') - 1
@@ -431,6 +453,10 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
     DllStructSetData($g_d_TraderBuy, 1, Memory_GetValue('CommandTraderBuy'))
     DllStructSetData($g_d_TraderSell, 1, Memory_GetValue('CommandTraderSell'))
     DllStructSetData($g_d_Salvage, 1, Memory_GetValue('CommandSalvage'))
+    DllStructSetData($g_d_InvCanIdentifyAll, 1, Memory_GetValue('CommandInvCanIdentifyAll'))
+    DllStructSetData($g_d_InvIdentifyAll, 1, Memory_GetValue('CommandInvIdentifyAll'))
+    DllStructSetData($g_d_InvCanDepositAllMaterials, 1, Memory_GetValue('CommandInvCanDepositAllMaterials'))
+    DllStructSetData($g_d_InvDepositAllMaterials, 1, Memory_GetValue('CommandInvDepositAllMaterials'))
 	$g_p_CraftItem = Memory_GetValue('CommandCraftItem')
 	$g_p_CollectorExchange = Memory_GetValue('CommandCollectorExchange')
 	;Agent
@@ -465,12 +491,17 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	DllStructSetData($g_d_MoveMap, 1, Memory_GetValue('CommandUIMsg'))
 	DllStructSetData($g_d_EquipItem, 1, Memory_GetValue('CommandUIMsg'))
 	DllStructSetData($g_d_Xunlai, 1, Memory_GetValue('CommandUIMsg'))
+	DllStructSetData($g_d_ApplyUpgrade, 1, Memory_GetValue('CommandUIMsg'))
 	;Party
 	DllStructSetData($g_d_AddPlayer, 1, Memory_GetValue('CommandAddPlayer'))
 	DllStructSetData($g_d_KickPlayer, 1, Memory_GetValue('CommandKickPlayer'))
 	DllStructSetData($g_d_KickInvitedPlayer, 1, Memory_GetValue('CommandKickInvitedPlayer'))
 	DllStructSetData($g_d_RejectInvitation, 1, Memory_GetValue('CommandRejectInvitation'))
 	DllStructSetData($g_d_AcceptInvitation, 1, Memory_GetValue('CommandAcceptInvitation'))
+	;Prop ray casting
+	DllStructSetData($g_d_PropRay, 1, Memory_GetValue('CommandPropRay'))
+	$g_p_PropRayResult = Memory_GetValue('PropRayResult')
+	$g_p_PropRayReady = Memory_GetValue('PropRayReady')
 	;EncString
 	DllStructSetData($g_d_DecodeEncString, 1, Memory_GetValue('CommandDecodeEncString'))
 	$g_p_DecodeInputPtr = Memory_GetValue('DecodeInputPtr')
@@ -625,4 +656,23 @@ EndFunc
 Func Core_GetStatusError()
 	$l_i_StatusCode = Core_GetStatusCode()
 	Return $l_i_StatusCode <> 0 And $l_i_StatusCode <> 1
+EndFunc
+
+Func Core_ResetRuntime()
+	Global $g_amx_AssertionCache[0][3]
+	Global $g_ai2_Sections[5][2]
+	Global $g_amx2_Labels[1][2]
+
+	$g_i_LastSkillUsed = 0
+	$g_i_LastSkillTarget = 0
+	$g_i_LastStatus = 0
+	$g_i_LastAttributeModified = -1
+	$g_i_LastAttributeValue = -1
+	$g_i_LastTransactionType = -1
+	$g_i_LastItemID = 0
+	$g_i_LastQuantity = 0
+	$g_i_LastPrice = 0
+	$g_i_LastTargetID = 0
+	$g_f_LastMoveX = 0
+	$g_f_LastMoveY = 0
 EndFunc

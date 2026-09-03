@@ -54,3 +54,20 @@ Func UAI_UpdatePlayerCache()
 	UAI_CachePlayerVisibleEffects()
 	UAI_CacheDynamicSkillbarInfo()
 EndFunc
+
+Func UAI_ResetRuntime()
+	$g_i_BestTarget = 0
+	$g_i_ForceTarget = 0
+	$g_i_AttackTarget = 0
+	$g_i_LastCalledTarget = 0
+
+	$g_b_SkillChanged = False
+	$g_b_CanUseSkill = True
+
+	Global $g_as_BestTargetCache[9]
+	Global $g_as_CanUseCache[9]
+	Global $g_amx2_DynamicSkillCache[$GC_UAI_DYNAMIC_SKILL_SLOTS + 1][$GC_UAI_DYNAMIC_SKILL_COUNT]
+	$g_p_StaticSkillbarPtr = 0
+
+	$g_i_LastFeederEnchTimestamp = 0
+EndFunc
