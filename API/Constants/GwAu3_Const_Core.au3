@@ -220,6 +220,26 @@ Global $g_p_PropRayReady        ; Pointer to the completion flag in GW memory
 Global $g_d_PropRay = DllStructCreate('ptr;dword;float[56]')  ; Command struct: ptr + count + rays
 Global $g_p_PropRay = DllStructGetPtr($g_d_PropRay)
 
+;Trade session natives
+Global Const $GC_I_TRADESESS_STATE_PENDING = 0   ; Command not processed yet
+Global Const $GC_I_TRADESESS_STATE_DONE = 1      ; Return value available
+Global Const $GC_I_TRADESESS_STATE_SKIPPED = 2   ; No trade context, native was never called
+Global Const $GC_I_TRADESESS_OP_NONE = 0         ; Context is idle, a new call is accepted
+Global Const $GC_I_TRADESESS_OP_ABORT = 1        ; Codes written while a call is in flight
+Global Const $GC_I_TRADESESS_OP_CONFIRM = 2
+Global Const $GC_I_TRADESESS_OP_OFFERITEM = 3
+Global Const $GC_I_TRADESESS_OP_REVOKECONFIRM = 4
+Global Const $GC_I_TRADESESS_OP_REVOKEITEM = 5
+Global Const $GC_I_TRADESESS_OP_REVOKESUBMIT = 6
+Global Const $GC_I_TRADESESS_OP_SUBMIT = 7
+Global Const $GC_I_TRADE_FLAG_ACTIVE = 1         ; Trade context flags
+Global Const $GC_I_TRADE_FLAG_SUBMITTED = 2
+Global Const $GC_I_TRADE_FLAG_CONFIRMED = 4
+Global $g_p_TradeSessResult      ; Pointer to the native return value in GW memory
+Global $g_p_TradeSessReady       ; Pointer to the completion flag in GW memory
+Global $g_d_TradeSession = DllStructCreate('ptr;ptr;dword;dword')  ; Command struct: ptr + native + 2 args
+Global $g_p_TradeSession = DllStructGetPtr($g_d_TradeSession)
+
 ;EncString Decoding
 Global $g_p_DecodeInputPtr      ; Pointer to encoded string input buffer in GW memory
 Global $g_p_DecodeOutputPtr     ; Pointer to decoded string output buffer in GW memory
