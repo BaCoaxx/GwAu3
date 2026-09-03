@@ -207,6 +207,19 @@ Global $g_p_AcceptInvitation = DllStructGetPtr($g_d_AcceptInvitation)
 Global $g_bAutoStart = False  ; Flag for auto-start
 Global $g_s_MainCharName  = ""
 
+;Prop ray casting
+Global Const $GC_I_PROPRAY_MAX = 8            ; Rays carried by a single command
+Global Const $GC_I_PROPRAY_INPUT_SIZE = 28    ; Bytes per ray: origin[3] + dir[3] + dist
+Global Const $GC_I_PROPRAY_RESULT_SIZE = 12   ; Bytes per result: hit + distance + prop index
+Global Const $GC_I_PROPRAY_STATE_PENDING = 0  ; Command not processed yet
+Global Const $GC_I_PROPRAY_STATE_DONE = 1     ; Results available
+Global Const $GC_I_PROPRAY_STATE_SKIPPED = 2  ; No props loaded, native was never called
+Global Const $GC_F_PROPRAY_MIN_RANGE = 0.1    ; Below this the engine rejects the ray itself
+Global $g_p_PropRayResult       ; Pointer to the result block in GW memory
+Global $g_p_PropRayReady        ; Pointer to the completion flag in GW memory
+Global $g_d_PropRay = DllStructCreate('ptr;dword;float[56]')  ; Command struct: ptr + count + rays
+Global $g_p_PropRay = DllStructGetPtr($g_d_PropRay)
+
 ;EncString Decoding
 Global $g_p_DecodeInputPtr      ; Pointer to encoded string input buffer in GW memory
 Global $g_p_DecodeOutputPtr     ; Pointer to decoded string output buffer in GW memory
