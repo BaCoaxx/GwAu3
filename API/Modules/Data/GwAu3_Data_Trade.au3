@@ -37,6 +37,22 @@ Func Trade_GetTradeInfo($a_s_Info = "")
         Case "PartnerItemCount"
             Return Memory_Read($l_p_Ptr + 0x30, "long")
 
+        Case "Flags"
+            Return Memory_Read($l_p_Ptr, "long")
+        Case "IsSubmitted"
+            Return BitAND(Memory_Read($l_p_Ptr, "long"), $GC_I_TRADE_FLAG_SUBMITTED) <> 0
+        Case "IsConfirmed"
+            Return BitAND(Memory_Read($l_p_Ptr, "long"), $GC_I_TRADE_FLAG_CONFIRMED) <> 0
+
+        Case "PendingOp"
+            Return Memory_Read($l_p_Ptr + 0x4, "long")
+        Case "IsBusy"
+            Return Memory_Read($l_p_Ptr + 0x4, "long") <> 0
+        Case "PartnerName"
+            Local $l_p_Name = Memory_Read($l_p_Ptr + 0x38, "ptr")
+            If $l_p_Name = 0 Then Return ""
+            Return Memory_Read($l_p_Name, "wchar[32]")
+
     EndSwitch
 
     Return 0
