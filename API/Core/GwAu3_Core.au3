@@ -98,6 +98,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
     Scanner_AddPattern('InvIdentifyAll', '558BEC83EC??A1????????33C58945FC8D45??50E8????????8B45??83C40483F8FF????????000053', 0x1, 'Func')
     Scanner_AddPattern('InvCanDepositAllMaterials', '558BEC83EC??5733FF33C0538945FC568D4D??C745??000000005150', 0x1, 'Func')
     Scanner_AddPattern('InvDepositAllMaterials', '558BEC83EC??A1????????33C58945FC53565733FF897D??EB068D9B', 0x1, 'Func')
+    Scanner_AddPattern('DropBundle', '8378480675058B4024EB0233C085C07405E8', 0x1, 'Ptr')
     ; Map patterns
     Scanner_AddPattern('QueryPropIntersect', '558BEC83EC??535657E8????????8B40148B587C', 0x1, 'Func')
     ; Agent patterns
@@ -240,6 +241,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
     Memory_SetValue('InvIdentifyAll', Ptr(Scanner_GetScanResult('InvIdentifyAll', $g_ap_ScanResults, 'Func')))
     Memory_SetValue('InvCanDepositAllMaterials', Ptr(Scanner_GetScanResult('InvCanDepositAllMaterials', $g_ap_ScanResults, 'Func')))
     Memory_SetValue('InvDepositAllMaterials', Ptr(Scanner_GetScanResult('InvDepositAllMaterials', $g_ap_ScanResults, 'Func')))
+    Memory_SetValue('DropBundle', Ptr(Scanner_ToFunctionStart(Scanner_GetScanResult('DropBundle', $g_ap_ScanResults, 'Ptr'))))
     Memory_SetValue('QueryPropIntersect', Ptr(Scanner_GetScanResult('QueryPropIntersect', $g_ap_ScanResults, 'Func')))
 	;Trader log
 	Log_Debug("BuyItemBase: " & Memory_GetValue('BuyItemBase'), "Initialize", $g_h_EditText)
@@ -251,6 +253,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	Log_Debug("InvIdentifyAll: " & Memory_GetValue('InvIdentifyAll'), "Initialize", $g_h_EditText)
 	Log_Debug("InvCanDepositAllMaterials: " & Memory_GetValue('InvCanDepositAllMaterials'), "Initialize", $g_h_EditText)
 	Log_Debug("InvDepositAllMaterials: " & Memory_GetValue('InvDepositAllMaterials'), "Initialize", $g_h_EditText)
+	Log_Debug("DropBundle: " & Memory_GetValue('DropBundle'), "Initialize", $g_h_EditText)
 	Log_Debug("QueryPropIntersect: " & Memory_GetValue('QueryPropIntersect'), "Initialize", $g_h_EditText)
 
 	;Agent
@@ -457,6 +460,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
     DllStructSetData($g_d_InvIdentifyAll, 1, Memory_GetValue('CommandInvIdentifyAll'))
     DllStructSetData($g_d_InvCanDepositAllMaterials, 1, Memory_GetValue('CommandInvCanDepositAllMaterials'))
     DllStructSetData($g_d_InvDepositAllMaterials, 1, Memory_GetValue('CommandInvDepositAllMaterials'))
+    DllStructSetData($g_d_DropBundle, 1, Memory_GetValue('CommandDropBundle'))
 	$g_p_CraftItem = Memory_GetValue('CommandCraftItem')
 	$g_p_CollectorExchange = Memory_GetValue('CommandCollectorExchange')
 	;Agent
