@@ -2415,6 +2415,10 @@ Func Assembler_CreateItemCommands()
 	_('call InvDepositAllMaterials')
 	_('mov dword[InvDepositAllMaterialsResult],eax')
 	_('ljmp CommandReturn')
+
+	_('CommandDropBundle:')
+	_('call DropBundle')
+	_('ljmp CommandReturn')
 EndFunc
 
 Func Assembler_CreateAgentCommands()
