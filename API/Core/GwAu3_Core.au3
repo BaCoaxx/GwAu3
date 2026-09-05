@@ -510,6 +510,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	DllStructSetData($g_d_MoveMap, 1, Memory_GetValue('CommandUIMsg'))
 	DllStructSetData($g_d_EquipItem, 1, Memory_GetValue('CommandUIMsg'))
 	DllStructSetData($g_d_Xunlai, 1, Memory_GetValue('CommandUIMsg'))
+	DllStructSetData($g_d_CloseDialog, 1, Memory_GetValue('CommandUIMsg'))
 	DllStructSetData($g_d_ApplyUpgrade, 1, Memory_GetValue('CommandUIMsg'))
 	;Party
 	DllStructSetData($g_d_AddPlayer, 1, Memory_GetValue('CommandAddPlayer'))
