@@ -289,7 +289,7 @@ Func UAI_DropBundle($a_f_AggroRange = 1320)
 
 		; Check if skill is not recharged (but can drop bundle)
 		If UAI_CanDrop($l_i_Slot) Then
-			Core_ControlAction($GC_I_CONTROL_ACTION_DROP_ITEM)
+			Item_DropBundle()
 			Return
 		EndIf
 	Next
