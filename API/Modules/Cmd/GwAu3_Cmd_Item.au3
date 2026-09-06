@@ -402,6 +402,13 @@ Func Item_DropItem($a_v_Item, $a_i_Amount = 0)
     Return Core_SendPacket(0xC, $GC_I_HEADER_DROP_ITEM, $l_i_ItemID, $a_i_Amount)
 EndFunc ;==>DropItem
 
+;~ Description: Drops the bundle the player is holding (torch, ashes, relic...).
+Func Item_DropBundle()
+    If DllStructGetData($g_d_DropBundle, 1) <= 0 Then Return SetError(1, 0, False)
+    Core_Enqueue($g_p_DropBundle, 4)
+    Return True
+EndFunc ;==>DropBundle
+
 ;Description: Destroys and Item f.e. Bonus items not needed
 Func Item_DestroyItem($a_v_ItemID)
 	Return Core_SendPacket(0x8, $GC_I_HEADER_ITEM_DESTROY, Item_ItemID($a_v_ItemID))

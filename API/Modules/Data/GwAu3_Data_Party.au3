@@ -341,7 +341,7 @@ EndFunc
 Func Party_GetHeroFlagInfo($a_i_HeroNumber = 1, $a_s_Info = "")
     Local $l_p_Ptr = World_GetWorldInfo("HeroFlagArray")
     Local $l_i_Size = World_GetWorldInfo("HeroFlagArraySize")
-    If $l_p_Ptr = 0 Or $a_i_HeroNumber < 1 Or $a_i_HeroNumber >= $l_i_Size Then Return 0
+    If $l_p_Ptr = 0 Or $a_i_HeroNumber < 1 Or $a_i_HeroNumber > $l_i_Size Then Return 0
 
     Local $l_i_HeroID = Party_GetMyPartyHeroInfo($a_i_HeroNumber, "AgentID")
     If $l_i_HeroID = 0 Then Return 0
@@ -359,7 +359,7 @@ Func Party_GetHeroFlagInfo($a_i_HeroNumber = 1, $a_s_Info = "")
             Return Memory_Read($l_p_HeroFlagPtr, "dword")
         Case "AgentID"
             Return Memory_Read($l_p_HeroFlagPtr + 0x4, "dword")
-        Case "Level"
+        Case "InventoryID"
             Return Memory_Read($l_p_HeroFlagPtr + 0x8, "dword")
         Case "Behavior"
             Return Memory_Read($l_p_HeroFlagPtr + 0xC, "dword")

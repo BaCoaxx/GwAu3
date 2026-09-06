@@ -54,23 +54,89 @@ EndFunc   ;==>Trade_InitiateTrade
 
 ;~ Description: Cancel the current trade session
 Func Trade_CancelTrade()
-    Core_Enqueue($g_p_TradeCancel, 4)
+    If Not Trade_WaitIdle() Then Return SetError(3, 0, False)
+    Local $l_b_Result = Trade_CallSession('TradeSessAbort')
+    Return SetError(@error, 0, $l_b_Result)
 EndFunc
 
 ;~ Description: Accept the trade; only possible once both sides submitted their offers
+;~ Requires the trade window open locally: on the invited side, send Trade_InitiateTrade once first
 Func Trade_AcceptTrade()
-    Core_Enqueue($g_p_TradeAccept, 4)
+    If Not Trade_WaitIdle() Then Return SetError(3, 0, False)
+    Local $l_b_Result = Trade_CallSession('TradeSessConfirm')
+    Return SetError(@error, 0, $l_b_Result)
 EndFunc
 
-;~ Description: Submit player's trade offer including $a_i_Gold amount; submitted offer will not be visible for the one running this command
+;~ Description: Submit the player's offer including $a_i_Gold amount; the server refuses more gold than carried
 Func Trade_SubmitOffer($a_i_Gold = 0)
-    DllStructSetData($g_d_TradeSubmitOffer, 2, $a_i_Gold)
-    Core_Enqueue($g_p_TradeSubmitOffer, 8)
+    If Not Trade_WaitIdle() Then Return SetError(3, 0, False)
+    Local $l_b_Result = Trade_CallSession('TradeSessSubmit', $a_i_Gold)
+    Return SetError(@error, 0, $l_b_Result)
 EndFunc
 
-;~ Description: Add $a_v_Item with $a_i_Qty to trade window; offered item will not be visible for the one running this command and will not appear in the TradeInfo array.
+;~ Description: Add $a_v_Item with $a_i_Qty to the trade window; the item is then readable in Trade_GetPlayerTradeItemsInfo
 Func Trade_OfferItem($a_v_Item, $a_i_Qty = 1)
-    DllStructSetData($g_d_TradeOfferItem, 2, Item_ItemID($a_v_Item))
-    DllStructSetData($g_d_TradeOfferItem, 3, $a_i_Qty)
-    Core_Enqueue($g_p_TradeOfferItem, 12)
+    If Not Trade_WaitIdle() Then Return SetError(3, 0, False)
+    Local $l_b_Result = Trade_CallSession('TradeSessOfferItem', Item_ItemID($a_v_Item), $a_i_Qty)
+    Return SetError(@error, 0, $l_b_Result)
 EndFunc
+
+#Region Trade Session Natives
+;~ Description: Calls one TradeClient::Session* native through the command queue, returns its result
+;~ @error 1 = scanner unresolved, 2 = no trade context, 3 = timeout, 4 = no live trade session
+Func Trade_CallSession($a_s_Native, $a_i_Arg1 = 0, $a_i_Arg2 = 0, $a_i_Timeout = 250)
+    Local $l_p_Native = Memory_GetValue($a_s_Native)
+    If $l_p_Native = 0 Then Return SetError(1, 0, False)
+    If Trade_GetTradePtr() = 0 Then Return SetError(2, 0, False)
+
+    ; Called outside a session, these natives store a pending code no acknowledgement clears,
+    ; which then blocks every later call
+    If BitAND(Trade_GetTradeInfo("Flags"), $GC_I_TRADE_FLAG_ACTIVE) = 0 Then Return SetError(4, 0, False)
+
+    DllStructSetData($g_d_TradeSession, 2, $l_p_Native)
+    DllStructSetData($g_d_TradeSession, 3, $a_i_Arg1)
+    DllStructSetData($g_d_TradeSession, 4, $a_i_Arg2)
+    Memory_Write($g_p_TradeSessReady, $GC_I_TRADESESS_STATE_PENDING, "dword")
+    Core_Enqueue($g_p_TradeSession, 16)
+
+    Local $l_i_Timer = TimerInit()
+    While TimerDiff($l_i_Timer) < $a_i_Timeout
+        Local $l_i_State = Memory_Read($g_p_TradeSessReady, "dword")
+        If $l_i_State = $GC_I_TRADESESS_STATE_SKIPPED Then Return SetError(2, 0, False)
+        If $l_i_State = $GC_I_TRADESESS_STATE_DONE Then Return (Memory_Read($g_p_TradeSessResult, "dword") <> 0)
+        Sleep(10)
+    WEnd
+    Return SetError(3, 0, False)
+EndFunc
+
+;~ Description: Waits until the trade context accepts a new operation; the natives refuse until then
+Func Trade_WaitIdle($a_i_Timeout = 3000)
+    Local $l_i_Timer = TimerInit()
+    While TimerDiff($l_i_Timer) < $a_i_Timeout
+        If Not Trade_GetTradeInfo("IsBusy") Then Return True
+        Sleep(20)
+    WEnd
+    Return False
+EndFunc
+
+;~ Description: Takes back one item from the player's offer; refused once the offer is submitted
+Func Trade_RevokeItem($a_v_Item)
+    If Not Trade_WaitIdle() Then Return SetError(3, 0, False)
+    Local $l_b_Result = Trade_CallSession('TradeSessRevokeItem', Item_ItemID($a_v_Item))
+    Return SetError(@error, 0, $l_b_Result)
+EndFunc
+
+;~ Description: Takes back the submitted offer, like pressing "Change Offer"
+Func Trade_RevokeOffer()
+    If Not Trade_WaitIdle() Then Return SetError(3, 0, False)
+    Local $l_b_Result = Trade_CallSession('TradeSessRevokeSubmit')
+    Return SetError(@error, 0, $l_b_Result)
+EndFunc
+
+;~ Description: Takes back the player's acceptance; the submitted flag is cleared too, so submit again after
+Func Trade_RevokeAccept()
+    If Not Trade_WaitIdle() Then Return SetError(3, 0, False)
+    Local $l_b_Result = Trade_CallSession('TradeSessRevokeConfirm')
+    Return SetError(@error, 0, $l_b_Result)
+EndFunc
+#EndRegion Trade Session Natives
