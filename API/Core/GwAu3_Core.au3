@@ -544,25 +544,25 @@ EndFunc
 #EndRegion Initialization
 
 Func Core_Enqueue_($a_p_Ptr, $a_i_Size)
-    Local $l_i_Slot = $g_p_QueueBase + (256 * $g_i_QueueCounter)
+    ; Slot read once, counter set from it - see Core_Enqueue
+    Local $l_i_Index = $g_i_QueueCounter
+    Local $l_i_Slot = $g_p_QueueBase + (256 * $l_i_Index)
 
     DllCall("kernel32.dll", "bool", "WriteProcessMemory", "handle", $g_h_GWProcess, "ptr", $l_i_Slot + 4, "ptr", $a_p_Ptr + 4, "ulong_ptr", $a_i_Size - 4,"ptr", 0)
     DllCall("kernel32.dll", "bool", "WriteProcessMemory", "handle", $g_h_GWProcess, "ptr", $l_i_Slot, "ptr", $a_p_Ptr, "ulong_ptr", 4, "ptr", 0)
 
-    If $g_i_QueueCounter = $g_i_QueueSize Then
-        $g_i_QueueCounter = 0
-    Else
-        $g_i_QueueCounter += 1
-    EndIf
+    $g_i_QueueCounter = ($l_i_Index = $g_i_QueueSize) ? 0 : $l_i_Index + 1
 EndFunc
 
+; The injected reader runs the slots strictly in order and waits on an empty one. An Adlib can interrupt this function
+; between its statements and enqueue its own command; incrementing the global counter after that would move it twice
+; and leave one slot empty, stalling every later command until the counter wraps round the whole queue. Reading the
+; slot once and setting the counter from it means an interleaved enqueue reuses the slot instead - at worst one of the
+; two commands is overwritten or runs late, the queue never stalls.
 Func Core_Enqueue($a_p_Ptr, $a_i_Size)
-	DllCall($g_h_Kernel32, 'int', 'WriteProcessMemory', 'int', $g_h_GWProcess, 'int', 256 * $g_i_QueueCounter + $g_p_QueueBase, 'ptr', $a_p_Ptr, 'int', $a_i_Size, 'int', '')
-	If $g_i_QueueCounter = $g_i_QueueSize Then
-		$g_i_QueueCounter = 0
-	Else
-		$g_i_QueueCounter = $g_i_QueueCounter + 1
-	EndIf
+	Local $l_i_Index = $g_i_QueueCounter
+	DllCall($g_h_Kernel32, 'int', 'WriteProcessMemory', 'int', $g_h_GWProcess, 'int', 256 * $l_i_Index + $g_p_QueueBase, 'ptr', $a_p_Ptr, 'int', $a_i_Size, 'int', '')
+	$g_i_QueueCounter = ($l_i_Index = $g_i_QueueSize) ? 0 : $l_i_Index + 1
 EndFunc
 
 Func Core_PerformAction($a_i_Action, $a_i_Flag, $a_i_Type = 0)
