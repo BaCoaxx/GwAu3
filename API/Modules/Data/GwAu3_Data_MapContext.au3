@@ -4056,7 +4056,7 @@ Func Map_FindNearestUnlockedOutpost($a_i_DestMapID, $a_i_FromMapID = 0, $a_f_XIn
         $l_i_Neighbor = $l_a_Path[$l_a_NearestOutposts[0]][0]
     Else
         For $l_i_IndexNearestOutpost in $l_a_NearestOutposts
-            $l_a_PathFromOutpost = Map_FindMapPath($l_a_Path[$l_i_IndexNearestOutpost][0], $a_i_DestMapID)
+            Local $l_a_PathFromOutpost = Map_FindMapPath($l_a_Path[$l_i_IndexNearestOutpost][0], $a_i_DestMapID)
 
             If Not IsArray($l_a_PathFromOutpost) Then ContinueLoop
 
