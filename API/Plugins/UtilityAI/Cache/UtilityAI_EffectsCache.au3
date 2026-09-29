@@ -343,9 +343,11 @@ Func UAI_GetAgentEffectInfo($a_i_AgentID, $a_i_SkillID, $a_i_Property)
 			Switch $a_i_Property
 				Case $GC_UAI_EFFECT_TimeElapsed
 					Local $l_i_Timestamp = $g_amx3_EffectsCache[$l_i_Index][$i][$GC_UAI_EFFECT_Timestamp]
+					If $l_i_Timestamp = 0 Then Return 0 ; maintained effect: no start time
 					Return BitAND(Skill_GetSkillTimer() - $l_i_Timestamp, 0xFFFFFFFF)
 				Case $GC_UAI_EFFECT_TimeRemaining
 					Local $l_i_Timestamp = $g_amx3_EffectsCache[$l_i_Index][$i][$GC_UAI_EFFECT_Timestamp]
+					If $l_i_Timestamp = 0 Then Return 0x7FFFFFFF ; maintained effect: does not expire
 					Local $l_f_Duration = $g_amx3_EffectsCache[$l_i_Index][$i][$GC_UAI_EFFECT_Duration]
 					Return $l_f_Duration * 1000 - BitAND(Skill_GetSkillTimer() - $l_i_Timestamp, 0xFFFFFFFF)
 				Case $GC_UAI_EFFECT_Scale
@@ -377,9 +379,11 @@ Func UAI_GetPlayerEffectInfo($a_i_SkillID, $a_i_Property)
 			Switch $a_i_Property
 				Case $GC_UAI_EFFECT_TimeElapsed
 					Local $l_i_Timestamp = $g_amx3_PlayerEffects[0][$i][$GC_UAI_EFFECT_Timestamp]
+					If $l_i_Timestamp = 0 Then Return 0 ; maintained effect: no start time
 					Return BitAND(Skill_GetSkillTimer() - $l_i_Timestamp, 0xFFFFFFFF)
 				Case $GC_UAI_EFFECT_TimeRemaining
 					Local $l_i_Timestamp = $g_amx3_PlayerEffects[0][$i][$GC_UAI_EFFECT_Timestamp]
+					If $l_i_Timestamp = 0 Then Return 0x7FFFFFFF ; maintained effect: does not expire
 					Local $l_f_Duration = $g_amx3_PlayerEffects[0][$i][$GC_UAI_EFFECT_Duration]
 					Return $l_f_Duration * 1000 - BitAND(Skill_GetSkillTimer() - $l_i_Timestamp, 0xFFFFFFFF)
 				Case $GC_UAI_EFFECT_Scale

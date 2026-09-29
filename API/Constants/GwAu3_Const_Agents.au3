@@ -18,3 +18,7 @@ Global Const $GC_I_ALLEGIANCE_SPIRIT = 0x4 ; Spirit or Pet
 Global Const $GC_I_ALLEGIANCE_MINION = 0x5 ; Minion
 Global Const $GC_I_ALLEGIANCE_NPC = 0x6 ; NPC/Minipet
 #EndRegion Module Constants
+
+#Region NPC PlayerNumber
+Global Const $GC_I_NPC_THE_PURVEYOR = 8057
+#EndRegion NPC PlayerNumber

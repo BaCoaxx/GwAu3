@@ -891,4 +891,57 @@ Func Item_IsRuneOrInsignia($a_i_ModelID)
 			Return 0
    EndSwitch
 EndFunc   ;==>IsRuneOrInsignia
+
+;~ Description: Returns the inventory ID owned by an agent, mirroring IUi::Game::ItemHelpGetInventoryFromAgent.
+Func Item_GetInventoryIDByAgentID($a_v_AgentID)
+    Local $l_i_AgentID = Agent_ConvertID($a_v_AgentID)
+    If $l_i_AgentID = 0 Then Return 0
+
+    If $l_i_AgentID = Agent_GetMyID() Then
+        Local $l_p_InventoryPtr = Item_GetInventoryPtr()
+        If $l_p_InventoryPtr = 0 Then Return 0
+        Return Memory_Read($l_p_InventoryPtr, "dword")
+    EndIf
+
+    Local $l_p_HeroPtr = World_GetWorldInfo("HeroFlagArray")
+    Local $l_i_Size = World_GetWorldInfo("HeroFlagArraySize")
+    If $l_p_HeroPtr = 0 Then Return 0
+
+    For $l_i_Idx = 0 To $l_i_Size - 1
+        Local $l_p_Entry = $l_p_HeroPtr + (0x24 * $l_i_Idx)
+        If Memory_Read($l_p_Entry + 0x4, "dword") = $l_i_AgentID Then Return Memory_Read($l_p_Entry + 0x8, "dword")
+    Next
+
+    Return 0
+EndFunc   ;==>GetInventoryIDByAgentID
+
+;~ Description: Returns the item one of the player's heroes has equipped in an equipment slot.
+;~ @error: 1 hero not in party, 2 invalid equipment slot, 3 no inventory ID, 4 hero items not loaded yet, 5 no equipment bag.
+Func Item_GetHeroEquippedItemPtr($a_i_HeroNumber, $a_i_EquipmentSlot)
+    Local $l_i_AgentID = Party_GetMyPartyHeroInfo($a_i_HeroNumber, "AgentID")
+    If $l_i_AgentID = 0 Then Return SetError(1, 0, 0)
+    If $a_i_EquipmentSlot < $GC_I_EQUIPMENT_SLOT_RIGHT_HAND Or $a_i_EquipmentSlot >= $GC_I_EQUIPMENT_SLOT_NONE Then Return SetError(2, 0, 0)
+
+    Local $l_i_InventoryID = Item_GetInventoryIDByAgentID($l_i_AgentID)
+    If $l_i_InventoryID = 0 Then Return SetError(3, 0, 0)
+
+    Local $l_ap_ItemArray = Item_GetItemArray()
+    For $l_i_Idx = 1 To $l_ap_ItemArray[0]
+        If Item_GetItemInventoryID($l_ap_ItemArray[$l_i_Idx]) <> $l_i_InventoryID Then ContinueLoop
+
+        Local $l_p_BagPtr = Item_GetItemInfoByPtr($l_ap_ItemArray[$l_i_Idx], "Bag")
+        If $l_p_BagPtr = 0 Then $l_p_BagPtr = Item_GetItemInfoByPtr($l_ap_ItemArray[$l_i_Idx], "BagEquipped")
+
+        Local $l_p_InventoryPtr = Item_GetBagInfo($l_p_BagPtr, "Bag")
+        If $l_p_InventoryPtr = 0 Then ContinueLoop
+
+        Local $l_p_EquipmentBagPtr = Memory_Read($l_p_InventoryPtr + (0x4 * $GC_I_INVENTORY_EQUIPPED_ITEMS), "ptr")
+        If $l_p_EquipmentBagPtr = 0 Then Return SetError(5, 0, 0)
+
+        Return Item_GetItemBySlot($l_p_EquipmentBagPtr, $a_i_EquipmentSlot + 1)
+    Next
+
+    Return SetError(4, 0, 0)
+EndFunc   ;==>GetHeroEquippedItemPtr
+
 #EndRegion Item Context

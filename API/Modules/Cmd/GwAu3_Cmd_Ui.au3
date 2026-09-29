@@ -72,6 +72,24 @@ Func Ui_Xunlai()
     Core_Enqueue($g_p_Xunlai, 8)
 EndFunc   ;==>Ui_Xunlai
 
+;~ Description: Close the confirmation window a salvage or an upgrade leaves open on screen.
+;~ Takes an s_floatingDialogs index; only the dialogs the client can close by message are handled.
+Func Ui_CloseDialog($a_i_DialogID)
+    Local $l_i_Message
+    Switch $a_i_DialogID
+        Case $GC_I_UIDIALOG_INVUPGRADE
+            $l_i_Message = $GC_I_UIMSG_CLOSE_DIALOG_INVUPGRADE
+        Case $GC_I_UIDIALOG_SALVAGE
+            $l_i_Message = $GC_I_UIMSG_CLOSE_DIALOG_SALVAGE
+        Case Else
+            Return SetError(1, 0, False)
+    EndSwitch
+
+    DllStructSetData($g_d_CloseDialog, 2, $l_i_Message)
+    Core_Enqueue($g_p_CloseDialog, 8)
+    Return True
+EndFunc   ;==>Ui_CloseDialog
+
 ;~ Description: Command a hero via flag.
 Func Ui_CommandHero($a_i_HeroNumber, $a_f_X, $a_f_Y)
     DllStructSetData($g_d_FlagHero, 2, Party_GetMyPartyHeroInfo($a_i_HeroNumber, "AgentID"))

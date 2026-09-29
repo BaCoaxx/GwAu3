@@ -45,6 +45,28 @@ Func Agent_GetAgentCopyBase()
     Return $g_p_AgentCopyBase
 EndFunc
 
+;~ Description: Target orders the game thread actually dequeued and ran the guard on.
+Func Agent_GetTargetOrderCount()
+    Return Memory_Read($g_p_TargetOrderCount, 'dword')
+EndFunc
+
+;~ Description: Target orders refused by the guard since the ASM was injected.
+Func Agent_GetTargetRejectCount()
+    Return Memory_Read($g_p_TargetRejectCount, 'dword')
+EndFunc
+
+;~ Description: Last agent id refused by the target guard.
+Func Agent_GetTargetRejectLast()
+    Return Memory_Read($g_p_TargetRejectLast, 'dword')
+EndFunc
+
+;~ Description: Resets the target guard diagnosis counters.
+Func Agent_ResetTargetRejectStats()
+    Memory_Write($g_p_TargetOrderCount, 0, 'dword')
+    Memory_Write($g_p_TargetRejectCount, 0, 'dword')
+    Memory_Write($g_p_TargetRejectLast, 0, 'dword')
+EndFunc
+
 Func Agent_GetLastTarget()
     Return $g_i_LastTargetID
 EndFunc
@@ -877,9 +899,11 @@ Func Agent_GetAgentEffectInfo($a_i_AgentID = -2, $a_i_SkillID = 0, $a_s_Info = "
             Return Memory_Read($l_p_EffectPtr + 0x14, "dword")
 		Case "TimeElapsed"
 			Local $l_i_Timestamp = Memory_Read($l_p_EffectPtr + 0x14, "dword")
+			If $l_i_Timestamp = 0 Then Return 0 ; maintained effect: no start time
 			Return BitAND(Skill_GetSkillTimer() - $l_i_Timestamp, 0xFFFFFFFF)
 		Case "TimeRemaining"
 			Local $l_i_Timestamp = Memory_Read($l_p_EffectPtr + 0x14, "dword")
+			If $l_i_Timestamp = 0 Then Return 0x7FFFFFFF ; maintained effect: does not expire
 			Local $l_i_Duration = Memory_Read($l_p_EffectPtr + 0x10, "float")
 			Return $l_i_Duration * 1000 - BitAND(Skill_GetSkillTimer() - $l_i_Timestamp, 0xFFFFFFFF)
         Case "HasEffect"
@@ -936,21 +960,15 @@ EndFunc
 #EndRegion
 
 #Region Related NPC Info
-;~ TIPS: $a_i_ModelFileID = Player number of an npc
-Func Agent_GetNpcInfo($a_i_ModelFileID = 0, $a_s_Info = "")
+;~ TIPS: $a_i_NpcIndex = Player number of an npc
+;~ Description: Reads one field of an NPC table entry, addressed by NPC index.
+Func Agent_GetNpcInfo($a_i_NpcIndex = 0, $a_s_Info = "")
 	Local $l_p_Pointer = World_GetWorldInfo("NpcArray")
 	Local $l_i_Size = World_GetWorldInfo("NpcArraySize")
-	Local $l_p_AgentPtr = 0
+	If $l_p_Pointer = 0 Or $l_i_Size <= 0 Or $a_s_Info = "" Then Return 0
+	If $a_i_NpcIndex <= 0 Or $a_i_NpcIndex >= $l_i_Size Then Return 0
 
-	For $i = 0 To $l_i_Size
-        Local $l_p_AgentEffects = $l_p_Pointer + ($i * 0x30)
-        If Memory_Read($l_p_AgentEffects, "dword") = $a_i_ModelFileID Then
-            $l_p_AgentPtr = $l_p_AgentEffects
-            ExitLoop
-        EndIf
-    Next
-
-	If $l_p_AgentPtr = 0 Then Return 0
+	Local $l_p_AgentPtr = $l_p_Pointer + ($a_i_NpcIndex * 0x30)
 
 	Switch $a_s_Info
 		Case "ModelFileID"
@@ -977,11 +995,6 @@ Func Agent_GetNpcInfo($a_i_ModelFileID = 0, $a_s_Info = "")
 		Case "IsMinion"
 			Local $flags = Memory_Read($l_p_AgentPtr + 0x10, "dword")
             Return BitAND($flags, 0x100) <> 0
-		Case "IsPet"
-			Local $flags = Memory_Read($l_p_AgentPtr + 0x10, "dword")
-            Return BitAND($flags, 0xD) <> 0
-		Case "Level"
-            Return Memory_Read($l_p_AgentPtr + 0x1C, "dword")
 		Case "NameEnc"
 			Local $l_p_NamePtr = Memory_Read($l_p_AgentPtr + 0x20, "ptr")
             Return Utils_DecodeEncString($l_p_NamePtr)
@@ -991,6 +1004,13 @@ Func Agent_GetNpcInfo($a_i_ModelFileID = 0, $a_s_Info = "")
         Case Else
             Return 0
     EndSwitch
+EndFunc
+
+;~ Description: Same as Agent_GetNpcInfo, addressed by agent id. Returns 0 for a player,
+;~ which has no NPC entry.
+Func Agent_GetNpcInfoByAgentID($a_i_AgentID = -2, $a_s_Info = "")
+	If Agent_GetAgentInfo($a_i_AgentID, "LoginNumber") <> 0 Then Return 0
+	Return Agent_GetNpcInfo(Agent_GetAgentInfo($a_i_AgentID, "PlayerNumber"), $a_s_Info)
 EndFunc
 
 #EndRegion

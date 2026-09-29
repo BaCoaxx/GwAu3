@@ -280,13 +280,14 @@ Func Party_GetPetInfo($a_i_PetNumber = 1, $a_s_Info = "")
             Return Memory_Read($l_p_PetPtr + 0x4, "dword")
         Case "PetNamePtr"
             Return Memory_Read($l_p_PetPtr + 0x8, "ptr")
+        Case "PetNameEnc"
+            Local $l_p_NamePtr = Memory_Read($l_p_PetPtr + 0x8, "ptr")
+            If $l_p_NamePtr <= 0x10000 Then Return ""
+            Return Utils_DecodeEncString($l_p_NamePtr)
         Case "PetName"
             Local $l_p_NamePtr = Memory_Read($l_p_PetPtr + 0x8, "ptr")
-            If $l_p_NamePtr > 0x10000 Then
-                Return Memory_Read($l_p_NamePtr, "wchar[32]")
-            Else
-                Return "Unknown"
-            EndIf
+            If $l_p_NamePtr <= 0x10000 Then Return "Unknown"
+            Return Utils_DecodeEncStringAsync($l_p_NamePtr)
         Case "ModelFileID1"
             Return Memory_Read($l_p_PetPtr + 0xC, "dword")
         Case "ModelFileID2"
@@ -306,6 +307,32 @@ Func Party_GetPetInfo($a_i_PetNumber = 1, $a_s_Info = "")
         Case Else
             Return 0
     EndSwitch
+EndFunc
+
+;~ Description: Whether an agent is a charmed pet.
+Func Party_IsPet($a_v_AgentID)
+    Return Party_GetPetNumberByAgentID($a_v_AgentID) <> 0
+EndFunc
+
+;~ Description: The 1-based pet number for an agent, or 0 if that agent is not a pet.
+Func Party_GetPetNumberByAgentID($a_v_AgentID)
+    Local $l_i_AgentID = Agent_ConvertID($a_v_AgentID)
+    If $l_i_AgentID = 0 Then Return 0
+
+    Local $l_i_Count = World_GetWorldInfo("PetInfoArraySize")
+    If $l_i_Count <= 0 Then Return 0
+
+    For $i = 1 To $l_i_Count
+        If Party_GetPetInfo($i, "AgentID") = $l_i_AgentID Then Return $i
+    Next
+    Return 0
+EndFunc
+
+;~ Description: The owner of a pet agent, or 0 if that agent is not a pet.
+Func Party_GetPetOwnerByAgentID($a_v_AgentID)
+    Local $l_i_Number = Party_GetPetNumberByAgentID($a_v_AgentID)
+    If $l_i_Number = 0 Then Return 0
+    Return Party_GetPetInfo($l_i_Number, "OwnerAgentID")
 EndFunc
 #EndRegion Pet Related
 
@@ -341,7 +368,7 @@ EndFunc
 Func Party_GetHeroFlagInfo($a_i_HeroNumber = 1, $a_s_Info = "")
     Local $l_p_Ptr = World_GetWorldInfo("HeroFlagArray")
     Local $l_i_Size = World_GetWorldInfo("HeroFlagArraySize")
-    If $l_p_Ptr = 0 Or $a_i_HeroNumber < 1 Or $a_i_HeroNumber >= $l_i_Size Then Return 0
+    If $l_p_Ptr = 0 Or $a_i_HeroNumber < 1 Or $a_i_HeroNumber > $l_i_Size Then Return 0
 
     Local $l_i_HeroID = Party_GetMyPartyHeroInfo($a_i_HeroNumber, "AgentID")
     If $l_i_HeroID = 0 Then Return 0
@@ -359,7 +386,7 @@ Func Party_GetHeroFlagInfo($a_i_HeroNumber = 1, $a_s_Info = "")
             Return Memory_Read($l_p_HeroFlagPtr, "dword")
         Case "AgentID"
             Return Memory_Read($l_p_HeroFlagPtr + 0x4, "dword")
-        Case "Level"
+        Case "InventoryID"
             Return Memory_Read($l_p_HeroFlagPtr + 0x8, "dword")
         Case "Behavior"
             Return Memory_Read($l_p_HeroFlagPtr + 0xC, "dword")

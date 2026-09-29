@@ -290,7 +290,7 @@ Func Party_GetAllHeroFlags()
     Static $l_a_StructInfo = Memory_CreateArrayStructure( _
         "dword HeroID[0x0];" & _
         "dword AgentID[0x4];" & _
-        "dword Level[0x8];" & _
+        "dword InventoryID[0x8];" & _
         "dword Behavior[0xC];" & _
         "float FlagX[0x10];" & _
         "float FlagY[0x14];" & _
@@ -312,7 +312,7 @@ Func Party_GetHeroFlagByAgentID($a_i_AgentID)
     Static $l_a_StructInfo = Memory_CreateArrayStructure( _
         "dword HeroID[0x0];" & _
         "dword AgentID[0x4];" & _
-        "dword Level[0x8];" & _
+        "dword InventoryID[0x8];" & _
         "dword Behavior[0xC];" & _
         "float FlagX[0x10];" & _
         "float FlagY[0x14];" & _
@@ -334,7 +334,7 @@ Func Party_GetHeroFlagsWithBehavior($a_i_Behavior)
     Static $l_a_StructInfo = Memory_CreateArrayStructure( _
         "dword HeroID[0x0];" & _
         "dword AgentID[0x4];" & _
-        "dword Level[0x8];" & _
+        "dword InventoryID[0x8];" & _
         "dword Behavior[0xC];" & _
         "float FlagX[0x10];" & _
         "float FlagY[0x14];" & _

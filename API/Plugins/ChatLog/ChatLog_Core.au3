@@ -1,13 +1,6 @@
 #include-once
 
 Global $g_m_Detours[]
-Global $g_p_PostMessageA
-
-Global $g_b_AddPattern
-Global $g_b_Scanner
-Global $g_b_InitializeResult
-Global $g_b_Assembler
-Global $g_b_AssemblerData
 
 Global $g_s_ChatReceive
 Global $g_s_ChatLogBase
@@ -16,20 +9,15 @@ Global $g_i_ChatMessageChannel
 Global $g_d_ChatLogStruct = DllStructCreate("dword;wchar[256]")
 Global $g_p_ChatLogStruct = DllStructGetPtr($g_d_ChatLogStruct)
 
-Func Extend_AddPattern()
-	Scanner_AddPattern("PostMessage", "6AFF6A00680180", 0x19, "Ptr")
+Func ChatLog_AddPattern()
 	Scanner_AddPattern("ChatLog", "8B4508837D0C07", -0x20, "Hook")
 EndFunc
 
-Func Extend_Scanner()
-	$g_p_PostMessageA = Scanner_GetScanResult("PostMessage", $g_ap_ScanResults, "Ptr")
-	Memory_SetValue("PostMessage", Ptr(Memory_Read($g_p_PostMessageA, "dword")))
-
+Func ChatLog_Scanner()
 	$l_p_Temp = Scanner_GetScanResult("ChatLog", $g_ap_ScanResults, "Hook")
 	Memory_SetValue("ChatLogStart", Ptr($l_p_Temp))
 	Memory_SetValue("ChatLogReturn", Ptr($l_p_Temp + 0x5))
 
-	Log_Debug("PostMessage: " & Memory_GetValue("PostMessage"), "Initialize", $g_h_EditText)
 	Log_Debug("ChatLogStart: " & Memory_GetValue("ChatLogStart"), "Initialize", $g_h_EditText)
 	Log_Debug("ChatLogReturn: " & Memory_GetValue("ChatLogReturn"), "Initialize", $g_h_EditText)
 
@@ -37,7 +25,7 @@ Func Extend_Scanner()
 	Memory_SetValue("ChatLogSize", "0x00000010")
 EndFunc
 
-Func Extend_InitializeResult()
+Func ChatLog_InitializeResult()
 	Local $l_h_GUI = GUICreate("GwAu3")
 	GUIRegisterMsg(0x00000501, "ChatLog_EventCallback")
 	Memory_Write(Memory_GetValue("ChatLogCallbackHandle"), $l_h_GUI)
@@ -46,14 +34,6 @@ Func Extend_InitializeResult()
 	$g_s_ChatLogBase = Memory_GetValue("ChatLogBase")
 	$g_i_ChatLogCounter = Memory_GetValue("ChatMessageCounter")
 	$g_i_ChatMessageChannel = Memory_GetValue("ChatMessageChannel")
-EndFunc
-
-Func Extend_Assembler()
-	Assembler_CreateChatLog()
-EndFunc
-
-Func Extend_AssemblerData()
-	Assembler_CreateEventData()
 EndFunc
 
 Func Assembler_CreateEventData()

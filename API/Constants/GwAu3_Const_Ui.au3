@@ -6,3 +6,9 @@ Global Const $GC_I_UIMSG_ITEM_APPLY_UPGRADE = 0x100001B6
 Global Const $GC_I_UIMSG_INITIATE_TRADE = 0x100001B5
 Global Const $GC_I_UIMSG_OPEN_XUNLAI = 0x10000040
 Global Const $GC_I_UIMSG_HERO_FLAG = 0x7F800000
+
+; Floating dialog indices, and the messages whose handler destroys their frame.
+Global Const $GC_I_UIDIALOG_INVUPGRADE = 0x16
+Global Const $GC_I_UIDIALOG_SALVAGE = 0x29
+Global Const $GC_I_UIMSG_CLOSE_DIALOG_INVUPGRADE = 0x1000010A
+Global Const $GC_I_UIMSG_CLOSE_DIALOG_SALVAGE = 0x100000FE

@@ -219,15 +219,14 @@ EndFunc   ;==>Map_GetPropModels
 Func Map_GetPropInfo($a_p_PropPtr, $a_s_Info = "")
 	If $a_p_PropPtr = 0 Or $a_s_Info = "" Then Return 0
 
-	; MapProp structure access - based on common prop structures
 	Local $l_v_Result = 0
 	Switch $a_s_Info
 		Case "X"
-			$l_v_Result = Memory_Read($a_p_PropPtr + 0x0, "float")
+			$l_v_Result = Memory_Read($a_p_PropPtr + 0x20, "float")
 		Case "Y"
-			$l_v_Result = Memory_Read($a_p_PropPtr + 0x4, "float")
+			$l_v_Result = Memory_Read($a_p_PropPtr + 0x24, "float")
 		Case "Z"
-			$l_v_Result = Memory_Read($a_p_PropPtr + 0x8, "float")
+			$l_v_Result = Memory_Read($a_p_PropPtr + 0x28, "float")
 		Case "PropType"
 			$l_v_Result = Memory_Read($a_p_PropPtr + 0x10, "dword")
 		Case "ModelInfo"
