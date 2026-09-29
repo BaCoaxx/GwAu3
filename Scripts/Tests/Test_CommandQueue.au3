@@ -15,17 +15,20 @@
 ; the writer went round all 256 slots and filled it - the character stops acting
 ; for minutes, then runs the whole backlog as a burst.
 ;
-; The fix: read the slot once, write it, and set the counter from that slot. An
-; interleaved enqueue then reuses the slot instead of skipping one - at worst one
-; of the two commands is overwritten or runs late, the queue never stalls.
+; Reading the slot once and setting the counter from it removes the stall, but an
+; interleaved enqueue then writes the same slot and one of the two commands is
+; lost. The fix: an enqueue that finds another one running parks its command, and
+; the running one writes it before returning (Core_EnqueueGuarded).
 ;
-; This test runs both versions against a queue in its own memory: the main loop
-; and an Adlib enqueue, and after every main-loop command one frame of a model of
-; the injected reader runs. The model follows MainProc's queue handling step by
-; step, with the assembly quoted above each step. Simplifications: the reader
-; runs between main-loop commands instead of on the game thread, and MainProc's
-; HandleCase branch (a game state in which queued commands are dropped unread) is
-; left out - neither changes whether a slot can be skipped.
+; This test runs each version against a queue in its own memory: the main loop
+; and an Adlib enqueue, and after every main-loop command two frames of a model of
+; the injected reader run - the Adlib adds commands, so with one frame the writer
+; would lap the reader. Every command carries an id, so the test sees which ones
+; ran. The model follows MainProc's queue handling step by step, with the assembly
+; quoted above each step. Simplifications: the reader runs between main-loop
+; commands instead of on the game thread, and MainProc's HandleCase branch (a game
+; state in which queued commands are dropped unread) is left out - neither
+; changes whether a slot can be skipped or overwritten.
 ;
 ; Run with the 32-bit AutoIt interpreter. Prints one PASS/FAIL line per check,
 ; exits 1 if any check failed.
@@ -39,19 +42,22 @@ Opt('MustDeclareVars', True)
 Global Const $GC_I_TEST_MAIN_COMMANDS = 20000
 Global Const $GC_I_TEST_SLOT_DWORDS = 64
 Global Const $GC_I_TEST_QUEUE_SLOTS = 256
+; Adlib ids start here, so the Adlib never shares a counter with the main loop it interrupts
+Global Const $GC_I_TEST_ADLIB_ID_BASE = 1000000
+Global Const $GC_I_TEST_MAX_ADLIB_COMMANDS = 20000
 
 Global $g_i_TestFailures = 0
 ; The queue: 256 slots of 256 bytes, like QueueBase in the injected memory
 Global $g_d_TestQueue = DllStructCreate('dword[' & $GC_I_TEST_SLOT_DWORDS * $GC_I_TEST_QUEUE_SLOTS & ']')
-; A command: its first dword is the address of the command's code, never 0
-Global $g_d_TestCommand = DllStructCreate('dword;dword')
 ; The enqueue function under test, called by the main loop and the Adlib alike
 Global $g_f_TestEnqueue = Null
 ; The injected reader's own counter - QueueCounter in the injected memory
 Global $g_i_TestReaderCounter = 0
-Global $g_i_TestEnqueued = 0
-Global $g_i_TestExecuted = 0
+Global $g_i_TestMainEnqueues = 0
 Global $g_i_TestAdlibEnqueues = 0
+Global $g_i_TestExecuted = 0
+; Ids the reader ran
+Global $g_ab_TestMainRun[1], $g_ab_TestAdlibRun[1]
 
 Test_CommandQueue()
 Exit ($g_i_TestFailures > 0 ? 1 : 0)
@@ -63,42 +69,53 @@ Func Test_CommandQueue()
 	$g_h_GWProcess = -1
 	$g_p_QueueBase = DllStructGetPtr($g_d_TestQueue)
 	$g_i_QueueSize = $GC_I_TEST_QUEUE_SLOTS - 1
-	DllStructSetData($g_d_TestCommand, 1, 1)
 
 	Local $l_a_Before = Test_RunQueue(Core_Enqueue_BeforeFix)
-	ConsoleWrite('Before the fix: ' & Test_Describe($l_a_Before) & @CRLF)
+	ConsoleWrite('Before the fix:  ' & Test_Describe($l_a_Before) & @CRLF)
+	Local $l_a_SlotOnce = Test_RunQueue(Core_Enqueue_SlotReadOnce)
+	ConsoleWrite('Slot read once:  ' & Test_Describe($l_a_SlotOnce) & @CRLF)
 	Local $l_a_After = Test_RunQueue(Core_Enqueue)
-	ConsoleWrite('After the fix:  ' & Test_Describe($l_a_After) & @CRLF)
+	ConsoleWrite('Core_Enqueue:    ' & Test_Describe($l_a_After) & @CRLF)
+	Local $l_a_AfterSplit = Test_RunQueue(Core_Enqueue_)
+	ConsoleWrite('Core_Enqueue_:   ' & Test_Describe($l_a_AfterSplit) & @CRLF)
 
-	Test_Check('the Adlib enqueued during both runs', $l_a_Before[0] > 100 And $l_a_After[0] > 100)
+	Test_Check('the Adlib enqueued during every run', $l_a_Before[0] > 100 And $l_a_SlotOnce[0] > 100 And $l_a_After[0] > 100 And $l_a_AfterSplit[0] > 100)
 	Test_Check('before the fix, the reader stalls on an empty slot (the test reproduces the bug)', $l_a_Before[1] > 0)
-	Test_Check('after the fix, the reader never stalls on an empty slot', $l_a_After[1] == 0)
-	Test_Check('after the fix, the reader catches up with the writer', $l_a_After[3] == 0)
+	Test_Check('with the slot read once, commands are lost', $l_a_SlotOnce[6] > 0)
+	Test_Check('after the fix, Core_Enqueue never stalls, loses nothing, and the reader catches up', Test_IsClean($l_a_After))
+	Test_Check('after the fix, Core_Enqueue_ never stalls, loses nothing, and the reader catches up', Test_IsClean($l_a_AfterSplit))
 	If $g_i_TestFailures == 0 Then ConsoleWrite('ALL PASSED' & @CRLF)
 EndFunc
 
 
 ;~ Run the main loop and the Adlib against an empty queue with one enqueue function.
 ;~ Returns [Adlib enqueues, reader frames stalled on an empty slot, longest stall in commands, commands left unread at the end,
-;~ commands enqueued, commands run]
+;~ commands enqueued, commands run, commands lost]
 Func Test_RunQueue($a_f_Enqueue)
 	DllCall($g_h_Kernel32, 'none', 'RtlZeroMemory', 'ptr', $g_p_QueueBase, 'ulong_ptr', 4 * $GC_I_TEST_SLOT_DWORDS * $GC_I_TEST_QUEUE_SLOTS)
 	$g_f_TestEnqueue = $a_f_Enqueue
 	$g_i_QueueCounter = 0
 	$g_i_TestReaderCounter = 0
-	$g_i_TestEnqueued = 0
-	$g_i_TestExecuted = 0
+	$g_i_TestMainEnqueues = 0
 	$g_i_TestAdlibEnqueues = 0
+	$g_i_TestExecuted = 0
+	Local $l_ab_MainRun[$GC_I_TEST_MAIN_COMMANDS + 1], $l_ab_AdlibRun[$GC_I_TEST_MAX_ADLIB_COMMANDS + 1]
+	$g_ab_TestMainRun = $l_ab_MainRun
+	$g_ab_TestAdlibRun = $l_ab_AdlibRun
 
 	Local $l_i_StalledFrames = 0, $l_i_LongestStall = 0
 	AdlibRegister('Test_AdlibEnqueue', 1)
 	For $l_i_Command = 1 To $GC_I_TEST_MAIN_COMMANDS
-		$g_f_TestEnqueue(DllStructGetPtr($g_d_TestCommand), 8)
-		$g_i_TestEnqueued += 1
-		If Not Test_ReaderFrame() And $g_i_TestReaderCounter <> $g_i_QueueCounter Then
-			$l_i_StalledFrames += 1
-			$l_i_LongestStall = _Max($l_i_LongestStall, Mod($g_i_QueueCounter - $g_i_TestReaderCounter + $GC_I_TEST_QUEUE_SLOTS, $GC_I_TEST_QUEUE_SLOTS))
-		EndIf
+		$g_i_TestMainEnqueues += 1
+		Test_Enqueue($g_i_TestMainEnqueues)
+		For $l_i_Frame = 1 To 2
+			; Writer counter taken before the frame: an Adlib enqueuing right after an empty frame is not a stall
+			Local $l_i_Writer = $g_i_QueueCounter
+			If Not Test_ReaderFrame() And $g_i_TestReaderCounter <> $l_i_Writer Then
+				$l_i_StalledFrames += 1
+				$l_i_LongestStall = _Max($l_i_LongestStall, Mod($l_i_Writer - $g_i_TestReaderCounter + $GC_I_TEST_QUEUE_SLOTS, $GC_I_TEST_QUEUE_SLOTS))
+			EndIf
+		Next
 	Next
 	AdlibUnRegister('Test_AdlibEnqueue')
 
@@ -107,16 +124,34 @@ Func Test_RunQueue($a_f_Enqueue)
 	WEnd
 	Local $l_i_Unread = Mod($g_i_QueueCounter - $g_i_TestReaderCounter + $GC_I_TEST_QUEUE_SLOTS, $GC_I_TEST_QUEUE_SLOTS)
 
-	Local $l_a_Result[6] = [$g_i_TestAdlibEnqueues, $l_i_StalledFrames, $l_i_LongestStall, $l_i_Unread, $g_i_TestEnqueued, $g_i_TestExecuted]
+	Local $l_i_Lost = 0
+	For $l_i_Id = 1 To $g_i_TestMainEnqueues
+		If Not $g_ab_TestMainRun[$l_i_Id] Then $l_i_Lost += 1
+	Next
+	For $l_i_Id = 1 To $g_i_TestAdlibEnqueues
+		If Not $g_ab_TestAdlibRun[$l_i_Id] Then $l_i_Lost += 1
+	Next
+
+	Local $l_a_Result[7] = [$g_i_TestAdlibEnqueues, $l_i_StalledFrames, $l_i_LongestStall, $l_i_Unread, _
+		$g_i_TestMainEnqueues + $g_i_TestAdlibEnqueues, $g_i_TestExecuted, $l_i_Lost]
 	Return $l_a_Result
 EndFunc
 
 
 ;~ The Adlib: a bot's upkeep tick, reduced to its enqueue
 Func Test_AdlibEnqueue()
-	$g_f_TestEnqueue(DllStructGetPtr($g_d_TestCommand), 8)
-	$g_i_TestEnqueued += 1
+	If $g_i_TestAdlibEnqueues >= $GC_I_TEST_MAX_ADLIB_COMMANDS Then Return
 	$g_i_TestAdlibEnqueues += 1
+	Test_Enqueue($GC_I_TEST_ADLIB_ID_BASE + $g_i_TestAdlibEnqueues)
+EndFunc
+
+
+;~ A command: its first dword is the address of the command's code, never 0; the second is the test's id for it
+Func Test_Enqueue($a_i_Id)
+	Local $l_d_Command = DllStructCreate('dword;dword')
+	DllStructSetData($l_d_Command, 1, 1)
+	DllStructSetData($l_d_Command, 2, $a_i_Id)
+	$g_f_TestEnqueue(DllStructGetPtr($l_d_Command), 8)
 EndFunc
 
 
@@ -129,8 +164,14 @@ Func Test_ReaderFrame()
 	; test ebx,ebx / jz MainExit - an empty slot: the reader leaves and reads the same slot next frame
 	If $l_i_CommandPtr == 0 Then Return False
 	; mov dword[SavedIndex],ecx / mov dword[eax],0 / jmp ebx - clear the slot and run the command
+	Local $l_i_Id = DllStructGetData($g_d_TestQueue, 1, $l_i_SlotDword + 1)
 	DllStructSetData($g_d_TestQueue, 1, 0, $l_i_SlotDword)
 	$g_i_TestExecuted += 1
+	If $l_i_Id > $GC_I_TEST_ADLIB_ID_BASE And $l_i_Id <= $GC_I_TEST_ADLIB_ID_BASE + $GC_I_TEST_MAX_ADLIB_COMMANDS Then
+		$g_ab_TestAdlibRun[$l_i_Id - $GC_I_TEST_ADLIB_ID_BASE] = True
+	ElseIf $l_i_Id >= 1 And $l_i_Id <= $GC_I_TEST_MAIN_COMMANDS Then
+		$g_ab_TestMainRun[$l_i_Id] = True
+	EndIf
 	; CommandReturn: inc eax / cmp eax,QueueSize / jnz MainSkipReset / xor eax,eax / mov dword[QueueCounter],eax
 	$g_i_TestReaderCounter = Mod($g_i_TestReaderCounter + 1, $GC_I_TEST_QUEUE_SLOTS)
 	Return True
@@ -148,8 +189,22 @@ Func Core_Enqueue_BeforeFix($a_p_Ptr, $a_i_Size)
 EndFunc
 
 
+;~ Core_Enqueue with the slot read once and the counter set from it, for comparison - no stall, but an interleaved enqueue
+;~ writes the same slot
+Func Core_Enqueue_SlotReadOnce($a_p_Ptr, $a_i_Size)
+	Local $l_i_Index = $g_i_QueueCounter
+	DllCall($g_h_Kernel32, 'int', 'WriteProcessMemory', 'int', $g_h_GWProcess, 'int', 256 * $l_i_Index + $g_p_QueueBase, 'ptr', $a_p_Ptr, 'int', $a_i_Size, 'int', '')
+	$g_i_QueueCounter = ($l_i_Index = $g_i_QueueSize) ? 0 : $l_i_Index + 1
+EndFunc
+
+
+Func Test_IsClean($a_a_Result)
+	Return $a_a_Result[1] == 0 And $a_a_Result[3] == 0 And $a_a_Result[6] == 0
+EndFunc
+
+
 Func Test_Describe($a_a_Result)
-	Return $a_a_Result[4] & ' commands enqueued (' & $a_a_Result[0] & ' by the Adlib), ' & $a_a_Result[5] & ' run, reader stalled on an empty slot in ' _
+	Return $a_a_Result[4] & ' commands enqueued (' & $a_a_Result[0] & ' by the Adlib), ' & $a_a_Result[5] & ' run, ' & $a_a_Result[6] & ' lost, reader stalled on an empty slot in ' _
 		& $a_a_Result[1] & ' frames (longest: ' & $a_a_Result[2] & ' commands queued behind it), ' & $a_a_Result[3] & ' left unread at the end'
 EndFunc
 

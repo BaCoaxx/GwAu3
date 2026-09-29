@@ -49,11 +49,6 @@ EndFunc   ;==>Chat_SendWhisper
 ;~ '!' = All, '@' = Guild, '#' = Team, '$' = Trade, '%' = Alliance, '"' = Whisper
 Func Chat_SendChat($a_s_Message, $a_s_Channel = '!')
     Local $l_s_Message
-    ; Slot read once, counter set from it - see Core_Enqueue
-    Local $l_i_Index = $g_i_QueueCounter
-    Local $l_p_Address = 256 * $l_i_Index + $g_p_QueueBase
-
-    $g_i_QueueCounter = ($l_i_Index = $g_i_QueueSize) ? 0 : $l_i_Index + 1
 
     If StringLen($a_s_Message) > 120 Then
         $l_s_Message = StringLeft($a_s_Message, 120)
@@ -61,8 +56,12 @@ Func Chat_SendChat($a_s_Message, $a_s_Channel = '!')
         $l_s_Message = $a_s_Message
     EndIf
 
-    Memory_Write($l_p_Address + 12, $a_s_Channel & $l_s_Message, 'wchar[122]')
-    DllCall($g_h_Kernel32, 'int', 'WriteProcessMemory', 'int', $g_h_GWProcess, 'int', $l_p_Address, 'ptr', $g_p_SendChat, 'int', 8, 'int', '')
+    ; Whole slot: command, header, unused dword, message at +12
+    Local $l_d_Command = DllStructCreate('dword;dword;dword;wchar[122]')
+    DllStructSetData($l_d_Command, 1, DllStructGetData($g_d_SendChat, 1))
+    DllStructSetData($l_d_Command, 2, DllStructGetData($g_d_SendChat, 2))
+    DllStructSetData($l_d_Command, 4, $a_s_Channel & $l_s_Message)
+    Core_Enqueue_(DllStructGetPtr($l_d_Command), DllStructGetSize($l_d_Command))
 
     If StringLen($a_s_Message) > 120 Then Chat_SendChat(StringTrimLeft($a_s_Message, 120), $a_s_Channel)
 EndFunc   ;==>Chat_SendChat
