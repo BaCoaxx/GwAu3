@@ -682,7 +682,7 @@ Func Core_IsIngame()
 EndFunc
 
 Func Core_GetStatusError()
-	$l_i_StatusCode = Core_GetStatusCode()
+	Local $l_i_StatusCode = Core_GetStatusCode()
 	Return $l_i_StatusCode <> 0 And $l_i_StatusCode <> 1
 EndFunc
 

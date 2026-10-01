@@ -14,7 +14,7 @@ Func ChatLog_AddPattern()
 EndFunc
 
 Func ChatLog_Scanner()
-	$l_p_Temp = Scanner_GetScanResult("ChatLog", $g_ap_ScanResults, "Hook")
+	Local $l_p_Temp = Scanner_GetScanResult("ChatLog", $g_ap_ScanResults, "Hook")
 	Memory_SetValue("ChatLogStart", Ptr($l_p_Temp))
 	Memory_SetValue("ChatLogReturn", Ptr($l_p_Temp + 0x5))
 
