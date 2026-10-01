@@ -543,26 +543,58 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 EndFunc
 #EndRegion Initialization
 
+;~ Description: Queue a command, writing its body before its code pointer.
 Func Core_Enqueue_($a_p_Ptr, $a_i_Size)
-    Local $l_i_Slot = $g_p_QueueBase + (256 * $g_i_QueueCounter)
-
-    DllCall("kernel32.dll", "bool", "WriteProcessMemory", "handle", $g_h_GWProcess, "ptr", $l_i_Slot + 4, "ptr", $a_p_Ptr + 4, "ulong_ptr", $a_i_Size - 4,"ptr", 0)
-    DllCall("kernel32.dll", "bool", "WriteProcessMemory", "handle", $g_h_GWProcess, "ptr", $l_i_Slot, "ptr", $a_p_Ptr, "ulong_ptr", 4, "ptr", 0)
-
-    If $g_i_QueueCounter = $g_i_QueueSize Then
-        $g_i_QueueCounter = 0
-    Else
-        $g_i_QueueCounter += 1
-    EndIf
+	Core_EnqueueGuarded($a_p_Ptr, $a_i_Size, True)
 EndFunc
 
+;~ Description: Queue a command in a single write.
 Func Core_Enqueue($a_p_Ptr, $a_i_Size)
-	DllCall($g_h_Kernel32, 'int', 'WriteProcessMemory', 'int', $g_h_GWProcess, 'int', 256 * $g_i_QueueCounter + $g_p_QueueBase, 'ptr', $a_p_Ptr, 'int', $a_i_Size, 'int', '')
-	If $g_i_QueueCounter = $g_i_QueueSize Then
-		$g_i_QueueCounter = 0
-	Else
-		$g_i_QueueCounter = $g_i_QueueCounter + 1
+	Core_EnqueueGuarded($a_p_Ptr, $a_i_Size, False)
+EndFunc
+
+; The injected reader runs the slots strictly in order and waits on an empty one. An Adlib can interrupt an enqueue
+; between any two statements and enqueue its own command: the two then share the counter and either skip a slot
+; (the queue stalls until the counter wraps round) or write the same one (a command is lost). An enqueue that finds
+; another one running parks its command instead, and the running one writes it before returning. Adlibs run to
+; completion before the code they interrupted resumes, so only the interrupted enqueue drains the parked commands.
+Func Core_EnqueueGuarded($a_p_Ptr, $a_i_Size, $a_b_PointerLast)
+	If $g_b_QueueBusy Then
+		Local $l_d_Command = DllStructCreate('byte[' & $a_i_Size & ']', $a_p_Ptr)
+		$g_av_QueuePending[$g_i_QueuePendingTail][0] = DllStructGetData($l_d_Command, 1)
+		$g_av_QueuePending[$g_i_QueuePendingTail][1] = $a_b_PointerLast
+		$g_i_QueuePendingTail = Mod($g_i_QueuePendingTail + 1, UBound($g_av_QueuePending))
+		Return
 	EndIf
+
+	$g_b_QueueBusy = True
+	Core_WriteQueueSlot($a_p_Ptr, $a_i_Size, $a_b_PointerLast)
+	While 1
+		While $g_i_QueuePendingHead <> $g_i_QueuePendingTail
+			Local $l_d_Pending = DllStructCreate('byte[' & BinaryLen($g_av_QueuePending[$g_i_QueuePendingHead][0]) & ']')
+			DllStructSetData($l_d_Pending, 1, $g_av_QueuePending[$g_i_QueuePendingHead][0])
+			Core_WriteQueueSlot(DllStructGetPtr($l_d_Pending), DllStructGetSize($l_d_Pending), $g_av_QueuePending[$g_i_QueuePendingHead][1])
+			$g_i_QueuePendingHead = Mod($g_i_QueuePendingHead + 1, UBound($g_av_QueuePending))
+		WEnd
+		$g_b_QueueBusy = False
+		; An Adlib may have parked a command between the last check and the reset
+		If $g_i_QueuePendingHead = $g_i_QueuePendingTail Then ExitLoop
+		$g_b_QueueBusy = True
+	WEnd
+EndFunc
+
+;~ Description: Write a command into the slot at the queue counter, then advance the counter. Only called by Core_EnqueueGuarded.
+Func Core_WriteQueueSlot($a_p_Ptr, $a_i_Size, $a_b_PointerLast)
+	Local $l_p_Slot = $g_p_QueueBase + 256 * $g_i_QueueCounter
+
+	If $a_b_PointerLast Then
+		DllCall($g_h_Kernel32, "bool", "WriteProcessMemory", "handle", $g_h_GWProcess, "ptr", $l_p_Slot + 4, "ptr", $a_p_Ptr + 4, "ulong_ptr", $a_i_Size - 4, "ptr", 0)
+		DllCall($g_h_Kernel32, "bool", "WriteProcessMemory", "handle", $g_h_GWProcess, "ptr", $l_p_Slot, "ptr", $a_p_Ptr, "ulong_ptr", 4, "ptr", 0)
+	Else
+		DllCall($g_h_Kernel32, 'int', 'WriteProcessMemory', 'int', $g_h_GWProcess, 'int', $l_p_Slot, 'ptr', $a_p_Ptr, 'int', $a_i_Size, 'int', '')
+	EndIf
+
+	$g_i_QueueCounter = ($g_i_QueueCounter = $g_i_QueueSize) ? 0 : $g_i_QueueCounter + 1
 EndFunc
 
 Func Core_PerformAction($a_i_Action, $a_i_Flag, $a_i_Type = 0)

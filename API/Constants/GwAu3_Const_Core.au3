@@ -28,6 +28,11 @@ Global $g_p_SavedIndex
 Global $g_i_QueueCounter
 Global $g_i_QueueSize
 Global $g_p_QueueBase
+; Core_EnqueueGuarded: set while an enqueue runs; commands from an Adlib that interrupted it wait in the ring below
+Global $g_b_QueueBusy = False
+Global $g_av_QueuePending[256][2]
+Global $g_i_QueuePendingHead = 0
+Global $g_i_QueuePendingTail = 0
 Global $g_p_PreGame
 Global $g_p_Login
 Global $g_p_InGame
