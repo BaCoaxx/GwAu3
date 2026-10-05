@@ -116,7 +116,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
     Scanner_AddPattern('MyID', '83EC08568BF13B15', -0x3, 'Ptr')
     ; Map patterns
     Scanner_AddPattern('Move', '558BEC83EC208D45F0', 0x1, 'Func')
-    Scanner_AddPattern('ClickCoords', '8B451C85C0741CD945F8', 0xD, 'Ptr')
+    Scanner_AddPattern('ClickCoords', 'D91D????????D945FCD91D????????C705????????FFFFFFFF', 0x3, 'Ptr')
     Scanner_AddPattern('InstanceInfo', '6A2C50E80000000083C408C7', 0xE, 'Ptr')
 ;~ 	Scanner_AddPattern('WorldConst', "P:\Code\Gw\Const\ConstWorld.cpp", "index < arrsize(s_worldData)", 'Ptr', 0x16)
     Scanner_AddPattern('WorldConst', '8D0476C1E00405', 0x8, 'Ptr')
@@ -130,7 +130,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	Scanner_AddPattern('PartySearchButtonCallback', '8B450883EC08568BF18B480483F90E', -0x2, 'Func')
 	Scanner_AddPattern('PartyWindowButtonCallback', '837d0800578bf97411', -0x2, 'Func')
 	Scanner_AddPattern('EnterMission', '83C902890A5D', 0x24, 'Func')
-	Scanner_AddPattern('SetDifficulty', '83C41C682A010010', 0x8C, 'Func')
+	Scanner_AddPattern('SetDifficulty', '833B000F85????????FF7020E8', 0xD, 'Func')
 	Scanner_AddPattern('Dialog', '894B248B4B2883E900', 0x16, 'Func')
 	Scanner_AddPattern('Interact', '894B248B4B2883E900', 0x26, 'Func')
 	Scanner_AddPattern('AiMode', '683A000010FF36', 0x1, 'Ptr')
@@ -145,7 +145,7 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	Scanner_AddPattern('Render', 'F6C401741C68', -0x68, 'Hook')
 	Scanner_AddPattern('LoadFinished', '2BD9C1E303', 0xA0, 'Hook')
 	Scanner_AddPattern('Trader', '8D4DFC51576A5650', -0x3C, 'Hook')
-	Scanner_AddPattern('TradePartner', '6A008D45F8C745F80100000050686501000089', -0xC, 'Hook')
+	Scanner_AddPattern('TradePartner', '6A008D45F8C745F8010000005068????????89', -0xC, 'Hook')
 	; EncString Decoding
 	Scanner_AddPattern('ValidateAsyncDecodeStr', "P:\Code\Engine\Text\TextApi.cpp", "codedString", 'Func')
 	
@@ -543,26 +543,58 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 EndFunc
 #EndRegion Initialization
 
+;~ Description: Queue a command, writing its body before its code pointer.
 Func Core_Enqueue_($a_p_Ptr, $a_i_Size)
-    Local $l_i_Slot = $g_p_QueueBase + (256 * $g_i_QueueCounter)
-
-    DllCall("kernel32.dll", "bool", "WriteProcessMemory", "handle", $g_h_GWProcess, "ptr", $l_i_Slot + 4, "ptr", $a_p_Ptr + 4, "ulong_ptr", $a_i_Size - 4,"ptr", 0)
-    DllCall("kernel32.dll", "bool", "WriteProcessMemory", "handle", $g_h_GWProcess, "ptr", $l_i_Slot, "ptr", $a_p_Ptr, "ulong_ptr", 4, "ptr", 0)
-
-    If $g_i_QueueCounter = $g_i_QueueSize Then
-        $g_i_QueueCounter = 0
-    Else
-        $g_i_QueueCounter += 1
-    EndIf
+	Core_EnqueueGuarded($a_p_Ptr, $a_i_Size, True)
 EndFunc
 
+;~ Description: Queue a command in a single write.
 Func Core_Enqueue($a_p_Ptr, $a_i_Size)
-	DllCall($g_h_Kernel32, 'int', 'WriteProcessMemory', 'int', $g_h_GWProcess, 'int', 256 * $g_i_QueueCounter + $g_p_QueueBase, 'ptr', $a_p_Ptr, 'int', $a_i_Size, 'int', '')
-	If $g_i_QueueCounter = $g_i_QueueSize Then
-		$g_i_QueueCounter = 0
-	Else
-		$g_i_QueueCounter = $g_i_QueueCounter + 1
+	Core_EnqueueGuarded($a_p_Ptr, $a_i_Size, False)
+EndFunc
+
+; The injected reader runs the slots strictly in order and waits on an empty one. An Adlib can interrupt an enqueue
+; between any two statements and enqueue its own command: the two then share the counter and either skip a slot
+; (the queue stalls until the counter wraps round) or write the same one (a command is lost). An enqueue that finds
+; another one running parks its command instead, and the running one writes it before returning. Adlibs run to
+; completion before the code they interrupted resumes, so only the interrupted enqueue drains the parked commands.
+Func Core_EnqueueGuarded($a_p_Ptr, $a_i_Size, $a_b_PointerLast)
+	If $g_b_QueueBusy Then
+		Local $l_d_Command = DllStructCreate('byte[' & $a_i_Size & ']', $a_p_Ptr)
+		$g_av_QueuePending[$g_i_QueuePendingTail][0] = DllStructGetData($l_d_Command, 1)
+		$g_av_QueuePending[$g_i_QueuePendingTail][1] = $a_b_PointerLast
+		$g_i_QueuePendingTail = Mod($g_i_QueuePendingTail + 1, UBound($g_av_QueuePending))
+		Return
 	EndIf
+
+	$g_b_QueueBusy = True
+	Core_WriteQueueSlot($a_p_Ptr, $a_i_Size, $a_b_PointerLast)
+	While 1
+		While $g_i_QueuePendingHead <> $g_i_QueuePendingTail
+			Local $l_d_Pending = DllStructCreate('byte[' & BinaryLen($g_av_QueuePending[$g_i_QueuePendingHead][0]) & ']')
+			DllStructSetData($l_d_Pending, 1, $g_av_QueuePending[$g_i_QueuePendingHead][0])
+			Core_WriteQueueSlot(DllStructGetPtr($l_d_Pending), DllStructGetSize($l_d_Pending), $g_av_QueuePending[$g_i_QueuePendingHead][1])
+			$g_i_QueuePendingHead = Mod($g_i_QueuePendingHead + 1, UBound($g_av_QueuePending))
+		WEnd
+		$g_b_QueueBusy = False
+		; An Adlib may have parked a command between the last check and the reset
+		If $g_i_QueuePendingHead = $g_i_QueuePendingTail Then ExitLoop
+		$g_b_QueueBusy = True
+	WEnd
+EndFunc
+
+;~ Description: Write a command into the slot at the queue counter, then advance the counter. Only called by Core_EnqueueGuarded.
+Func Core_WriteQueueSlot($a_p_Ptr, $a_i_Size, $a_b_PointerLast)
+	Local $l_p_Slot = $g_p_QueueBase + 256 * $g_i_QueueCounter
+
+	If $a_b_PointerLast Then
+		DllCall($g_h_Kernel32, "bool", "WriteProcessMemory", "handle", $g_h_GWProcess, "ptr", $l_p_Slot + 4, "ptr", $a_p_Ptr + 4, "ulong_ptr", $a_i_Size - 4, "ptr", 0)
+		DllCall($g_h_Kernel32, "bool", "WriteProcessMemory", "handle", $g_h_GWProcess, "ptr", $l_p_Slot, "ptr", $a_p_Ptr, "ulong_ptr", 4, "ptr", 0)
+	Else
+		DllCall($g_h_Kernel32, 'int', 'WriteProcessMemory', 'int', $g_h_GWProcess, 'int', $l_p_Slot, 'ptr', $a_p_Ptr, 'int', $a_i_Size, 'int', '')
+	EndIf
+
+	$g_i_QueueCounter = ($g_i_QueueCounter = $g_i_QueueSize) ? 0 : $g_i_QueueCounter + 1
 EndFunc
 
 Func Core_PerformAction($a_i_Action, $a_i_Flag, $a_i_Type = 0)
@@ -682,7 +714,7 @@ Func Core_IsIngame()
 EndFunc
 
 Func Core_GetStatusError()
-	$l_i_StatusCode = Core_GetStatusCode()
+	Local $l_i_StatusCode = Core_GetStatusCode()
 	Return $l_i_StatusCode <> 0 And $l_i_StatusCode <> 1
 EndFunc
 
