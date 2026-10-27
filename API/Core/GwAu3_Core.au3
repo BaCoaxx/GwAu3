@@ -126,6 +126,9 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	Scanner_AddPattern('TradeCancel', 'C745FC01000000506A04', -0x6, 'Func')
 	; Ui patterns
 	Scanner_AddPattern('UIMessage', 'B900000000E8000000005DC3894508', -0x14, 'Func')
+	; FrameMsgSend: anchored on its msgId >= FRAME_MSG_EX (0x56) check. FrameGetChild has no assertion to anchor on.
+	Scanner_AddPattern('FrameMsgSend', '558BEC5356578B7D088BF7F7DE1BF685FF75??68????????BA????????B9????????E8????????8B5D0C83FB56', 0x1, 'Func')
+	Scanner_AddPattern('FrameGetChild', '558BEC8B450885C074??50E8????????83C404EB??E8????????FF750C8D88????????E8????????85C074??8B80????????5DC3', 0x1, 'Func')
 	Scanner_AddPattern('CompassFlag', '8D451050566A5D57', 0x1, 'Func')
 	Scanner_AddPattern('PartySearchButtonCallback', '8B450883EC08568BF18B480483F90E', -0x2, 'Func')
 	Scanner_AddPattern('PartyWindowButtonCallback', '837d0800578bf97411', -0x2, 'Func')
@@ -323,6 +326,8 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 
 	;Ui
 	Memory_SetValue('UIMessage', Ptr(Scanner_GetScanResult('UIMessage', $g_ap_ScanResults, 'Func')))
+	Memory_SetValue('FrameMsgSend', Ptr(Scanner_GetScanResult('FrameMsgSend', $g_ap_ScanResults, 'Func')))
+	Memory_SetValue('FrameGetChild', Ptr(Scanner_GetScanResult('FrameGetChild', $g_ap_ScanResults, 'Func')))
 	$l_p_Temp = Scanner_GetScanResult('Dialog', $g_ap_ScanResults, 'Func')
 	Memory_SetValue('Dialog', Ptr(Scanner_GetCallTargetAddress($l_p_Temp)))
 	$l_p_Temp = Scanner_GetScanResult('Interact', $g_ap_ScanResults, 'Func')
@@ -362,6 +367,8 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 
 	;Ui log
 	Log_Debug("UIMessage: " & Memory_GetValue('UIMessage'), "Initialize", $g_h_EditText)
+	Log_Debug("FrameMsgSend: " & Memory_GetValue('FrameMsgSend'), "Initialize", $g_h_EditText)
+	Log_Debug("FrameGetChild: " & Memory_GetValue('FrameGetChild'), "Initialize", $g_h_EditText)
 	Log_Debug("Dialog: " & Memory_GetValue('Dialog'), "Initialize", $g_h_EditText)
 	Log_Debug("Interact: " & Memory_GetValue('Interact'), "Initialize", $g_h_EditText)
 	Log_Debug("AddNPC: " & Memory_GetValue('AddNPC'), "Initialize", $g_h_EditText)
@@ -512,6 +519,9 @@ Func Core_Initialize($a_v_GW, $a_b_ChangeTitle = True)
 	DllStructSetData($g_d_Xunlai, 1, Memory_GetValue('CommandUIMsg'))
 	DllStructSetData($g_d_CloseDialog, 1, Memory_GetValue('CommandUIMsg'))
 	DllStructSetData($g_d_ApplyUpgrade, 1, Memory_GetValue('CommandUIMsg'))
+	DllStructSetData($g_d_Logout, 1, Memory_GetValue('CommandUIMsg'))
+	;PreGame
+	DllStructSetData($g_d_PlayCharacter, 1, Memory_GetValue('CommandPlayCharacter'))
 	;Party
 	DllStructSetData($g_d_AddPlayer, 1, Memory_GetValue('CommandAddPlayer'))
 	DllStructSetData($g_d_KickPlayer, 1, Memory_GetValue('CommandKickPlayer'))
