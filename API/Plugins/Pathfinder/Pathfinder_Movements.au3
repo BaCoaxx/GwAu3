@@ -10,7 +10,7 @@ Global $g_hPathfinder_LastPathUpdateTime = 0
 ; Configuration
 Global $g_iPathfinder_PathUpdateInterval = 1000      ; Interval before recalculating path (ms)
 Global $g_iPathfinder_WaypointReachedDistance = 250 ; Distance to consider waypoint reached
-Global $g_iPathfinder_SimplifyRange = 1250           ; Path simplification range
+Global $g_iPathfinder_SimplifyRange = 800           ; Path simplification range
 Global $g_iPathfinder_ObstacleUpdateInterval = 1000  ; Interval for dynamic obstacle updates (ms)
 Global $g_iPathfinder_StuckCheckInterval = 500      ; Interval to check if stuck (ms)
 Global $g_iPathfinder_StuckDistance = 100           ; If moved less than this, consider stuck
