@@ -197,8 +197,14 @@ Global $g_d_MoveMap = DllStructCreate('ptr;dword;dword;dword;dword;dword')
 Global $g_p_MoveMap = DllStructGetPtr($g_d_MoveMap)
 Global $g_d_ApplyUpgrade = DllStructCreate('ptr;dword;dword;dword;dword;dword')
 Global $g_p_ApplyUpgrade = DllStructGetPtr($g_d_ApplyUpgrade)
+Global $g_d_Logout = DllStructCreate('ptr;dword;dword;dword')
+Global $g_p_Logout = DllStructGetPtr($g_d_Logout)
 Global $g_d_EquipItem = DllStructCreate('ptr;dword;dword;dword')
 Global $g_p_EquipItem = DllStructGetPtr($g_d_EquipItem)
+
+;PreGame
+Global $g_d_PlayCharacter = DllStructCreate('ptr;wchar[20]')
+Global $g_p_PlayCharacter = DllStructGetPtr($g_d_PlayCharacter)
 
 ;Party
 Global $g_d_AddPlayer = DllStructCreate('ptr;dword')
